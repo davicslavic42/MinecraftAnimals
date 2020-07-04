@@ -1,0 +1,3 @@
+Minecraft Animals is a mod that adds in different mobs and such from minecraft as you'd expect. Do note that much of this does
+need plenty of polishing as for the ai and that can take a bit of time. 
+Team: Davslav(spriter/coder), rebmiami(previous lead dev), Pootistweet(spriter)
