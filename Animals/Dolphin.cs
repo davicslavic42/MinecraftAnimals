@@ -31,7 +31,6 @@ namespace MinecraftAnimals.Animals
 		private const int State_Swim_1 = 0;
 		private const int State_Swim_2 = 1;
 		private const int State_Follow = 2;
-		private const int State_Jump = 3;
 
 		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
 		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
@@ -56,44 +55,52 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y = 0;
-				if (AI_Timer > 400)
+				if (AI_Timer == 5)
 				{
-					switch (Main.rand.Next(3))
+					switch (Main.rand.Next(2))
+					{
+						case 0:
+							npc.direction = -1;
+							return;
+						case 1:
+							npc.direction = 1;
+							return;
+					}
+				}
+				if (AI_Timer == 400)
+				{
+					switch (Main.rand.Next(2))
 					{
 						case 0:
 							AI_State = State_Swim_2;
-							break;
+							AI_Timer = 0;
+							return;
 						case 1:
-							AI_State = State_Swim_2;
-							break;
-						case 2:
 							AI_State = State_Follow;
-							break;
+							AI_Timer = 0;
+							return;
 					}
-					AI_Timer = 0;
 				}
 			}
 			else if (AI_State == State_Swim_2)
 			{
 				AI_Timer++;
-				npc.velocity.X = 1 * npc.direction;
+				npc.velocity.X = 2 * npc.direction;
 				npc.velocity.Y = 0;
-				if (AI_Timer > 400)
+				if (AI_Timer == 400)
 				{
-					switch (Main.rand.Next(3))
+					switch (Main.rand.Next(2))
 					{
 						case 0:
 							AI_State = State_Swim_1;
-							break;
+							AI_Timer = 0;
+							return;
 						case 1:
-							AI_State = State_Jump;
-							break;
-						case 2:
 							AI_State = State_Follow;
-							break;
+							AI_Timer = 0;
+							return;
 
 					}
-					AI_Timer = 0;
 				}
 			}
 			else if (AI_State == State_Follow)
@@ -103,16 +110,18 @@ namespace MinecraftAnimals.Animals
 				npc.velocity.Y = 0;
 				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
-				if (AI_Timer > 400)
+				if (AI_Timer == 400)
 				{
 					switch (Main.rand.Next(2))
 					{
 						case 0:
 							AI_State = State_Swim_1;
-							break;
+							AI_Timer = 0;
+							return;
 						case 1:
 							AI_State = State_Swim_2;
-							break;
+							AI_Timer = 0;
+							return;
 					}
 					AI_Timer = 0;
 				}

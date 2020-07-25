@@ -30,7 +30,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return !Main.dayTime == false ? SpawnCondition.Cavern.Chance * 0.1f : 0;
+            return SpawnCondition.Overworld.Chance * 0.01f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -59,6 +59,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
             {

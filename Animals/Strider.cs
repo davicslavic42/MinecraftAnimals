@@ -33,6 +33,7 @@ namespace MinecraftAnimals.Animals
 		}
 		public override void AI()
 		{
+			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y + 2f) / 16].liquid > 50)
 			{
 				npc.velocity = new Vector2(npc.direction * 2, -4f);

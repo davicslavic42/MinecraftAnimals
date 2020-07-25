@@ -31,12 +31,12 @@ namespace MinecraftAnimals.Mounts
 			mountData.playerYOffsets = array;
 			mountData.xOffset = 13;
 			mountData.bodyFrame = 3;
-			mountData.yOffset = -12;
+			mountData.yOffset = 8;
 			mountData.playerHeadOffset = 22;
-			mountData.standingFrameCount = 4;
+			mountData.standingFrameCount = 1;
 			mountData.standingFrameDelay = 12;
 			mountData.standingFrameStart = 0;
-			mountData.runningFrameCount = 4;
+			mountData.runningFrameCount = 8;
 			mountData.runningFrameDelay = 12;
 			mountData.runningFrameStart = 0;
 			mountData.flyingFrameCount = 0;
@@ -45,7 +45,7 @@ namespace MinecraftAnimals.Mounts
 			mountData.inAirFrameCount = 1;
 			mountData.inAirFrameDelay = 12;
 			mountData.inAirFrameStart = 0;
-			mountData.idleFrameCount = 4;
+			mountData.idleFrameCount = 1;
 			mountData.idleFrameDelay = 12;
 			mountData.idleFrameStart = 0;
 			mountData.idleFrameLoop = true;
@@ -56,6 +56,8 @@ namespace MinecraftAnimals.Mounts
 			{
 				return;
 			}
+			mountData.textureWidth = mountData.backTexture.Width + 20;
+			mountData.textureHeight = mountData.backTexture.Height;
 		}
 	}
 }

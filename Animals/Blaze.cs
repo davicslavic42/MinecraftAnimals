@@ -20,10 +20,10 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 32;
             npc.height = 44;
-            npc.lifeMax = 250;
+            npc.lifeMax = 98;
             npc.damage = 25;
             npc.lavaImmune = true;
-            npc.knockBackResist = 0f;
+            npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -87,7 +87,7 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
                 }
-                if (Main.player[npc.target].Distance(npc.Center) < 320f)
+                if (Main.player[npc.target].Distance(npc.Center) < 270f)
                 {
                     AI_State = State_Shoot;
                     AI_Timer = 0;
@@ -121,7 +121,7 @@ namespace MinecraftAnimals.Animals
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 270f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Notice;

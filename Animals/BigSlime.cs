@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +22,7 @@ namespace MinecraftAnimals.Animals
 		{
 			npc.width = 55;
 			npc.height = 42;
-			npc.lifeMax = 175;
+			npc.lifeMax = 68;
 			npc.damage = 20;
 			npc.knockBackResist = 1f;
 			npc.HitSound = SoundID.NPCHit1;
@@ -31,14 +32,18 @@ namespace MinecraftAnimals.Animals
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return SpawnCondition.OverworldDay.Chance * 0f;
+			return SpawnCondition.OverworldDay.Chance * 0.01f;
 		}
 		private const int Frame_Hop = 0;
 		private const int Frame_Hop_2 = 1;
 
+
 		public override void NPCLoot()
-		{
-			NPC.NewNPC(5, 5, mod.NPCType("Slime") * 2, 1, 1, 1);
+        {
+			for (int i = 1; i <= 3; i++)
+			{
+				NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("Slime"), 0);
+			}
 		}
 
 		public override void FindFrame(int frameHeight)

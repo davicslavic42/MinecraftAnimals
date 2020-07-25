@@ -2,6 +2,8 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using System;
+
 
 namespace MinecraftAnimals.Animals
 {
@@ -16,7 +18,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 80;
             npc.height = 60;
-            npc.lifeMax = 750;
+            npc.lifeMax = 350;
             npc.damage = 38;
             npc.knockBackResist = 0f;
             npc.HitSound = SoundID.NPCHit1;
@@ -35,8 +37,6 @@ namespace MinecraftAnimals.Animals
         // Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
         private const int State_Find = 0;
         private const int State_Attack = 1;
-        private const int State_Jump = 2;
-        private const int State_Roar = 3;
 
         // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
         // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
@@ -55,6 +55,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
@@ -78,6 +79,7 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             else if (AI_State == State_Attack)
             {
+                AI_Timer++;
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.5f * npc.direction;
@@ -89,33 +91,13 @@ namespace MinecraftAnimals.Animals
                     AI_Timer = 0;
                     npc.frameCounter = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 4), npc.height - 1))
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
                 {
-                    AI_State = State_Jump;
+                    AI_State = State_Find;
                     AI_Timer = 0;
                     npc.frameCounter = 0;
                 }
             }
-            else if (AI_State == State_Jump)
-            {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
-                npc.velocity.Y += 0.5f;
-                if (AI_Timer == 1)
-                {
-                    // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -10f);
-                }
-                else if (AI_Timer > 10)
-                {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
-                    npc.frameCounter = 0;
-                }
-            }
-
         }
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
@@ -171,57 +153,28 @@ namespace MinecraftAnimals.Animals
                     npc.frameCounter = 0;
                 }
             }
-            if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 50f)
+            if (AI_State == State_Attack && npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 26)
+                if (npc.frameCounter < 8)
                 {
                     npc.frame.Y = Frame_Attack * frameHeight;
                 }
-                else if (npc.frameCounter < 30)
+                else if (npc.frameCounter < 16)
                 {
                     npc.frame.Y = Frame_Attack_2 * frameHeight;
                 }
-                else if (npc.frameCounter < 46)
+                else if (npc.frameCounter < 40)
                 {
                     npc.frame.Y = Frame_Attack_3 * frameHeight;
                 }
-                if (npc.frameCounter < 58)
+                if (npc.frameCounter < 48)
                 {
                     npc.frame.Y = Frame_Attack_4 * frameHeight;
                 }
-                else if (npc.frameCounter < 64)
+                else if (npc.frameCounter < 56)
                 {
                     npc.frame.Y = Frame_Attack_5 * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
-                }
-            }
-            if (AI_State == State_Jump)
-            {
-                npc.frameCounter++;
-
-                if (npc.frameCounter < 10)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else if (npc.frameCounter < 20)
-                {
-                    npc.frame.Y = Frame_Walk_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 30)
-                {
-                    npc.frame.Y = Frame_Walk_3 * frameHeight;
-                }
-                else if (npc.frameCounter < 40)
-                {
-                    npc.frame.Y = Frame_Walk_4 * frameHeight;
-                }
-                else if (npc.frameCounter < 50)
-                {
-                    npc.frame.Y = Frame_Walk_5 * frameHeight;
                 }
                 else
                 {

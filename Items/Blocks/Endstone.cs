@@ -10,7 +10,7 @@ namespace MinecraftAnimals.Items.Blocks
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("This is a modded block.");
+			Tooltip.SetDefault("A blast resistant stone found in the end");
 			ItemID.Sets.ExtractinatorMode[item.type] = item.type;
 		}
 
@@ -23,7 +23,7 @@ namespace MinecraftAnimals.Items.Blocks
 			item.autoReuse = true;
 			item.useAnimation = 15;
 			item.useTime = 10;
-			item.useStyle = 1;
+			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
 			item.createTile = TileType<Tiles.Endstonetile>();
 		}

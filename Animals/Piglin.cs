@@ -14,11 +14,11 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 30;
-            npc.height = 40;
-            npc.lifeMax = 250;
+            npc.width = 20;
+            npc.height = 30;
+            npc.lifeMax = 145;
             npc.damage = 28;
-            npc.knockBackResist = 0f;
+            npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -26,7 +26,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Underworld.Chance * 0.08f;
+            return SpawnCondition.Underworld.Chance * 0.04f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -54,6 +54,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
@@ -91,6 +92,12 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Jump;
                     AI_Timer = 0;
                 }
+                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+                {
+                    AI_State = State_Jump;
+                    AI_Timer = 0;
+                }
+
             }
             else if (AI_State == State_Jump)
             {
@@ -110,6 +117,7 @@ namespace MinecraftAnimals.Animals
                     AI_Timer = 0;
                 }
             }
+
         }
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;

@@ -17,7 +17,7 @@ namespace MinecraftAnimals.Animals
             npc.noGravity = true;
             npc.width = 47;
             npc.height = 14;
-            npc.lifeMax = 120;
+            npc.lifeMax = 58;
             npc.damage = 25;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;

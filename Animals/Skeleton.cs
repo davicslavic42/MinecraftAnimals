@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 38;
             npc.height = 60;
-            npc.lifeMax = 200;
+            npc.lifeMax = 68;
             npc.knockBackResist = 0f;
             npc.damage = 10;
             npc.HitSound = SoundID.NPCHit1;
@@ -30,7 +30,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return !Main.dayTime == false ? SpawnCondition.Cavern.Chance * 0.1f : 0;
+            return SpawnCondition.OverworldNight.Chance * 0.1f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -59,6 +59,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
             {
@@ -124,7 +125,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 50, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 14, 2, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {
@@ -153,6 +154,14 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
+            }
+        }
+        public override void NPCLoot()
+        {
+            base.NPCLoot();
+            if (Main.rand.NextBool(5))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("Bone"));
             }
         }
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.

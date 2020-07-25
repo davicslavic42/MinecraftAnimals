@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 38;
             npc.height = 60;
-            npc.lifeMax = 200;
+            npc.lifeMax = 71;
             npc.knockBackResist = 0f;
             npc.damage = 20;
             npc.HitSound = SoundID.NPCHit1;
@@ -63,6 +63,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
             {
@@ -129,7 +130,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 50, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("SlowArrow"), 15, 2, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {
@@ -160,9 +161,13 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
-        public override void OnHitPlayer(Player player, int damage, bool crit)
+        public override void NPCLoot()
         {
-            player.AddBuff(BuffID.Slow, 600, true);
+            base.NPCLoot();
+            if (Main.rand.NextBool(5))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("Bone"));
+            }
         }
         private const int Frame_Search = 0;
         private const int Frame_Walk = 1;

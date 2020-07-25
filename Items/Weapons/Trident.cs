@@ -14,13 +14,13 @@ namespace MinecraftAnimals.Items.Weapons
 			item.shootSpeed = 10f;
 			item.damage = 45;
 			item.knockBack = 5f;
-			item.useStyle = 1;
+			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.useAnimation = 25;
 			item.useTime = 25;
 			item.width = 30;
 			item.height = 30;
 			item.maxStack = 1;
-			item.rare = 5;
+			item.rare = ItemRarityID.Pink;
 
 			item.consumable = true;
 			item.noUseGraphic = true;

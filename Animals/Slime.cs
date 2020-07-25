@@ -16,7 +16,7 @@ namespace MinecraftAnimals.Animals
 		{
 			npc.width = 32;
 			npc.height = 26;
-			npc.lifeMax = 75;
+			npc.lifeMax = 38;
 			npc.damage = 10;
 			npc.HitSound = SoundID.NPCHit1;
 			npc.DeathSound = SoundID.NPCDeath1;
@@ -29,6 +29,13 @@ namespace MinecraftAnimals.Animals
 		}
 		private const int Frame_Hop = 0;
 		private const int Frame_Hop_2 = 1;
+		public override void NPCLoot()
+		{
+			for (int i = 1; i <= 2; i++)
+			{
+				NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("SlimePiece"), 0);
+			}
+		}
 
 		public override void FindFrame(int frameHeight)
 		{

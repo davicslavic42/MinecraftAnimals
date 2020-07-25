@@ -3,6 +3,8 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.projectiles;
+using MinecraftAnimals.Items.Weapons;
 
 namespace MinecraftAnimals.Animals.Village
 {
@@ -21,8 +23,13 @@ namespace MinecraftAnimals.Animals.Village
 		{
 			// DisplayName automatically assigned from .lang files, but the commented line below is the normal approach.
 			// DisplayName.SetDefault("Example Person");
-			Main.npcFrameCount[npc.type] = 5;
+			Main.npcFrameCount[npc.type] = 25;
+			NPCID.Sets.ExtraFramesCount[npc.type] = 9;
+			NPCID.Sets.AttackFrameCount[npc.type] = 4;
 			NPCID.Sets.DangerDetectRange[npc.type] = 700;
+			NPCID.Sets.AttackType[npc.type] = 0;
+			NPCID.Sets.AttackTime[npc.type] = 90;
+			NPCID.Sets.AttackAverageChance[npc.type] = 30;
 			NPCID.Sets.HatOffsetY[npc.type] = 4;
 		}
 
@@ -39,6 +46,7 @@ namespace MinecraftAnimals.Animals.Village
 			npc.HitSound = SoundID.NPCHit1;
 			npc.DeathSound = SoundID.NPCDeath1;
 			npc.knockBackResist = 0.5f;
+			animationType = NPCID.Guide;
 		}
 
 
@@ -101,14 +109,13 @@ namespace MinecraftAnimals.Animals.Village
 			switch (Main.rand.Next(5))
 			{
 				case 0:
-					return "What's wrong with emeralds for some iron leggings?";
+					return "What's wrong with trading emeralds for some iron leggings?";
 				case 1:
 					return "I've heard rumors of Illagers coming to these areas too, watch out for the raid captains";
 				case 2:
 					{
 						// Main.npcChatCornerItem shows a single item in the corner, like the Angler Quest chat.
-						Main.npcChatCornerItem = ItemID.Emerald;
-						return $"Hey, if you find a [i:{ItemID.Emerald}], I can trade with you for some fairly useless stuff.";
+						return $"Hey, if you find a few Emeralds, I can trade with you for some fairly useless stuff.";
 					}
 				default:
 					return "What? I don't have any arms or hands? I'd slap you, but my hands are stuck";
@@ -143,18 +150,54 @@ namespace MinecraftAnimals.Animals.Village
 		public override void SetChatButtons(ref string button, ref string button2)
 		{
 			button = Language.GetTextValue("LegacyInterface.28");
-			button2 = "Awesomeify";
-			if (Main.LocalPlayer.HasItem(ItemID.HiveBackpack))
-				button = "Upgrade " + Lang.GetItemNameValue(ItemID.HiveBackpack);
 		}
-
+		public override void OnChatButtonClicked(bool firstButton, ref bool shop)
+		{
+			if (firstButton)
+			{
+				shop = true;
+			}
+			else
+			{
+				// If the 2nd button is pressed, open the inventory...
+				Main.playerInventory = true;
+				// remove the chat window...
+				Main.npcChatText = "";
+				// and start an instance of our UIState.
+				// Note that even though we remove the chat window, Main.LocalPlayer.talkNPC will still be set correctly and we are still technically chatting with the npc.
+			}
+		}
 
 		public override void SetupShop(Chest shop, ref int nextSlot)
 		{
 			shop.item[nextSlot].SetDefaults(ItemID.RegenerationPotion);
 			nextSlot++;
-			shop.item[nextSlot].SetDefaults(ItemID.ManaPotion);
+			shop.item[nextSlot].SetDefaults(ItemID.ArcheryPotion);
 			nextSlot++;
 		}
+		public override void TownNPCAttackStrength(ref int damage, ref float knockback)
+		{
+			damage = 20;
+			knockback = 4f;
+		}
+
+		public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
+		{
+			cooldown = 30;
+			randExtraCooldown = 30;
+		}
+
+		public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
+		{
+			projType = ProjectileID.FireArrow;
+			attackDelay = 1;
+		}
+
+		public override void TownNPCAttackProjSpeed(ref float multiplier, ref float gravityCorrection, ref float randomOffset)
+		{
+			multiplier = 12f;
+			randomOffset = 2f;
+		}
+
 	}
 }

@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using MinecraftAnimals.Items.Weapons;
 
 namespace MinecraftAnimals.Animals
 {
@@ -20,8 +21,8 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 64;
             npc.height = 80;
-            npc.lifeMax = 200;
-            npc.knockBackResist = 0f;
+            npc.lifeMax = 83;
+            npc.knockBackResist = 1f;
             npc.damage = 20;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -40,8 +41,7 @@ namespace MinecraftAnimals.Animals
         private const int State_Search = 0;
         private const int State_Notice = 1;
         private const int State_Throw = 2;
-        private const int State_Fall = 3;
-        private const int State_Jump = 4;
+        private const int State_Jump = 3;
 
         // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
         // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
@@ -60,7 +60,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
-
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
             {
@@ -82,7 +82,7 @@ namespace MinecraftAnimals.Animals
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
-                npc.velocity.Y = 0.5f;
+                npc.velocity.Y += 0.5f;
                 if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 600f)
                 {
                     AI_State = State_Search;
@@ -114,8 +114,7 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Throw)
             {
                 npc.velocity.X = 0;
-                npc.velocity.Y = 2f;
-
+                npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 61)
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
@@ -126,7 +125,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 5f, mod.ProjectileType("DeepTrident"), 50, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 7f, mod.ProjectileType("DeepTrident"), 15, 2, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {
@@ -150,28 +149,35 @@ namespace MinecraftAnimals.Animals
                     // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
                     npc.velocity = new Vector2(npc.direction * 1, -10f);
                 }
-                else if (AI_Timer > 15)
+                if (AI_Timer > 15)
                 {
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
             }
         }
+        public override void NPCLoot()
+        {
+            base.NPCLoot();
+            if (Main.rand.NextBool(50))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("Trident"));
+            }
+        }
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
         private const int Frame_Walk_3 = 2;
+        private const int Frame_Walk_4 = 3;
         private const int Frame_Walk_5 = 4;
-        private const int Frame_Walk_6 = 5;
-        private const int Frame_Jump = 5;
-        private const int Frame_Fall = 5;
-        private const int Frame_Throw = 6;
-        private const int Frame_Throw_2 = 7;
-        private const int Frame_Throw_3 = 8;
-        private const int Frame_Throw_4 = 9;
-        private const int Frame_Throw_5 = 10;
-        private const int Frame_Throw_6 = 11;
-        private const int Frame_Throw_7 = 12;
+        private const int Frame_Jump = 4;
+        private const int Frame_Throw = 5;
+        private const int Frame_Throw_2 = 6;
+        private const int Frame_Throw_3 = 7;
+        private const int Frame_Throw_4 = 8;
+        private const int Frame_Throw_5 = 9;
+        private const int Frame_Throw_6 = 10;
+        private const int Frame_Throw_7 = 11;
 
         // Here in FindFrame, we want to set the animation frame our npc will use depending on what it is doing.
         // We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
@@ -212,11 +218,11 @@ namespace MinecraftAnimals.Animals
                 }
                 else if (npc.frameCounter < 50)
                 {
-                    npc.frame.Y = Frame_Walk_5 * frameHeight;
+                    npc.frame.Y = Frame_Walk_4 * frameHeight;
                 }
                 else if (npc.frameCounter < 60)
                 {
-                    npc.frame.Y = Frame_Walk_6 * frameHeight;
+                    npc.frame.Y = Frame_Walk_5 * frameHeight;
                 }
                 else
                 {
@@ -262,10 +268,6 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Jump)
             {
                 npc.frame.Y = Frame_Jump * frameHeight;
-            }
-            else if (AI_State == State_Fall)
-            {
-                npc.frame.Y = Frame_Fall * frameHeight;
             }
         }
     }

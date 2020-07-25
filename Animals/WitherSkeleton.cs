@@ -16,7 +16,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 60;
             npc.height = 62;
-            npc.lifeMax = 170;
+            npc.lifeMax = 98;
             npc.defense = 5;
             npc.damage = 35;
             npc.knockBackResist = 0f;
@@ -56,6 +56,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;

@@ -18,8 +18,8 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 32;
             npc.height = 40;
-            npc.lifeMax = 220;
-            npc.knockBackResist = 0f;
+            npc.lifeMax = 122;
+            npc.knockBackResist = 1f;
             npc.damage = 8;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -122,7 +122,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 50, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 20, 2, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {

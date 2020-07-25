@@ -18,9 +18,9 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 24;
             npc.height = 48;
-            npc.lifeMax = 100;
+            npc.lifeMax = 38;
             npc.damage = 25;
-            npc.knockBackResist = 0f;
+            npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;

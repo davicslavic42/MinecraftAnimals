@@ -16,8 +16,8 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 34;
             npc.height = 60;
-            npc.lifeMax = 150;
-            npc.damage = 28;
+            npc.lifeMax = 50;
+            npc.damage = 18;
             npc.knockBackResist = 0f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -54,6 +54,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
@@ -78,7 +79,7 @@ namespace MinecraftAnimals.Animals
             {
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
+                npc.velocity.X = 0.5f * npc.direction;
                 npc.velocity.Y += 0.5f;
 
                 if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 350f)
@@ -86,7 +87,7 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Find;
                     AI_Timer = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height - 2))
                 {
                     AI_State = State_Jump;
                     AI_Timer = 0;
@@ -97,7 +98,7 @@ namespace MinecraftAnimals.Animals
                 AI_Timer++;
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
+                npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (AI_Timer == 1)
                 {
