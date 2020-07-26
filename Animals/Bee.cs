@@ -176,7 +176,7 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Walk)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (npc.frameCounter < 9)
 				{
 					npc.frame.Y = Frame_Float * frameHeight;
 				}
