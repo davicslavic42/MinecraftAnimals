@@ -31,8 +31,8 @@ namespace MinecraftAnimals.Animals
 
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return 0.08f;
-        }
-    }
+			return SpawnCondition.OverworldDay.Chance * 0.08f;
+		}
+	}
 }
 

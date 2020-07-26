@@ -112,7 +112,7 @@ namespace MinecraftAnimals.Animals
             // In this state, we are in the Shoot. 
             else if (AI_State == State_Shoot)
             {
-                npc.velocity.X = 0;
+                npc.velocity.X = 0 * npc.direction;
                 npc.velocity.Y += 0.5f;
 
                 if (npc.frameCounter == 155)

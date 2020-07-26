@@ -28,7 +28,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Overworld.Chance * 0.03f;
+            return SpawnCondition.Overworld.Chance * 0;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.

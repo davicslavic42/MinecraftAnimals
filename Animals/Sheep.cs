@@ -26,8 +26,8 @@ namespace MinecraftAnimals.Animals
 
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return 0.09f;
-        }
-    }
+			return SpawnCondition.Overworld.Chance * 0.1f;
+		}
+	}
 }
 

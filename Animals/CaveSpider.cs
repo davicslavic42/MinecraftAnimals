@@ -27,7 +27,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Overworld.Chance * 0.03f;
+            return SpawnCondition.Cavern.Chance * 0.1f;
         }
         private const int AI_State_Slot = 0;
         private const int AI_Timer_Slot = 1;
@@ -48,7 +48,7 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
-
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
@@ -77,7 +77,6 @@ namespace MinecraftAnimals.Animals
                     AI_Timer = 0;
                 }
             }
-            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (npc.type == mod.NPCType("CaveSpider") && Main.netMode != NetmodeID.MultiplayerClient && npc.velocity.Y > 1f)
             {
                 int num99 = (int)npc.Center.X / 16;

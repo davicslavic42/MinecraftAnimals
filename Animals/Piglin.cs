@@ -16,7 +16,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 20;
             npc.height = 30;
-            npc.lifeMax = 145;
+            npc.lifeMax = 125;
             npc.damage = 28;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
@@ -26,7 +26,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Underworld.Chance * 0.04f;
+            return SpawnCondition.Underworld.Chance * 0.08f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.

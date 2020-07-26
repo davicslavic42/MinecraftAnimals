@@ -9,14 +9,14 @@ namespace MinecraftAnimals.Animals
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pigman");
+            DisplayName.SetDefault("Pigman R.I.P");
             Main.npcFrameCount[npc.type] = 8;
         }
         public override void SetDefaults()
         {
             npc.width = 30;
             npc.height = 40;
-            npc.lifeMax = 143;
+            npc.lifeMax = 133;
             npc.damage = 35;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;

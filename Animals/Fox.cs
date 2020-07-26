@@ -23,7 +23,7 @@ namespace MinecraftAnimals.Animals
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return SpawnCondition.OverworldDay.Chance * 0.02f;
+			return SpawnCondition.Overworld.Chance * 0.08f;
 		}
 		private const int AI_State_Slot = 0;
 		private const int AI_Timer_Slot = 1;

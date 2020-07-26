@@ -54,6 +54,7 @@ namespace MinecraftAnimals.Animals
 		public override void AI()
 		{
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+
 			if (AI_State == State_Walk)
 			{
 				Player player = Main.player[npc.target];
@@ -105,11 +106,6 @@ namespace MinecraftAnimals.Animals
 				if (AI_Timer == 300)
 				{
 					AI_State = State_Walk;
-					AI_Timer = 0;
-				}
-				if (player.HeldItem.type == mod.ItemType("Bone"))
-                {
-					AI_State = State_Follow;
 					AI_Timer = 0;
 				}
 			}

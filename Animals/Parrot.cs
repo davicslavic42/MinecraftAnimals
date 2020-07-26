@@ -24,7 +24,7 @@ namespace MinecraftAnimals.Animals
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return SpawnCondition.Overworld.Chance * 0.02f;
+			return SpawnCondition.Overworld.Chance * 0.06f;
 		}
 		private const int AI_State_Slot = 0;
 		private const int AI_Timer_Slot = 1;
@@ -114,7 +114,7 @@ namespace MinecraftAnimals.Animals
 				{
 					npc.velocity = new Vector2(npc.direction * 3, -3f);
 				}
-				if (AI_Timer == 400)
+				if (AI_Timer == 500)
 				{
 					switch (Main.rand.Next(2))
 					{

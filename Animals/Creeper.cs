@@ -19,7 +19,7 @@ namespace MinecraftAnimals.Animals
             npc.width = 24;
             npc.height = 48;
             npc.lifeMax = 38;
-            npc.damage = 25;
+            npc.damage = 0;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -28,7 +28,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.OverworldDay.Chance * 0.05f;
+            return SpawnCondition.OverworldDay.Chance * 0.04f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -58,7 +58,7 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
-
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
@@ -90,7 +90,7 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Jump;
                     AI_Timer = 0;
                 }
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 65f)
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 85f)
                 {
                     AI_State = State_Explode;
                     AI_Timer = 0;
@@ -116,24 +116,33 @@ namespace MinecraftAnimals.Animals
             }
             else if (AI_State == State_Explode)
             {
+                AI_Timer++;
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 1f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 //.66 seconds=40ticks //
-                if (AI_Timer > 110)
+                if (AI_Timer == 70)
                 {
-                    Vector2 newVelocity = Vector2.Normalize(Main.player[npc.target].Center + Main.player[npc.target].velocity - npc.Center) * 18;
-                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, newVelocity.X, newVelocity.Y, ModContent.ProjectileType<CreeperExplosion>(), npc.damage / 3, 3f, Main.myPlayer);
+                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
+                    _ = npc.Distance(npc.position) - 50;
+                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
+                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -75f);
+                    npc.velocity.X += DirToRing.X;
+                    npc.velocity.Y += DirToRing.Y;
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 0, mod.ProjectileType("CreeperExplosion"), 5, 2, Main.LocalPlayer.whoAmI);
                 }
-                AI_Timer = 0;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 65f)
+                if (AI_Timer == 72)
+                {
+                    npc.life = 0;
+                }
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 85f)
                 {
                     AI_State = State_Find;
                     AI_Timer = 0;
                 }
             }
+            
         }
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;

@@ -64,7 +64,7 @@ namespace MinecraftAnimals.Animals
                 npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y = 1;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 100f)
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 165f)
                 {
                     AI_State = State_Attack;
                     AI_Timer = 0;

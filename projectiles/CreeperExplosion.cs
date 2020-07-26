@@ -15,17 +15,18 @@ namespace MinecraftAnimals.projectiles
 			// while the sprite is actually bigger than 15x15, we use 15x15 since it lets the projectile clip into tiles as it bounces. It looks better.
 			projectile.width = 15;
 			projectile.height = 15;
+			projectile.friendly = true;
+			projectile.penetrate = -1;
 			projectile.friendly = false;
 			projectile.hostile = true;
-			projectile.penetrate = 10;
-
 			// 5 second fuse.
-			projectile.timeLeft = 300;
+			projectile.timeLeft = 30;
 
 			// These 2 help the projectile hitbox be centered on the projectile sprite.
 			drawOffsetX = 5;
 			drawOriginOffsetY = 5;
 		}
+
 		public override bool OnTileCollide(Vector2 oldVelocity)
 		{
 			// Die immediately if ai[1] isn't 0 (We set this to 1 for the 5 extra explosives we spawn in Kill)
@@ -33,14 +34,16 @@ namespace MinecraftAnimals.projectiles
 			{
 				return true;
 			}
-			// OnTileCollide can trigger quite quickly, so using soundDelay helps prevent the sound from overlapping too much.
-			if (projectile.soundDelay == 0)
-			{
-				// We use WithVolume since the sound is a bit too loud, and WithPitchVariance to give the sound some random pitch variance.
-				Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Custom/BananaImpact").WithVolume(.7f).WithPitchVariance(.5f));
-			}
-			projectile.soundDelay = 10;
 
+			// This code makes the projectile very bouncy.
+			if (projectile.velocity.X != oldVelocity.X && Math.Abs(oldVelocity.X) > 1f)
+			{
+				projectile.velocity.X = oldVelocity.X * -0.9f;
+			}
+			if (projectile.velocity.Y != oldVelocity.Y && Math.Abs(oldVelocity.Y) > 1f)
+			{
+				projectile.velocity.Y = oldVelocity.Y * -0.9f;
+			}
 			return false;
 		}
 
@@ -60,7 +63,7 @@ namespace MinecraftAnimals.projectiles
 				projectile.Center = projectile.position;
 				//projectile.position.X = projectile.position.X - (float)(projectile.width / 2);
 				//projectile.position.Y = projectile.position.Y - (float)(projectile.height / 2);
-				projectile.damage = 250;
+				projectile.damage = 60;
 				projectile.knockBack = 10f;
 			}
 			else
@@ -79,43 +82,10 @@ namespace MinecraftAnimals.projectiles
 					Main.dust[dustIndex].position = projectile.Center + new Vector2(0f, (float)(-(float)projectile.height / 2 - 6)).RotatedBy((double)projectile.rotation, default(Vector2)) * 1.1f;
 				}
 			}
-			projectile.ai[0] += 1f;
-			if (projectile.ai[0] > 5f)
-			{
-				projectile.ai[0] = 10f;
-				// Roll speed dampening.
-				if (projectile.velocity.Y == 0f && projectile.velocity.X != 0f)
-				{
-					projectile.velocity.X = projectile.velocity.X * 0.97f;
-					//if (projectile.type == 29 || projectile.type == 470 || projectile.type == 637)
-					{
-						projectile.velocity.X = projectile.velocity.X * 0.99f;
-					}
-					if ((double)projectile.velocity.X > -0.01 && (double)projectile.velocity.X < 0.01)
-					{
-						projectile.velocity.X = 0f;
-						projectile.netUpdate = true;
-					}
-				}
-				projectile.velocity.Y = projectile.velocity.Y + 0.2f;
-			}
-			// Rotation increased by velocity.X 
-			projectile.rotation += projectile.velocity.X * 0.1f;
-			return;
 		}
 
 		public override void Kill(int timeLeft)
 		{
-			// If we are the original projectile, spawn the 5 child projectiles
-			if (projectile.ai[1] == 0)
-			{
-				for (int i = 0; i < 5; i++)
-				{
-					// Random upward vector.
-					Vector2 vel = new Vector2(Main.rand.NextFloat(-3, 3), Main.rand.NextFloat(-10, -8));
-					Projectile.NewProjectile(projectile.Center, vel, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 0, 1);
-				}
-			}
 			// Play explosion sound
 			Main.PlaySound(SoundID.Item15, projectile.position);
 			// Smoke Dust spawn
@@ -163,10 +133,10 @@ namespace MinecraftAnimals.projectiles
 
 			// TODO, tmodloader helper method
 			{
-				int explosionRadius = 3;
+				int explosionRadius = 8;
 				//if (projectile.type == 29 || projectile.type == 470 || projectile.type == 637)
 				{
-					explosionRadius = 7;
+					explosionRadius = 8;
 				}
 				int minTileX = (int)(projectile.position.X / 16f - (float)explosionRadius);
 				int maxTileX = (int)(projectile.position.X / 16f + (float)explosionRadius);
@@ -217,10 +187,6 @@ namespace MinecraftAnimals.projectiles
 							if (Main.tile[i, j] != null && Main.tile[i, j].active())
 							{
 								canKillTile = true;
-								if (Main.tileDungeon[(int)Main.tile[i, j].type] || Main.tile[i, j].type == 88 || Main.tile[i, j].type == 21 || Main.tile[i, j].type == 26 || Main.tile[i, j].type == 107 || Main.tile[i, j].type == 108 || Main.tile[i, j].type == 111 || Main.tile[i, j].type == 226 || Main.tile[i, j].type == 237 || Main.tile[i, j].type == 221 || Main.tile[i, j].type == 222 || Main.tile[i, j].type == 223 || Main.tile[i, j].type == 211 || Main.tile[i, j].type == 404)
-								{
-									canKillTile = false;
-								}
 								if (!Main.hardMode && Main.tile[i, j].type == 58)
 								{
 									canKillTile = false;
@@ -232,9 +198,9 @@ namespace MinecraftAnimals.projectiles
 								if (canKillTile)
 								{
 									WorldGen.KillTile(i, j, false, false, false);
-									if (!Main.tile[i, j].active() && Main.netMode != NetmodeID.SinglePlayer)
+									if (!Main.tile[i, j].active() && Main.netMode != 0)
 									{
-										NetMessage.SendData(MessageID.TileChange, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
+										NetMessage.SendData(17, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
 									}
 								}
 							}
@@ -247,9 +213,9 @@ namespace MinecraftAnimals.projectiles
 										if (Main.tile[x, y] != null && Main.tile[x, y].wall > 0 && canKillWalls && WallLoader.CanExplode(x, y, Main.tile[x, y].wall))
 										{
 											WorldGen.KillWall(x, y, false);
-											if (Main.tile[x, y].wall == 0 && Main.netMode != NetmodeID.SinglePlayer)
+											if (Main.tile[x, y].wall == 0 && Main.netMode != 0)
 											{
-												NetMessage.SendData(MessageID.TileChange, -1, -1, null, 2, (float)x, (float)y, 0f, 0, 0, 0);
+												NetMessage.SendData(17, -1, -1, null, 2, (float)x, (float)y, 0f, 0, 0, 0);
 											}
 										}
 									}
@@ -258,6 +224,7 @@ namespace MinecraftAnimals.projectiles
 						}
 					}
 				}
+				AchievementsHelper.CurrentlyMining = false;
 			}
 		}
 	}
