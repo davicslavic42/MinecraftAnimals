@@ -15,7 +15,7 @@ namespace MinecraftAnimals.Animals
         public override void SetDefaults()
         {
             npc.width = 28;
-            npc.height = 30;
+            npc.height = 50;
             npc.lifeMax = 125;
             npc.damage = 28;
             npc.knockBackResist = 2f;

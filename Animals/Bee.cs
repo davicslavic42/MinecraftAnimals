@@ -109,11 +109,24 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Fly)
 			{
 				AI_Timer++;
-				npc.velocity.X = 2 * npc.direction;
-				npc.velocity.Y += 0.5f;
-				if (Main.tile[(int)(npc.Center.X + ((npc.width) * npc.direction)) / 16, (int)(npc.Center.Y + 175f) / 16].nactive())
+				npc.TargetClosest(true);
+				if (Main.player[npc.target].position.Y < npc.position.Y + 130)
 				{
-					npc.velocity = new Vector2(npc.direction * 3, -3f);
+					npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
+				}
+				if (Main.player[npc.target].position.Y > npc.position.Y + 130)
+				{
+					npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
+				}
+				if (Main.player[npc.target].position.X > npc.position.X + 10)
+				{
+					npc.velocity.X -= npc.velocity.X < .1f ? 0.0075f : .1f;
+					npc.direction = -1;
+				}
+				if (Main.player[npc.target].position.X < npc.position.X + 10)
+				{
+					npc.velocity.X += npc.velocity.X > .1f ? 0.0075f : .1f;
+					npc.direction = 1;
 				}
 				if (AI_Timer == 500)
 				{
@@ -168,9 +181,21 @@ namespace MinecraftAnimals.Animals
 			if (AI_State == State_Idle)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (npc.frameCounter < 9)
 				{
 					npc.frame.Y = Frame_Float * frameHeight;
+				}
+				else if (npc.frameCounter < 20)
+				{
+					npc.frame.Y = Frame_Float_2 * frameHeight;
+				}
+				else if (npc.frameCounter < 30)
+				{
+					npc.frame.Y = Frame_Float_3 * frameHeight;
+				}
+				else if (npc.frameCounter < 40)
+				{
+					npc.frame.Y = Frame_Float_4 * frameHeight;
 				}
 				else
 				{
