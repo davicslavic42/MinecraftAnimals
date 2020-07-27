@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Animals
 			npc.width = 34;
 			npc.height = 30;
 			npc.lifeMax = 100;
-            npc.damage = 25;
+            npc.damage = 0;
 			npc.HitSound = SoundID.NPCHit1;
 			npc.DeathSound = SoundID.NPCDeath1;
 			npc.aiStyle = -1;
@@ -137,12 +137,16 @@ namespace MinecraftAnimals.Animals
 				npc.velocity.Y += 0.5f;
 				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
+				npc.damage = 25;
 			}
 		}
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             base.OnHitNPC(target, damage, knockback, crit);
-			AI_State = State_Attack;
+			if (damage > 1)
+            {
+				AI_State = State_Attack;
+            }
 		}
 		public override void OnHitPlayer(Player target, int damage, bool crit)
 		{

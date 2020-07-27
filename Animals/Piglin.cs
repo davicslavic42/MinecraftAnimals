@@ -14,11 +14,11 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 20;
+            npc.width = 28;
             npc.height = 30;
             npc.lifeMax = 125;
             npc.damage = 28;
-            npc.knockBackResist = 1f;
+            npc.knockBackResist = 2f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -92,12 +92,6 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Jump;
                     AI_Timer = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
-                {
-                    AI_State = State_Jump;
-                    AI_Timer = 0;
-                }
-
             }
             else if (AI_State == State_Jump)
             {
