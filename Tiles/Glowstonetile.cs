@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Tiles
 			Main.tileBlockLight[Type] = true;
 			Main.tileLighted[Type] = true;
 			drop = ItemType<Items.Blocks.Glowstone>();
-			AddMapEntry(new Color(200, 200, 200));
+			AddMapEntry(new Color(200, 200, 0));
 		}
 
 		public override void NumDust(int i, int j, bool fail, ref int num)
