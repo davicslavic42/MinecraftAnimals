@@ -24,9 +24,9 @@ namespace MinecraftAnimals.Tiles
 
 		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
 		{
-			r = 1.5f;
+			r = 1.75f;
 			g = 1.5f;
-			b = 1.5f;
+			b = 0;
 		}
 	}
 }
