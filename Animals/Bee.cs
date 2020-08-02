@@ -51,6 +51,7 @@ namespace MinecraftAnimals.Animals
 		}
 		public override void AI()
 		{
+			
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 			if (AI_State == State_Walk)
 			{
@@ -82,6 +83,11 @@ namespace MinecraftAnimals.Animals
 							AI_Timer = 0;
 							return;
 					}
+				}
+                if (npc.life < npc.life - 10)
+                {
+					AI_State = State_Attack;
+					AI_Timer = 0;
 				}
 			}
 			else if (AI_State == State_Idle)
@@ -128,7 +134,7 @@ namespace MinecraftAnimals.Animals
 					npc.velocity.X += npc.velocity.X > .1f ? 0.0075f : .1f;
 					npc.direction = 1;
 				}
-				if (AI_Timer == 500)
+				if (AI_Timer == 350)
 				{
 					switch (Main.rand.Next(2))
 					{
@@ -152,14 +158,6 @@ namespace MinecraftAnimals.Animals
 				npc.TargetClosest(true);
 				npc.damage = 25;
 			}
-		}
-		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            base.OnHitNPC(target, damage, knockback, crit);
-			if (damage > 1)
-            {
-				AI_State = State_Attack;
-            }
 		}
 		public override void OnHitPlayer(Player target, int damage, bool crit)
 		{

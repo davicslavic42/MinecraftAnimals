@@ -16,8 +16,8 @@ namespace MinecraftAnimals.Animals
         public override void SetDefaults()
         {
             npc.noGravity = true;
-            npc.width = 35;
-            npc.height = 40;
+            npc.width = 25;
+            npc.height = 35;
             npc.lifeMax = 100;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Animals
 							return;
 					}
 				}
-				if (AI_Timer == 220)
+				if (AI_Timer == 180)
 				{
 					AI_State = State_Down;
 					AI_Timer = 0;
@@ -94,7 +94,7 @@ namespace MinecraftAnimals.Animals
 							return;
 					}
 				}
-				if (AI_Timer == 275)
+				if (AI_Timer == 200)
 				{
 					switch (Main.rand.Next(2))
 					{
@@ -115,7 +115,7 @@ namespace MinecraftAnimals.Animals
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
 				npc.velocity = new Vector2(npc.direction * 0, -5f);
-				if (Main.tileSolid[Main.tile[(int)(npc.Center.X) / 16, (int)((npc.Center.Y + 4) / 16)].type])
+				if (Main.tileSolid[Main.tile[(int)((npc.Center.X) / 32), (int)((npc.Center.Y) / 16)].type])
 				{
 					AI_Timer = 0;
 					AI_State = State_Rest;

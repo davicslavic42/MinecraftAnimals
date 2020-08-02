@@ -50,3 +50,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/Tiles/Trees/HugeFungus_Tops.png
+/Tiles/Trees/HugeFungus_Branches.png
+/Tiles/Trees/HugeFungus.png
+/Tiles/GlowstoneTile.png

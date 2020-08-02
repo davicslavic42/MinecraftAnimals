@@ -21,8 +21,6 @@ namespace MinecraftAnimals.Items
 			item.useAnimation = 20;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.value = 30000;
-			item.rare = ItemRarityID.Green;
-			item.UseSound = SoundID.Item79;
 			item.noMelee = true;
 		}
 	}

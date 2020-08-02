@@ -116,7 +116,7 @@ namespace MinecraftAnimals.Animals
                 if (AI_Timer > 200)
                 {
                     Vector2 newVelocity = Vector2.Normalize(Main.player[npc.target].Center + Main.player[npc.target].velocity - npc.Center) * 9;
-                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, newVelocity.X, newVelocity.Y, ModContent.ProjectileType<FireCharge>(), npc.damage / 3, 3f, Main.myPlayer, BuffID.OnFire, 600f);
+                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, newVelocity.X, newVelocity.Y, ModContent.ProjectileType<Ghastshot>(), npc.damage / 2, 3f, Main.myPlayer, BuffID.OnFire, 600f);
                     AI_Timer = 0;
                 }
                 else
@@ -167,7 +167,7 @@ namespace MinecraftAnimals.Animals
                     npc.frameCounter = 0;
                 }
             }
-            if (AI_State == State_Notice)
+            else if (AI_State == State_Notice)
             {
                 npc.frameCounter++;
                 if (npc.frameCounter < 10)

@@ -114,7 +114,12 @@ namespace MinecraftAnimals.Animals
 				{
 					npc.velocity = new Vector2(npc.direction * 3, -3f);
 				}
-				if (AI_Timer == 500)
+				else
+				{
+					npc.velocity.Y = 0;
+				}
+
+				if (AI_Timer == 350)
 				{
 					switch (Main.rand.Next(2))
 					{

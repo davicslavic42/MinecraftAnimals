@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 namespace MinecraftAnimals.projectiles
 {
 	// to investigate: Projectile.Damage, (8843)
-	internal class CreeperExplosion : ModProjectile
+	internal class Ghastshot : ModProjectile
 	{
 		public override void SetDefaults()
 		{
@@ -19,7 +19,7 @@ namespace MinecraftAnimals.projectiles
 			projectile.penetrate = -1;
 			projectile.friendly = false;
 			projectile.hostile = true;
-			projectile.hide = true;
+			projectile.hide = false;
 			// 5 second fuse.
 			projectile.timeLeft = 30;
 
@@ -35,27 +35,28 @@ namespace MinecraftAnimals.projectiles
 			{
 				return true;
 			}
-
 			return false;
 		}
 
 		public override void AI()
 		{
-			if (projectile.owner == Main.myPlayer && projectile.timeLeft <= 3)
+			if (projectile.owner == Main.myPlayer && projectile.timeLeft <= 8)
 			{
-				projectile.tileCollide = false;
+				projectile.tileCollide = true;
+
 				// Set to transparent. This projectile technically lives as  transparent for about 3 frames
 				projectile.alpha = 255;
+				projectile.timeLeft = 8;
 				// change the hitbox size, centered about the original projectile center. This makes the projectile damage enemies during the explosion.
 				projectile.position = projectile.Center;
 				//projectile.position.X = projectile.position.X + (float)(projectile.width / 2);
 				//projectile.position.Y = projectile.position.Y + (float)(projectile.height / 2);
-				projectile.width = 250;
-				projectile.height = 250;
+				projectile.width = 175;
+				projectile.height = 175;
 				projectile.Center = projectile.position;
 				//projectile.position.X = projectile.position.X - (float)(projectile.width / 2);
 				//projectile.position.Y = projectile.position.Y - (float)(projectile.height / 2);
-				projectile.damage = 60;
+				projectile.damage = 30;
 				projectile.knockBack = 10f;
 			}
 			else
@@ -125,10 +126,10 @@ namespace MinecraftAnimals.projectiles
 
 			// TODO, tmodloader helper method
 			{
-				int explosionRadius = 8;
+				int explosionRadius = 5;
 				//if (projectile.type == 29 || projectile.type == 470 || projectile.type == 637)
 				{
-					explosionRadius = 8;
+					explosionRadius = 5;
 				}
 				int minTileX = (int)(projectile.position.X / 16f - (float)explosionRadius);
 				int maxTileX = (int)(projectile.position.X / 16f + (float)explosionRadius);

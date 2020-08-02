@@ -125,7 +125,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 7f, mod.ProjectileType("DeepTrident"), 15, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 3f, mod.ProjectileType("DeepTrident"), 15, 2, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {
