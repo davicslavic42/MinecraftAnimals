@@ -10,7 +10,8 @@ namespace MinecraftAnimals.Items.Blocks
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Netherrack coated in a moss like substance suitable for plant life");
+			DisplayName.SetDefault("WarpedNylium");
+			Tooltip.SetDefault("Netherrack coated in a moss like substance suitable for Warped plant life");
 		}
 
 		public override void SetDefaults()

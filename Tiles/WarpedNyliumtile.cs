@@ -15,6 +15,7 @@ namespace MinecraftAnimals.Tiles
 			Main.tileLighted[Type] = true;
 			drop = ItemType<Items.Blocks.WarpedNylium>();
 			AddMapEntry(new Color(200, 200, 200));
+			SetModTree(new Trees.HugeWarpedFungus());
 		}
 
 		public override void NumDust(int i, int j, bool fail, ref int num)
@@ -27,6 +28,11 @@ namespace MinecraftAnimals.Tiles
 			r = 0.5f;
 			g = 0.5f;
 			b = 0.5f;
+		}
+		public override int SaplingGrowthType(ref int style)
+		{
+			style = 0;
+			return TileType<Trees.WarpedSapling>();
 		}
 	}
 }

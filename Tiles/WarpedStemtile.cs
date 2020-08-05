@@ -12,6 +12,7 @@ namespace MinecraftAnimals.Tiles
 			Main.tileSolid[Type] = true;
 			Main.tileBlockLight[Type] = true;
 			Main.tileLighted[Type] = true;
+			Main.tileFrameImportant[Type] = true;
 			drop = ItemType<Items.Blocks.WarpedStem>();
 			AddMapEntry(new Color(200, 200, 200));
 		}

@@ -6,12 +6,12 @@ using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Items.Herbs
 {
-	public class WarpedFungus : ModItem
+	public class HugeFungusSeed : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("A blueish fungus found in the underworlds");
-			DisplayName.SetDefault("Warped Fungus");
+			Tooltip.SetDefault("Fungi can also be grown into much larger Huge fungi as well");
+			DisplayName.SetDefault("Huge Fungus Seed");
 		}
 
 		public override void SetDefaults()
@@ -26,11 +26,12 @@ namespace MinecraftAnimals.Items.Herbs
 			item.useTime = 10;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
+			item.createTile = TileType<Tiles.Trees.WarpedSapling>();
 		}
 		public override void AddRecipes()
 		{
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemType<HugeFungusSeed>(), 1);
+			recipe.AddIngredient(ItemType<WarpedFungus>(), 1);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}
