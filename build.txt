@@ -1,5 +1,8 @@
 displayName = Minecraft Animals
 author = Davslav
-version = 0.15
+version = 0.1.0
 includeSource = false
 includePDB = true
+includeSource = true
+hideCode = false
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
