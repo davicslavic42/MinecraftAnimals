@@ -5,4 +5,5 @@ includeSource = false
 includePDB = true
 includeSource = true
 hideCode = false
+homepage = https://forums.terraria.org/index.php?threads/minecraft-animals.96770/
 buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
