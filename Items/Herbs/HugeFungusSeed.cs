@@ -11,7 +11,7 @@ namespace MinecraftAnimals.Items.Herbs
 		public override void SetStaticDefaults()
 		{
 			Tooltip.SetDefault("Fungi can also be grown into much larger Huge fungi as well");
-			DisplayName.SetDefault("Huge Fungus Seed");
+			DisplayName.SetDefault("Fertile warped fungus");
 		}
 
 		public override void SetDefaults()
@@ -32,7 +32,7 @@ namespace MinecraftAnimals.Items.Herbs
 		{
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemType<WarpedFungus>(), 1);
-			recipe.AddIngredient(ItemType<BoneMeal>(), 2);
+			recipe.AddIngredient(ItemType<BoneMeal>(), 3);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}
