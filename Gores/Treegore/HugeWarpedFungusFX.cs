@@ -2,7 +2,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace MinecraftAnimals.Gores
+namespace MinecraftAnimals.Gores.Treegore
 {
 	public class HugeWarpedFungusFX : ModGore
 	{

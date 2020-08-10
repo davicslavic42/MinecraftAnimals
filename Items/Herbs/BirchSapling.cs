@@ -6,12 +6,12 @@ using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Items.Herbs
 {
-	public class HugeFungusSeed : ModItem
+	public class BirchSapling : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Fungi can also be grown into much larger Huge fungi as well");
-			DisplayName.SetDefault("Huge Fungus Seed");
+			Tooltip.SetDefault("remeber to use bone meal");
+			DisplayName.SetDefault("Birch Sapling");
 		}
 
 		public override void SetDefaults()
@@ -26,13 +26,12 @@ namespace MinecraftAnimals.Items.Herbs
 			item.useTime = 10;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
-			item.createTile = TileType<Tiles.Trees.WarpedSapling>();
+			item.createTile = TileType<Tiles.Trees.BirchSaplingtile>();
 		}
 		public override void AddRecipes()
 		{
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemType<WarpedFungus>(), 1);
-			recipe.AddIngredient(ItemType<BoneMeal>(), 2);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}

@@ -5,17 +5,16 @@ using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Tiles
 {
-	public class Dirttile : ModTile
+	public class Birchtile : ModTile
 	{
 		public override void SetDefaults()
 		{
 			Main.tileSolid[Type] = true;
-			Main.tileMergeDirt[Type] = true;
 			Main.tileBlockLight[Type] = true;
 			Main.tileLighted[Type] = true;
-			drop = ItemType<Items.Blocks.Dirt>();
+			Main.tileFrameImportant[Type] = true;
+			drop = ItemType<Items.Blocks.Birch>();
 			AddMapEntry(new Color(200, 200, 200));
-			SetModTree(new Trees.Birch());
 		}
 
 		public override void NumDust(int i, int j, bool fail, ref int num)
