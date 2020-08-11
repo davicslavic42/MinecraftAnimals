@@ -58,18 +58,6 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
-				if (AI_Timer == 5)
-				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							npc.direction = -1;
-							return;
-						case 1:
-							npc.direction = 1;
-							return;
-					}
-				}
 				if (AI_Timer == 500)
 				{
 					switch (Main.rand.Next(2))
@@ -83,11 +71,6 @@ namespace MinecraftAnimals.Animals
 							AI_Timer = 0;
 							return;
 					}
-				}
-                if (npc.life < npc.life - 10)
-                {
-					AI_State = State_Attack;
-					AI_Timer = 0;
 				}
 			}
 			else if (AI_State == State_Idle)
@@ -157,6 +140,23 @@ namespace MinecraftAnimals.Animals
 				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
 				npc.damage = 25;
+			}
+			if (AI_Timer == 5)
+			{
+				switch (Main.rand.Next(2))
+				{
+					case 0:
+						npc.direction = -1;
+						return;
+					case 1:
+						npc.direction = 1;
+						return;
+				}
+			}
+			if (npc.lifeMax < 0.9f)
+            {
+				AI_State = State_Attack;
+				AI_Timer = 0;
 			}
 		}
 		public override void OnHitPlayer(Player target, int damage, bool crit)

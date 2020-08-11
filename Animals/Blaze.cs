@@ -117,21 +117,19 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
                 }
-                if (AI_Timer == 175)
+                if (AI_Timer == 165 || AI_Timer == 180 || AI_Timer == 195) //Check three states of AI_Timer, this will result in 3 shots with a delay of 15 frames
                 {
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
-                        _ = npc.Distance(npc.position) - 50;
-                        Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                        Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -75f);
+                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
+                    _ = npc.Distance(npc.position) - 50;
+                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
+                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -75f);
 
-                        npc.velocity.X += DirToRing.X;
-                        npc.velocity.Y += DirToRing.Y;
+                    npc.velocity.X += DirToRing.X;
+                    npc.velocity.Y += DirToRing.Y;
 
-                        Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.15f) * 3f, mod.ProjectileType("FireCharge"), 15, 2, Main.LocalPlayer.whoAmI);
+                    Main.PlaySound(SoundID.Item20, npc.position); //We play a sound at the NPC's position for feedback for each shot
 
-                    }
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.15f) * 7.5f, mod.ProjectileType("FireCharge"), 15, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
                 }
                 if (AI_Timer == 210)
                 {
@@ -177,4 +175,3 @@ namespace MinecraftAnimals.Animals
         }
     }
 }
-

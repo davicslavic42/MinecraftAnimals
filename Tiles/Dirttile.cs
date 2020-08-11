@@ -29,5 +29,10 @@ namespace MinecraftAnimals.Tiles
 			g = 0.5f;
 			b = 0.5f;
 		}
+		public override int SaplingGrowthType(ref int style)
+		{
+			style = 0;
+			return TileType<Trees.BirchSaplingtile>();
+		}
 	}
 }

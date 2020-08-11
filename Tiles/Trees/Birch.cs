@@ -13,8 +13,6 @@ namespace MinecraftAnimals.Tiles.Trees
 				ItemType<Items.Blocks.Birch>();
 			return ItemType<Items.Herbs.BirchSapling>();
 		}
-		
-
 		public override int GrowthFXGore()
 		{
 			return mod.GetGoreSlot("Gores/BirchFX");

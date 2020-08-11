@@ -35,7 +35,7 @@ namespace MinecraftAnimals.Tiles.Trees
 			TileObjectData.newTile.RandomStyleRange = 3;
 			TileObjectData.newTile.StyleMultiplier = 3;
 			TileObjectData.newSubTile.CopyFrom(TileObjectData.newTile);
-			TileObjectData.newSubTile.AnchorValidTiles = new int[] { TileType<Netherracktile>() };
+			TileObjectData.newSubTile.AnchorValidTiles = new int[] { TileType<WarpedNyliumtile>() };
 			TileObjectData.addSubTile(1);
 			TileObjectData.addTile(Type);
 
