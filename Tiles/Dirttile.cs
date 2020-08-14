@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Tiles
 			Main.tileBlockLight[Type] = true;
 			Main.tileLighted[Type] = true;
 			drop = ItemType<Items.Blocks.Dirt>();
-			AddMapEntry(new Color(200, 200, 200));
+			AddMapEntry(new Color(25, 200, 0));
 			SetModTree(new Trees.Birch());
 		}
 

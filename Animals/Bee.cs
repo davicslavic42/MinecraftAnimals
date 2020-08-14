@@ -51,8 +51,9 @@ namespace MinecraftAnimals.Animals
 		}
 		public override void AI()
 		{
-			
+			Player player = Main.player[npc.target];
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+			npc.TargetClosest(true);
 			if (AI_State == State_Walk)
 			{
 				AI_Timer++;
@@ -78,8 +79,6 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				npc.velocity.X = 0;
 				npc.velocity.Y += 0.5f;
-				Player player = Main.player[npc.target];
-				npc.TargetClosest(true);
 				if (AI_Timer == 500)
 				{
 					switch (Main.rand.Next(2))
@@ -98,21 +97,20 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Fly)
 			{
 				AI_Timer++;
-				npc.TargetClosest(true);
-				if (Main.player[npc.target].position.Y < npc.position.Y + 130)
+				if (player.position.Y < npc.position.Y + 130)
 				{
 					npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
 				}
-				if (Main.player[npc.target].position.Y > npc.position.Y + 130)
+				if (player.position.Y > npc.position.Y + 130)
 				{
 					npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
 				}
-				if (Main.player[npc.target].position.X > npc.position.X + 10)
+				if (player.position.X > npc.position.X + 10)
 				{
 					npc.velocity.X -= npc.velocity.X < .1f ? 0.0075f : .1f;
 					npc.direction = -1;
 				}
-				if (Main.player[npc.target].position.X < npc.position.X + 10)
+				if (player.position.X < npc.position.X + 10)
 				{
 					npc.velocity.X += npc.velocity.X > .1f ? 0.0075f : .1f;
 					npc.direction = 1;
@@ -137,21 +135,7 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				npc.velocity.X = 1.5f;
 				npc.velocity.Y += 0.5f;
-				Player player = Main.player[npc.target];
-				npc.TargetClosest(true);
 				npc.damage = 25;
-			}
-			if (AI_Timer == 5)
-			{
-				switch (Main.rand.Next(2))
-				{
-					case 0:
-						npc.direction = -1;
-						return;
-					case 1:
-						npc.direction = 1;
-						return;
-				}
 			}
 			if (npc.lifeMax < 0.9f)
             {
