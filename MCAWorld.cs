@@ -32,19 +32,28 @@ namespace MinecraftAnimals
 			progress.Message = "Tree bases";
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
-			for (int k = 0; k < (int)(Main.maxTilesX * (WorldGen.worldSurface * 0.20) * WorldGen.worldSurface * 1E-01); k++)
+			
+			for (int k = 0; k < (int)(Main.maxTilesX * (WorldGen.worldSurface * 0.20) * WorldGen.worldSurface * 1E-03); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 2, Main.maxTilesX - 60); 
-				int y = WorldGen.genRand.Next((int)(WorldGen.worldSurface * 0.20), (int)(WorldGen.worldSurface)); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
+				int y = (int)(WorldGen.worldSurface * 0.20);
 				// Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
 				// Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
 				Tile tile = Framing.GetTileSafely(x, y);
-				if (tile.active() && tile.type == TileID.Grass)
+				if ( y != TileID.Grass)
 				{
-						WorldGen.TileRunner(x, y, WorldGen.genRand.Next(1, 2), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
+					y++;
 				}
+                else
+                {
+					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
+				}
+				if (y == WorldGen.worldSurface)
+                {
+					break;
+                }
 			}
 		}
 	}
