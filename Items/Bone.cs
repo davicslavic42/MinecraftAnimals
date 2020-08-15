@@ -15,13 +15,12 @@ namespace MinecraftAnimals.Items
 
 		public override void SetDefaults()
 		{
-			item.maxStack = 99;
 			item.width = 20;
 			item.height = 30;
 			item.useTime = 20;
 			item.useAnimation = 20;
 			item.useStyle = ItemUseStyleID.SwingThrow;
-			item.value = 0;
+			item.value = 30000;
 			item.noMelee = true;
 		}
 	}
