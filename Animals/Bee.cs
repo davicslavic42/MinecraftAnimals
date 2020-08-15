@@ -51,13 +51,25 @@ namespace MinecraftAnimals.Animals
 		}
 		public override void AI()
 		{
+			
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-			AI_Timer++;
 			if (AI_State == State_Walk)
 			{
 				AI_Timer++;
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
+				if (AI_Timer == 5)
+				{
+					switch (Main.rand.Next(2))
+					{
+						case 0:
+							npc.direction = -1;
+							return;
+						case 1:
+							npc.direction = 1;
+							return;
+					}
+				}
 				if (AI_Timer == 500)
 				{
 					switch (Main.rand.Next(2))
@@ -72,12 +84,19 @@ namespace MinecraftAnimals.Animals
 							return;
 					}
 				}
+                if (npc.life < npc.life - 10)
+                {
+					AI_State = State_Attack;
+					AI_Timer = 0;
+				}
 			}
 			else if (AI_State == State_Idle)
 			{
 				AI_Timer++;
 				npc.velocity.X = 0;
 				npc.velocity.Y += 0.5f;
+				Player player = Main.player[npc.target];
+				npc.TargetClosest(true);
 				if (AI_Timer == 500)
 				{
 					switch (Main.rand.Next(2))
@@ -95,22 +114,22 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Fly)
 			{
-				Player player = Main.player[npc.target];
 				AI_Timer++;
-				if (player.position.Y < npc.position.Y + 130)
+				npc.TargetClosest(true);
+				if (Main.player[npc.target].position.Y < npc.position.Y + 130)
 				{
-					npc.velocity.Y -= npc.velocity.Y > 0f ? 0.0375f : .1f;
+					npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
 				}
-				if (player.position.Y > npc.position.Y + 130)
+				if (Main.player[npc.target].position.Y > npc.position.Y + 130)
 				{
-					npc.velocity.Y += npc.velocity.Y < 0f ? 0.0375f : .1f;
+					npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
 				}
-				if (player.position.X > npc.position.X + 10)
+				if (Main.player[npc.target].position.X > npc.position.X + 10)
 				{
 					npc.velocity.X -= npc.velocity.X < .1f ? 0.0075f : .1f;
 					npc.direction = -1;
 				}
-				if (player.position.X < npc.position.X + 10)
+				if (Main.player[npc.target].position.X < npc.position.X + 10)
 				{
 					npc.velocity.X += npc.velocity.X > .1f ? 0.0075f : .1f;
 					npc.direction = 1;
@@ -132,15 +151,12 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Attack)
 			{
-				npc.TargetClosest(true);
+				AI_Timer++;
 				npc.velocity.X = 1.5f;
 				npc.velocity.Y += 0.5f;
+				Player player = Main.player[npc.target];
+				npc.TargetClosest(true);
 				npc.damage = 25;
-			}
-			if (npc.life == npc.lifeMax * 0.9)
-			{
-				AI_State = State_Attack;
-				AI_Timer = 0;
 			}
 		}
 		public override void OnHitPlayer(Player target, int damage, bool crit)
