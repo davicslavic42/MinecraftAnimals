@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Tiles
 			Main.tileBlockLight[Type] = true;
 			Main.tileLighted[Type] = true;
 			drop = ItemType<Items.Blocks.Dirt>();
-			AddMapEntry(new Color(25, 200, 0));
+			AddMapEntry(new Color(170, 20, 0));
 			SetModTree(new Trees.Birch());
 		}
 
@@ -23,12 +23,6 @@ namespace MinecraftAnimals.Tiles
 			num = fail ? 1 : 3;
 		}
 
-		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-		{
-			r = 0.5f;
-			g = 0.5f;
-			b = 0.5f;
-		}
 		public override int SaplingGrowthType(ref int style)
 		{
 			style = 0;

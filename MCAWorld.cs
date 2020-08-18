@@ -1,5 +1,6 @@
 ﻿using MinecraftAnimals.Tiles;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
@@ -25,6 +26,19 @@ namespace MinecraftAnimals
 				tasks.Insert(ShiniesIndex + 1, new PassLegacy("Tree bases", Treebases));
 			}
 		}
+		private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
+		{
+			if (maxDepth == -1) maxDepth = (int)WorldGen.worldSurface; //Set default
+			while (true)
+			{
+				if (y >= maxDepth)
+					break;
+				if (Main.tile[x, y].active() && types.Any(i => i == Main.tile[x, y].type))
+					return y; //Returns first valid tile under intitial Y pos, -1 if max depth is reached
+				y++;
+			}
+			return -1; //fallout case
+		}
 
 		private void Treebases(GenerationProgress progress)
 		{
@@ -32,28 +46,20 @@ namespace MinecraftAnimals
 			progress.Message = "Tree bases";
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
-			
-			for (int k = 0; k < (int)(Main.maxTilesX * (WorldGen.worldSurface * 0.20) * WorldGen.worldSurface * 1E-03); k++)
+
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-05); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
-				int y = (int)(WorldGen.worldSurface * 0.20);
-				// Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
-				// Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
+				int x = WorldGen.genRand.Next(0, Main.maxTilesX);
+				int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.worldSurfaceLow + 75); // WorldGen.worldSurfaceLow is actually the highest surface tile. In practice you might want to use WorldGen.rockLayer or other WorldGen values.
+																												  // Then, we call WorldGen.TileRunner with random "strength" and random "steps", as well as the Tile we wish to place. Feel free to experiment with strength and step to see the shape they generate.
+																												  // Alternately, we could check the tile already present in the coordinate we are interested. Wrapping WorldGen.TileRunner in the following condition would make the ore only generate in Snow.
 				Tile tile = Framing.GetTileSafely(x, y);
-				if ( y != TileID.Grass)
+				if (tile.active() && tile.type == TileID.Grass)
 				{
-					y++;
-				}
-                else
-                {
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
 				}
-				if (y == WorldGen.worldSurface)
-                {
-					break;
-                }
 			}
 		}
 	}
