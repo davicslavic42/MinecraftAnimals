@@ -13,8 +13,8 @@ namespace MinecraftAnimals.Miscellaneous
 			// Alter any of these values as you see fit, but you should probably keep useStyle on 1, as well as the noUseGraphic and noMelee bools
 			item.knockBack = 5f;
 			item.useStyle = ItemUseStyleID.SwingThrow;
-			item.useAnimation = 25;
-			item.useTime = 25;
+			item.useAnimation = 1;
+			item.useTime = 1;
 			item.width = 30;
 			item.height = 30;
 			item.maxStack = 1;
@@ -33,8 +33,8 @@ namespace MinecraftAnimals.Miscellaneous
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
-				int x = WorldGen.genRand.Next(Main.maxTilesX - Main.maxTilesX / 3);
-				int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.worldSurface - 75); 
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
+				int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.worldSurface);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
 				if (tile.active() && tile.type == TileID.Grass)
