@@ -15,8 +15,8 @@ namespace MinecraftAnimals.projectiles
 		}
 		public override void SetDefaults()
 		{
-			projectile.width = 16;
-			projectile.height = 34;
+			projectile.width = 8;
+			projectile.height = 28;
 			projectile.friendly = false;
 			projectile.hostile = true;
 			projectile.penetrate = 3;

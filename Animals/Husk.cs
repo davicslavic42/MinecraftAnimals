@@ -54,16 +54,16 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Player player = Main.player[npc.target];
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 0;
                 npc.velocity.Y += 0.5f;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 350f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 350f)
                 {
                     AI_State = State_Attack;
                     AI_Timer = 0;
@@ -77,12 +77,11 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             else if (AI_State == State_Attack)
             {
-                Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 0.5f * npc.direction;
                 npc.velocity.Y += 0.5f;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 350f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 350f)
                 {
                     AI_State = State_Find;
                     AI_Timer = 0;
@@ -96,7 +95,6 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Jump)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y += 0.5f;

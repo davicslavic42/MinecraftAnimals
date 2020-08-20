@@ -47,7 +47,7 @@ namespace MinecraftAnimals
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
 
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-03); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 2E-02); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
@@ -58,6 +58,20 @@ namespace MinecraftAnimals
 				if (tile.active() && tile.type == TileID.Grass)
 				{
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
+				}
+				
+			}
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.5); k++)
+			{
+				// The inside of this for loop corresponds to one single splotch of our Ore.
+				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX);
+				int y = WorldGen.genRand.Next(Main.maxTilesY - 185, Main.maxTilesY - 80);
+				Tile tile = Framing.GetTileSafely(x, y);
+				WorldGen.SquareTileFrame(x, y);
+				if ((Main.tile[x, y - 1].active() == false) && tile.active() && tile.type == TileID.Ash)
+				{
+					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(1, 2), WorldGen.genRand.Next(1, 2), TileType<WarpedNyliumtile>());
 				}
 			}
 		}

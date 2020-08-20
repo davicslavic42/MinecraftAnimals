@@ -37,6 +37,7 @@ namespace MinecraftAnimals.Animals
 			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y + 2f) / 16].liquid > 50)
 			{
 				npc.velocity = new Vector2(npc.direction * 2, -4f);
+				npc.velocity.Y = 0;
 			}
 		}
 		private const int Frame_Walk = 0;

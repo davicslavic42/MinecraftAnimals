@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 32;
             npc.height = 50;
-            npc.lifeMax = 470;
+            npc.lifeMax = 170;
             npc.knockBackResist = 0f;
             npc.damage = 8;
             npc.HitSound = SoundID.NPCHit1;
@@ -59,17 +59,17 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Player player = Main.player[npc.target];
+            npc.TargetClosest(true);
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
             {
                 npc.velocity.X = 0;
-                npc.velocity.Y = 0.5f;
+                npc.velocity.Y += 0.5f;
                 // TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 // Now we check the make sure the target is still valid and within our specified notice range (500)
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 600f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 600f)
                 {
                     AI_State = State_Notice;
                     AI_Timer = 0;
@@ -78,22 +78,21 @@ namespace MinecraftAnimals.Animals
             // In this state, a player has been targeted
             else if (AI_State == State_Notice)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 1 * npc.direction;
+                npc.velocity.X = 2f * npc.direction;
                 npc.velocity.Y += 0.5f;
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 600f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 600f)
                 {
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
                 if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+
                 {
                     AI_State = State_Jump;
                     AI_Timer = 0;
                 }
                 // If the targeted player is in attack range (250).
-                if (Main.player[npc.target].Distance(npc.Center) < 350f)
+                if (player.Distance(npc.Center) < 350f)
                 {
                     AI_State = State_Shoot;
                     AI_Timer = 0;
@@ -114,8 +113,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.velocity.X = 0 * npc.direction;
                 npc.velocity.Y += 0.5f;
-
-                if (npc.frameCounter == 140)
+                if (npc.frameCounter == 144)
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
                     _ = npc.Distance(npc.position) - 25;
@@ -125,7 +123,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 6f, mod.ProjectileType("Arrow"), 50, 2, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, mod.ProjectileType("Arrow"), 20, 3, Main.LocalPlayer.whoAmI);
                 }
                 else
                 {
@@ -140,8 +138,6 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Jump)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 2f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (AI_Timer == 1)
