@@ -98,7 +98,7 @@ namespace MinecraftAnimals.Animals
                 else
                 {
                     npc.TargetClosest(true);
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 600f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 600f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Search;
@@ -125,7 +125,7 @@ namespace MinecraftAnimals.Animals
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 350f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Notice;

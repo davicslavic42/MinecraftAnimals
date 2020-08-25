@@ -85,12 +85,6 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
-
-                {
-                    AI_State = State_Jump;
-                    AI_Timer = 0;
-                }
                 // If the targeted player is in attack range (250).
                 if (player.Distance(npc.Center) < 350f)
                 {
@@ -150,6 +144,11 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
+            }
+            if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+            {
+                AI_State = State_Jump;
+                AI_Timer = 0;
             }
         }
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.

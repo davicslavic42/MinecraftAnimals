@@ -25,6 +25,7 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
+            npc.scale = 0.35f;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -55,16 +56,16 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Player player = Main.player[npc.target];
+            npc.TargetClosest(true);
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y = 1;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 165f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 165f)
                 {
                     AI_State = State_Attack;
                     AI_Timer = 0;
@@ -80,12 +81,10 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Attack)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 2 * npc.direction;
                 npc.velocity.Y = 1;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 100f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 165f)
                 {
                     AI_State = State_Find;
                     AI_Timer = 0;
