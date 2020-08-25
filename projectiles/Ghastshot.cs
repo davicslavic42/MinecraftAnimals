@@ -21,7 +21,7 @@ namespace MinecraftAnimals.projectiles
 			projectile.hostile = true;
 			projectile.hide = false;
 			// 5 second fuse.
-			projectile.timeLeft = 30;
+			projectile.timeLeft = 100;
 
 			// These 2 help the projectile hitbox be centered on the projectile sprite.
 			drawOffsetX = 5;
@@ -31,8 +31,9 @@ namespace MinecraftAnimals.projectiles
 		public override bool OnTileCollide(Vector2 oldVelocity)
 		{
 			// Die immediately if ai[1] isn't 0 (We set this to 1 for the 5 extra explosives we spawn in Kill)
-			if (projectile.ai[1] != 0)
+			if (projectile.timeLeft != 0)
 			{
+				projectile.timeLeft = 8;
 				return true;
 			}
 			return false;
@@ -76,8 +77,7 @@ namespace MinecraftAnimals.projectiles
 				}
 			}
 		}
-
-		public override void Kill(int timeLeft)
+        public override void Kill(int timeLeft)
 		{
 			// Play explosion sound
 			Main.PlaySound(SoundID.Item15, projectile.position);

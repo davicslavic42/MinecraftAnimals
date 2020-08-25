@@ -21,7 +21,7 @@ namespace MinecraftAnimals.Animals
 			npc.HitSound = SoundID.NPCHit1;
 			npc.DeathSound = SoundID.NPCDeath1;
 			npc.aiStyle = -1;
-			npc.scale = 0.5f;
+			npc.scale = 0.75f;
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{

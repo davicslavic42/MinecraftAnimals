@@ -54,16 +54,16 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Player player = Main.player[npc.target];
+            npc.TargetClosest(true);
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (AI_State == State_Find)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 0;
                 npc.velocity.Y += 0.5f;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 350f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 350f)
                 {
                     AI_State = State_Attack;
                     AI_Timer = 0;
@@ -77,12 +77,10 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             else if (AI_State == State_Attack)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y += 0.5f;
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 350f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 350f)
                 {
                     AI_State = State_Find;
                     AI_Timer = 0;
@@ -96,8 +94,6 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Jump)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 1.5f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (AI_Timer == 1)
@@ -123,7 +119,7 @@ namespace MinecraftAnimals.Animals
         private const int Frame_Attack_3 = 7;
         public override void FindFrame(int frameHeight)
         {
-            // This makes the sprite flip horizontally in conjunction with the npc.direction.
+            Player player = Main.player[npc.target];
             npc.spriteDirection = npc.direction;
             if (AI_State == State_Find)
             {
@@ -160,7 +156,7 @@ namespace MinecraftAnimals.Animals
                     npc.frameCounter = 0;
                 }
             }
-            if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 50f)
+            if (npc.HasValidTarget && player.Distance(npc.Center) < 50f)
             {
                 npc.frameCounter++;
                 if (npc.frameCounter < 46)

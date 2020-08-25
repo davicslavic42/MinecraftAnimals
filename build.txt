@@ -1,5 +1,5 @@
 displayName = Minecraft Animals
 author = Davslav
-version = 0.15
-includeSource = false
+version = 0.1.1.1
+includeSource = true
 includePDB = true
