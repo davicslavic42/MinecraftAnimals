@@ -40,6 +40,7 @@ namespace MinecraftAnimals.Animals
         private const int State_Search = 0;
         private const int State_Notice = 1;
         private const int State_Shoot = 2;
+        int fly = 1;
 
         public float AI_Timer
         {
@@ -54,21 +55,12 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
+            Player player = Main.player[npc.target];
+            npc.TargetClosest(true);
             if (AI_State == State_Search)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 0;
-                //thanks nuova prime//
-                if (Main.player[npc.target].position.Y < npc.position.Y + 130)
-                {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
-                }
-                if (Main.player[npc.target].position.Y > npc.position.Y + 130)
-                {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
-                }
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 550f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 550f)
                 {
                     AI_State = State_Notice;
                     AI_Timer = 0;
@@ -76,24 +68,13 @@ namespace MinecraftAnimals.Animals
             }
             else if (AI_State == State_Notice)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
                 //thanks nuova prime//
-                if (Main.player[npc.target].position.Y < npc.position.Y + 130)
-                {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
-                }
-                if (Main.player[npc.target].position.Y > npc.position.Y + 130)
-                {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
-                }
-                if (Main.player[npc.target].Distance(npc.Center) < 320f)
                 {
                     AI_State = State_Shoot;
                     AI_Timer = 0;
                 }
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 550f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 550f)
                 {
                     AI_State = State_Search;
                     AI_Timer = 0;
@@ -103,30 +84,31 @@ namespace MinecraftAnimals.Animals
             {
                 npc.velocity.X = 0;
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                if (Main.player[npc.target].position.Y < npc.position.Y + 130)
-                {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
-                }
-                if (Main.player[npc.target].position.Y > npc.position.Y + 130)
-                {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
-                }
-
                 if (AI_Timer > 200)
                 {
-                    Vector2 newVelocity = Vector2.Normalize(Main.player[npc.target].Center + Main.player[npc.target].velocity - npc.Center) * 9;
+                    Vector2 newVelocity = Vector2.Normalize(player.Center + player.velocity - npc.Center) * 9;
                     Projectile.NewProjectile(npc.Center.X, npc.Center.Y, newVelocity.X, newVelocity.Y, ModContent.ProjectileType<Ghastshot>(), npc.damage / 2, 3f, Main.myPlayer, BuffID.OnFire, 600f);
                     AI_Timer = 0;
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 350f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Notice;
                         AI_Timer = 0;
+                    }
+                }
+                if(fly == 1)
+                {
+                    //thanks nuova prime//
+                    if (player.position.Y < npc.position.Y + 130)
+                    {
+                        npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
+                    }
+                    if (player.position.Y > npc.position.Y + 130)
+                    {
+                        npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
                     }
                 }
             }

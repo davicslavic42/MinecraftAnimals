@@ -90,11 +90,6 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Find;
                     AI_Timer = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
-                {
-                    AI_State = State_Jump;
-                    AI_Timer = 0;
-                }
             }
             else if (AI_State == State_Jump)
             {
@@ -112,6 +107,11 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Attack;
                     AI_Timer = 0;
                 }
+            }
+            if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+            {
+                AI_State = State_Jump;
+                AI_Timer = 0;
             }
         }
         public void AddBuff(int type, int time, bool quiet = false)

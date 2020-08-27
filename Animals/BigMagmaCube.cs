@@ -71,8 +71,7 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Notice)
 			{
 				npc.velocity.Y = 0.25f;
-				npc.velocity.X = npc.direction * 0;
-				npc.TargetClosest(true);
+				npc.velocity.X = npc.direction;
 				// If the targeted player is in attack range (250).
 				if (player.Distance(npc.Center) < 620f)
 				{
@@ -85,7 +84,6 @@ namespace MinecraftAnimals.Animals
 				}
 				else
 				{
-					npc.TargetClosest(true);
 					if (!npc.HasValidTarget || player.Distance(npc.Center) > 640f)
 					{
 						// Out targeted player seems to have left our range, so we'll go back to sleep.
@@ -96,18 +94,17 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Jump)
 			{
+				npc.velocity.X = npc.direction;
 				AI_Timer++;
-				npc.TargetClosest(true);
 				if (AI_Timer == 5)
 				{
 					npc.velocity = new Vector2(npc.direction * 3, -6f);
 				}
 				if (AI_Timer == 45)
                 {
-					npc.velocity.Y = 0.25f;
-					npc.velocity.X = npc.direction * 0.25f;
+					npc.velocity.Y = 0.55f;
 				}
-				if (AI_Timer >= 60 && (Main.tileSolid[Main.tile[(int)npc.Center.X , (int)((npc.Center.Y + 2) / 16)].type]))
+				if (AI_Timer >= 60 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
 					AI_State = State_Notice;
 					AI_Timer = 0;

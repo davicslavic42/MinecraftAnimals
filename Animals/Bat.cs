@@ -116,7 +116,7 @@ namespace MinecraftAnimals.Animals
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
 				npc.velocity = new Vector2(npc.direction * 0, -5f);
-				if (Main.tileSolid[Main.tile[(int)((npc.Center.X) / 32), (int)((npc.Center.Y) / 16)].type])
+				if (Collision.SolidCollision(npc.position, (npc.width ), npc.height + 1))
 				{
 					AI_Timer = 0;
 					AI_State = State_Rest;

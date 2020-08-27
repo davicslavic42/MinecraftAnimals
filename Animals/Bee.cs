@@ -34,6 +34,7 @@ namespace MinecraftAnimals.Animals
 		private const int State_Idle = 1;
 		private const int State_Fly = 2;
 		private const int State_Attack = 3;
+		public bool hostile = false;
 		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
 		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
 		// Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
@@ -133,18 +134,33 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Attack)
 			{
+				npc.velocity.X = 1 * npc.direction;
+				npc.velocity.Y += 0.5f;
 				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
 				npc.velocity.X = 1.5f;
 				npc.velocity.Y += 0.5f;
 				npc.damage = 25;
 			}
+            if (hostile == true)
+            {
+				AI_State = State_Attack;
+			}
 		}
         public override void HitEffect(int hitDirection, double damage)
         {
 			AI_State = State_Attack;
 			AI_Timer = 0;
-			Main.NewText("e");
+			for (int n = 0; n < 200; n++)
+			{
+				NPC N = Main.npc[n];
+				if (N.active && (N.type == mod.NPCType("Bee")))
+				{
+					N.target = npc.target;
+					N.netUpdate = true;
+					hostile = true;
+				}
+			}
 			base.HitEffect(hitDirection, damage);
         }
         public override void OnHitPlayer(Player target, int damage, bool crit)
