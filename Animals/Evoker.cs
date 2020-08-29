@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Animals
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Evoker");
-            Main.npcFrameCount[npc.type] = 6;
+            Main.npcFrameCount[npc.type] = 9;
         }
         public override void SetDefaults()
         {
@@ -59,6 +59,8 @@ namespace MinecraftAnimals.Animals
         }
         public override void AI()
         {
+            Player player = Main.player[npc.target];
+            npc.TargetClosest(true);
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             // The npc starts in the asleep state, waiting for a player to enter range
             if (AI_State == State_Search)
@@ -66,10 +68,8 @@ namespace MinecraftAnimals.Animals
                 npc.velocity.X = 0;
                 npc.velocity.Y += 0.5f;
                 // TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 // Now we check the make sure the target is still valid and within our specified notice range (500)
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 750f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 750f)
                 {
                     AI_State = State_Notice;
                     AI_Timer = 0;
@@ -78,17 +78,15 @@ namespace MinecraftAnimals.Animals
             // In this state, a player has been targeted
             if (AI_State == State_Notice)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 1 * npc.direction;
                 npc.velocity.Y += 0.5f;
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 750f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 750f)
                 {
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
                 // If the targeted player is in attack range (250).
-                if (Main.player[npc.target].Distance(npc.Center) < 275f)
+                if (player.Distance(npc.Center) < 275f)
                 {
                     AI_State = State_Magic;
                     AI_Timer = 0;
@@ -96,7 +94,7 @@ namespace MinecraftAnimals.Animals
                 else
                 {
                     npc.TargetClosest(true);
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 750f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 750f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Search;
@@ -108,8 +106,6 @@ namespace MinecraftAnimals.Animals
             if (AI_State == State_Magic)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 0;
                 npc.velocity.Y += 0.5f;
 
@@ -137,7 +133,7 @@ namespace MinecraftAnimals.Animals
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 275f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 275f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         AI_State = State_Notice;
@@ -148,14 +144,12 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Jump)
             {
                 AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
                 npc.velocity.X = 2f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (AI_Timer == 1)
                 {
                     // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -10f);
+                    npc.velocity = new Vector2(npc.direction * 1, -6f);
                 }
                 else if (AI_Timer > 15)
                 {
@@ -170,8 +164,11 @@ namespace MinecraftAnimals.Animals
         private const int Frame_Walk_3 = 2;
         private const int Frame_Walk_4 = 3;
         private const int Frame_Walk_5 = 4;
-        private const int Frame_Jump = 4;
         private const int Frame_Magic = 5;
+        private const int Frame_Magic_2 = 6;
+        private const int Frame_Magic_3 = 7;
+        private const int Frame_Magic_4 = 8;
+
         // Here in FindFrame, we want to set the animation frame our npc will use depending on what it is doing.
         // We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
         public override void FindFrame(int frameHeight)
@@ -211,6 +208,10 @@ namespace MinecraftAnimals.Animals
                 }
                 else if (npc.frameCounter < 50)
                 {
+                    npc.frame.Y = Frame_Walk_4 * frameHeight;
+                }
+                else if (npc.frameCounter < 60)
+                {
                     npc.frame.Y = Frame_Walk_5 * frameHeight;
                 }
                 else
@@ -221,13 +222,21 @@ namespace MinecraftAnimals.Animals
             else if (AI_State == State_Magic)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 125)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                if (npc.frameCounter < 200)
+                if (npc.frameCounter < 10)
                 {
                     npc.frame.Y = Frame_Magic * frameHeight;
+                }
+                if (npc.frameCounter < 20)
+                {
+                    npc.frame.Y = Frame_Magic_2 * frameHeight;
+                }
+                if (npc.frameCounter < 30)
+                {
+                    npc.frame.Y = Frame_Magic_3 * frameHeight;
+                }
+                if (npc.frameCounter < 37)
+                {
+                    npc.frame.Y = Frame_Magic_4 * frameHeight;
                 }
                 else
                 {
@@ -236,7 +245,7 @@ namespace MinecraftAnimals.Animals
             }
             else if (AI_State == State_Jump)
             {
-                npc.frame.Y = Frame_Jump * frameHeight;
+                npc.frame.Y = Frame_Walk_3 * frameHeight;
             }
         }
     }

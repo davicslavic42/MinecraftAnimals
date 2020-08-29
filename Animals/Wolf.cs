@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Animals
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Wolf");
-			Main.npcFrameCount[npc.type] = 5;
+			Main.npcFrameCount[npc.type] = 16;
 		}
 		public override void SetDefaults()
 		{
@@ -35,6 +35,8 @@ namespace MinecraftAnimals.Animals
 		private const int State_Walk = 0;
 		private const int State_Idle = 1;
 		private const int State_Follow = 2;
+		private const int State_Attack = 3;
+		public bool hostile = false;
 
 		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
 		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
@@ -54,10 +56,9 @@ namespace MinecraftAnimals.Animals
 		public override void AI()
 		{
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-
+			Player player = Main.player[npc.target];
 			if (AI_State == State_Walk)
 			{
-				Player player = Main.player[npc.target];
 				AI_Timer++;
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
@@ -78,15 +79,9 @@ namespace MinecraftAnimals.Animals
 					AI_State = State_Idle;
 					AI_Timer = 0;
 				}
-				if (player.HeldItem.type == mod.ItemType("Bone"))
-				{
-					AI_State = State_Follow;
-					AI_Timer = 0;
-				}
 			}
 			else if (AI_State == State_Follow)
 			{
-				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
 				AI_Timer++;
 				npc.velocity.X = 1.5f * npc.target;
@@ -102,19 +97,61 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				npc.velocity.X = 0;
 				npc.velocity.Y += 0.5f;
-				Player player = Main.player[npc.target];
 				if (AI_Timer == 300)
 				{
 					AI_State = State_Walk;
 					AI_Timer = 0;
 				}
 			}
+			if (player.HeldItem.type == mod.ItemType("Bone"))
+			{
+				AI_State = State_Follow;
+				AI_Timer = 0;
+			}
+			else if (AI_State == State_Attack)
+			{
+				npc.velocity.X = 1 * npc.direction;
+				npc.velocity.Y += 0.5f;
+				npc.TargetClosest(true);
+				npc.damage = 25;
+			}
+            if (hostile == true)
+            {
+				AI_State = State_Attack;
+			}
 		}
+        public override void HitEffect(int hitDirection, double damage)
+        {
+			AI_State = State_Attack;
+			AI_Timer = 0;
+			for (int n = 0; n < 200; n++)
+			{
+				NPC N = Main.npc[n];
+				if (N.active && (N.type == mod.NPCType("Wolf")))
+				{
+					N.target = npc.target;
+					N.netUpdate = true;
+					hostile = true;
+				}
+			}
+			base.HitEffect(hitDirection, damage);
+        }
 		private const int Frame_Walk = 0;
 		private const int Frame_Walk_2 = 1;
 		private const int Frame_Walk_3 = 2;
 		private const int Frame_Walk_4 = 3;
 		private const int Frame_Walk_5 = 4;
+		private const int Frame_Walk_6 = 5;
+		private const int Frame_Walk_7 = 6;
+		private const int Frame_Walk_8 = 7;
+		private const int Frame_Angry = 8;
+		private const int Frame_Angry_2 = 9;
+		private const int Frame_Angry_3 = 10;
+		private const int Frame_Angry_4 = 11;
+		private const int Frame_Angry_5 = 12;
+		private const int Frame_Angry_6 = 13;
+		private const int Frame_Angry_7 = 14;
+		private const int Frame_Angry_8 = 15;
 		public override void FindFrame(int frameHeight)
 		{
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
@@ -134,25 +171,37 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Walk)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (npc.frameCounter < 8)
 				{
 					npc.frame.Y = Frame_Walk * frameHeight;
 				}
-				else if (npc.frameCounter < 20)
+				else if (npc.frameCounter < 16)
 				{
 					npc.frame.Y = Frame_Walk_2 * frameHeight;
 				}
-				else if (npc.frameCounter < 30)
+				else if (npc.frameCounter < 24)
 				{
 					npc.frame.Y = Frame_Walk_3 * frameHeight;
 				}
-				else if (npc.frameCounter < 40)
+				else if (npc.frameCounter < 32)
 				{
 					npc.frame.Y = Frame_Walk_4 * frameHeight;
 				}
-				else if (npc.frameCounter < 50)
+				else if (npc.frameCounter < 40)
 				{
 					npc.frame.Y = Frame_Walk_5 * frameHeight;
+				}
+				else if (npc.frameCounter < 48)
+				{
+					npc.frame.Y = Frame_Walk_6 * frameHeight;
+				}
+				else if (npc.frameCounter < 56)
+				{
+					npc.frame.Y = Frame_Walk_7 * frameHeight;
+				}
+				else if (npc.frameCounter < 64)
+				{
+					npc.frame.Y = Frame_Walk_8 * frameHeight;
 				}
 				else
 				{
@@ -181,6 +230,46 @@ namespace MinecraftAnimals.Animals
 				else if (npc.frameCounter < 50)
 				{
 					npc.frame.Y = Frame_Walk_5 * frameHeight;
+				}
+				else
+				{
+					npc.frameCounter = 0;
+				}
+			}
+			if (AI_State == State_Attack)
+			{
+				npc.frameCounter++;
+				if (npc.frameCounter < 8)
+				{
+					npc.frame.Y = Frame_Angry * frameHeight;
+				}
+				else if (npc.frameCounter < 16)
+				{
+					npc.frame.Y = Frame_Angry_2 * frameHeight;
+				}
+				else if (npc.frameCounter < 24)
+				{
+					npc.frame.Y = Frame_Angry_3 * frameHeight;
+				}
+				else if (npc.frameCounter < 32)
+				{
+					npc.frame.Y = Frame_Angry_4 * frameHeight;
+				}
+				else if (npc.frameCounter < 40)
+				{
+					npc.frame.Y = Frame_Angry_5 * frameHeight;
+				}
+				else if (npc.frameCounter < 48)
+				{
+					npc.frame.Y = Frame_Angry_6 * frameHeight;
+				}
+				else if (npc.frameCounter < 56)
+				{
+					npc.frame.Y = Frame_Angry_7 * frameHeight;
+				}
+				else if (npc.frameCounter < 64)
+				{
+					npc.frame.Y = Frame_Angry_8 * frameHeight;
 				}
 				else
 				{

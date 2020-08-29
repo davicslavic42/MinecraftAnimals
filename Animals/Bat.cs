@@ -10,7 +10,7 @@ namespace MinecraftAnimals.Animals
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Bat");
-            Main.npcFrameCount[npc.type] = 5;
+            Main.npcFrameCount[npc.type] = 7;
         }
 
         public override void SetDefaults()
@@ -22,7 +22,7 @@ namespace MinecraftAnimals.Animals
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
-			npc.scale = 0.45f;
+			npc.scale = 0.55f;
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -138,89 +138,51 @@ namespace MinecraftAnimals.Animals
         private const int Frame_Float_2 = 1;
         private const int Frame_Float_3 = 2;
         private const int Frame_Float_4 = 3;
-		private const int Frame_Rest = 4;
+		private const int Frame_Float_5 = 4;
+		private const int Frame_Float_6 = 6;
+		private const int Frame_Rest = 7;
 		public override void FindFrame(int frameHeight)
         {
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
 			npc.spriteDirection = npc.direction;
-			if (AI_State == State_Up)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
-			}
-			else if (AI_State == State_Down)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
-			}
-			else if (AI_State == State_Fly)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
-			}
-			else if (AI_State == State_Rest)
+		    if (AI_State == State_Rest)
 			{
 				npc.frameCounter++;
 				if (npc.frameCounter < 10)
 				{
 					npc.frame.Y = Frame_Rest * frameHeight;
+				}
+				else
+				{
+					npc.frameCounter = 0;
+				}
+			}
+			else
+			{
+				npc.frameCounter++;
+				if (npc.frameCounter < 6)
+				{
+					npc.frame.Y = Frame_Float * frameHeight;
+				}
+				else if (npc.frameCounter < 12)
+				{
+					npc.frame.Y = Frame_Float_2 * frameHeight;
+				}
+				else if (npc.frameCounter < 18)
+				{
+					npc.frame.Y = Frame_Float_3 * frameHeight;
+				}
+				else if (npc.frameCounter < 24)
+				{
+					npc.frame.Y = Frame_Float_4 * frameHeight;
+				}
+				else if (npc.frameCounter < 32)
+				{
+					npc.frame.Y = Frame_Float_5 * frameHeight;
+				}
+				else if (npc.frameCounter < 38)
+				{
+					npc.frame.Y = Frame_Float_6 * frameHeight;
 				}
 				else
 				{

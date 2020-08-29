@@ -28,7 +28,7 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
-            npc.scale = 1.85f;
+            npc.scale = 1.95f;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -40,7 +40,7 @@ namespace MinecraftAnimals.Animals
         private const int State_Search = 0;
         private const int State_Notice = 1;
         private const int State_Shoot = 2;
-        int fly = 1;
+         int fly = 1;
 
         public float AI_Timer
         {

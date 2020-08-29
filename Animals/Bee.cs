@@ -52,7 +52,7 @@ namespace MinecraftAnimals.Animals
 		}
 		public override void AI()
 		{
-			
+			Player player = Main.player[npc.target];
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 			AI_Timer++;
 			if (AI_State == State_Walk)
@@ -97,7 +97,6 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Fly)
 			{
-				Player player = Main.player[npc.target];
 				AI_Timer++;
 				if (player.position.Y < npc.position.Y + 130)
 				{
@@ -136,10 +135,7 @@ namespace MinecraftAnimals.Animals
 			{
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
-				Player player = Main.player[npc.target];
 				npc.TargetClosest(true);
-				npc.velocity.X = 1.5f;
-				npc.velocity.Y += 0.5f;
 				npc.damage = 25;
 			}
             if (hostile == true)
