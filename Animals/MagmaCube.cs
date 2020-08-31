@@ -53,14 +53,14 @@ namespace MinecraftAnimals.Animals
 		// Our AI here makes our NPC sit waiting for a player to enter range, jumps to attack, flutter mid-fall to stay afloat a little longer, then falls to the ground. Note that animation should happen in FindFrame
 		public override void AI()
 		{
+			Player player = Main.player[npc.target];
+			npc.TargetClosest(true);
 			// The npc starts in the asleep state, waiting for a player to enter range
 			if (AI_State == State_Search)
 			{
 				// TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
-				Player player = Main.player[npc.target];
-				npc.TargetClosest(true);
 				// Now we check the make sure the target is still valid and within our specified notice range (500)
-				if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 640f)
+				if (npc.HasValidTarget && player.Distance(npc.Center) < 640f)
 				{
 					// Since we have a target in range, we change to the Notice state. (and zero out the Timer for good measure)
 					AI_State = State_Notice;
@@ -70,12 +70,10 @@ namespace MinecraftAnimals.Animals
 			// In this state, a player has been targeted
 			else if (AI_State == State_Notice)
 			{
-				Player player = Main.player[npc.target];
-				npc.TargetClosest(true);
+				npc.velocity.X = npc.direction * 0;
 				// If the targeted player is in attack range (250).
-				if (Main.player[npc.target].Distance(npc.Center) < 620f)
+				if (player.Distance(npc.Center) < 620f)
 				{
-					// Here we use our Timer to wait .33 seconds before actually jumping. In FindFrame you'll notice AI_Timer also being used to animate the pre-jump crouch
 					AI_Timer++;
 					if (AI_Timer >= 20)
 					{
@@ -85,8 +83,7 @@ namespace MinecraftAnimals.Animals
 				}
 				else
 				{
-					npc.TargetClosest(true);
-					if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 640f)
+					if (!npc.HasValidTarget || player.Distance(npc.Center) > 640f)
 					{
 						// Out targeted player seems to have left our range, so we'll go back to sleep.
 						AI_State = State_Search;
@@ -97,21 +94,24 @@ namespace MinecraftAnimals.Animals
 			else if (AI_State == State_Jump)
 			{
 				AI_Timer++;
-				Player player = Main.player[npc.target];
-				npc.TargetClosest(true);
 				if (AI_Timer == 5)
 				{
-					npc.velocity = new Vector2(npc.direction * 3, -8f);
+					npc.velocity = new Vector2(npc.direction * 3, -10f);
 				}
-				if (AI_Timer == 60)
+				if (AI_Timer == 5 && player.Distance(npc.Center) < 220f)
 				{
-					npc.velocity.Y = 0.25f;
-					npc.velocity.X = npc.direction * 0.25f;
+					npc.velocity = new Vector2(npc.direction * 7, -7f);
 				}
-				if (AI_Timer == 70)
+
+				if (AI_Timer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
 				{
 					AI_State = State_Notice;
 					AI_Timer = 0;
+				}
+				if (AI_Timer > 10 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+				{
+					npc.velocity.X = npc.direction * 0;
+
 				}
 			}
 		}

@@ -70,8 +70,7 @@ namespace MinecraftAnimals.Animals
 			// In this state, a player has been targeted
 			else if (AI_State == State_Notice)
 			{
-				npc.velocity.Y = 0.25f;
-				npc.velocity.X = npc.direction;
+				npc.velocity.X = npc.direction * 0;
 				// If the targeted player is in attack range (250).
 				if (player.Distance(npc.Center) < 620f)
 				{
@@ -94,20 +93,25 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Jump)
 			{
-				npc.velocity.X = npc.direction;
 				AI_Timer++;
 				if (AI_Timer == 5)
 				{
-					npc.velocity = new Vector2(npc.direction * 3, -6f);
+					npc.velocity = new Vector2(npc.direction * 3, -10f);
 				}
-				if (AI_Timer == 45)
-                {
-					npc.velocity.Y = 0.55f;
+				if (AI_Timer == 5 && player.Distance(npc.Center) < 220f)
+				{
+					npc.velocity = new Vector2(npc.direction * 7, -7f);
 				}
-				if (AI_Timer >= 60 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+
+				if (AI_Timer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
 					AI_State = State_Notice;
 					AI_Timer = 0;
+				}
+				if (AI_Timer > 10 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+                {
+					npc.velocity.X = npc.direction * 0;
+
 				}
 			}
 		}

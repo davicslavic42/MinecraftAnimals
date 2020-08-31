@@ -41,6 +41,7 @@ namespace MinecraftAnimals.Animals
         private const int State_Notice = 1;
         private const int State_Magic = 2;
         private const int State_Jump = 3;
+        public int magic = 0;
 
         // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
         // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
@@ -105,11 +106,11 @@ namespace MinecraftAnimals.Animals
             // In this state, we are in the throw. 
             if (AI_State == State_Magic)
             {
-                AI_Timer++;
+                magic++;
                 npc.velocity.X = 0;
                 npc.velocity.Y += 0.5f;
 
-                if (AI_Timer == 200)
+                if (magic == 200)
                 {
                     switch (Main.rand.Next(2))
                     {
@@ -127,7 +128,7 @@ namespace MinecraftAnimals.Animals
                             npc.velocity.Y += DirToRing.Y;
 
                             Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.2f) * 5f, mod.ProjectileType("Harmpot"), 14, 2, Main.LocalPlayer.whoAmI);
-                            AI_Timer = 0;
+                            magic = 0;
                             return;
                     }
                 }

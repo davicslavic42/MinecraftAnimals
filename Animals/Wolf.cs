@@ -110,7 +110,7 @@ namespace MinecraftAnimals.Animals
 			}
 			else if (AI_State == State_Attack)
 			{
-				npc.velocity.X = 1 * npc.direction;
+				npc.velocity.X = 1.5f * npc.direction;
 				npc.velocity.Y += 0.5f;
 				npc.TargetClosest(true);
 				npc.damage = 25;
@@ -127,7 +127,7 @@ namespace MinecraftAnimals.Animals
 			for (int n = 0; n < 200; n++)
 			{
 				NPC N = Main.npc[n];
-				if (N.active && (N.type == mod.NPCType("Wolf")))
+				if (N.active && N.Distance(npc.Center) < 275f && (N.type == mod.NPCType("Wolf")))
 				{
 					N.target = npc.target;
 					N.netUpdate = true;

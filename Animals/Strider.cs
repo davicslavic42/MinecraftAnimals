@@ -36,7 +36,7 @@ namespace MinecraftAnimals.Animals
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid > 255)
 			{
-				
+				npc.velocity = new Vector2(npc.direction * 2, -4f);
 				npc.velocity.Y = 0;
 			}
 		}

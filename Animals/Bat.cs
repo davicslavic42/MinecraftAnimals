@@ -22,7 +22,7 @@ namespace MinecraftAnimals.Animals
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
-			npc.scale = 0.55f;
+			npc.scale = 0.70f;
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -139,25 +139,13 @@ namespace MinecraftAnimals.Animals
         private const int Frame_Float_3 = 2;
         private const int Frame_Float_4 = 3;
 		private const int Frame_Float_5 = 4;
-		private const int Frame_Float_6 = 6;
-		private const int Frame_Rest = 7;
+		private const int Frame_Float_6 = 5;
+		private const int Frame_Rest = 6;
 		public override void FindFrame(int frameHeight)
         {
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
 			npc.spriteDirection = npc.direction;
-		    if (AI_State == State_Rest)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 10)
-				{
-					npc.frame.Y = Frame_Rest * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
-			}
-			else
+			if (AI_State == 0)
 			{
 				npc.frameCounter++;
 				if (npc.frameCounter < 6)
@@ -183,6 +171,82 @@ namespace MinecraftAnimals.Animals
 				else if (npc.frameCounter < 38)
 				{
 					npc.frame.Y = Frame_Float_6 * frameHeight;
+				}
+				else
+				{
+					npc.frameCounter = 0;
+				}
+			}
+			else if (AI_State == 2)
+			{
+				npc.frameCounter++;
+				if (npc.frameCounter < 6)
+				{
+					npc.frame.Y = Frame_Float * frameHeight;
+				}
+				else if (npc.frameCounter < 12)
+				{
+					npc.frame.Y = Frame_Float_2 * frameHeight;
+				}
+				else if (npc.frameCounter < 18)
+				{
+					npc.frame.Y = Frame_Float_3 * frameHeight;
+				}
+				else if (npc.frameCounter < 24)
+				{
+					npc.frame.Y = Frame_Float_4 * frameHeight;
+				}
+				else if (npc.frameCounter < 32)
+				{
+					npc.frame.Y = Frame_Float_5 * frameHeight;
+				}
+				else if (npc.frameCounter < 38)
+				{
+					npc.frame.Y = Frame_Float_6 * frameHeight;
+				}
+				else
+				{
+					npc.frameCounter = 0;
+				}
+			}
+			else if (AI_State == 1)
+			{
+				npc.frameCounter++;
+				if (npc.frameCounter < 6)
+				{
+					npc.frame.Y = Frame_Float * frameHeight;
+				}
+				else if (npc.frameCounter < 12)
+				{
+					npc.frame.Y = Frame_Float_2 * frameHeight;
+				}
+				else if (npc.frameCounter < 18)
+				{
+					npc.frame.Y = Frame_Float_3 * frameHeight;
+				}
+				else if (npc.frameCounter < 24)
+				{
+					npc.frame.Y = Frame_Float_4 * frameHeight;
+				}
+				else if (npc.frameCounter < 32)
+				{
+					npc.frame.Y = Frame_Float_5 * frameHeight;
+				}
+				else if (npc.frameCounter < 38)
+				{
+					npc.frame.Y = Frame_Float_6 * frameHeight;
+				}
+				else
+				{
+					npc.frameCounter = 0;
+				}
+			}
+			else if (AI_State == 3)
+			{
+				npc.frameCounter++;
+				if (npc.frameCounter < 10)
+				{
+					npc.frame.Y = Frame_Rest * frameHeight;
 				}
 				else
 				{
