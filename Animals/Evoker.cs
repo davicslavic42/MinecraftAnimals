@@ -129,6 +129,7 @@ namespace MinecraftAnimals.Animals
 
                             Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.2f) * 5f, mod.ProjectileType("Harmpot"), 14, 2, Main.LocalPlayer.whoAmI);
                             magic = 0;
+                            
                             return;
                     }
                 }

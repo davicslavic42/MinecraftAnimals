@@ -1,4 +1,5 @@
 ﻿using MinecraftAnimals.Tiles;
+using MinecraftAnimals.Tiles.Trees;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -24,6 +25,7 @@ namespace MinecraftAnimals
 				// Next, we insert our step directly after the original "Shinies" step. 
 				// ExampleModOres is a method seen below.
 				tasks.Insert(ShiniesIndex + 1, new PassLegacy("Tree bases", Treebases));
+				tasks.Insert(ShiniesIndex + 2, new PassLegacy("Plants", Plants));
 			}
 		}
 		private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
@@ -60,15 +62,38 @@ namespace MinecraftAnimals
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
 				}
 			}
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 4E-02); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 2E-02); k++)
 			{
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX);
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
 				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
 				if ((!Main.tile[x, y - 1].active()) && tile.active() && tile.type == TileID.Ash)
 				{
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<WarpedNyliumtile>(), false, 0, 0, false, true);
+				}
+			}
+		}
+		private void Plants(GenerationProgress progress)
+        {
+			progress.Message = "plants";
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 2E-03); k++)
+			{
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
+				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
+				Tile tile = Framing.GetTileSafely(x, y);
+				WorldGen.SquareTileFrame(x, y);
+				if ((!Main.tile[x, y - 1].active()) && tile.active() && tile.type == TileType<WarpedNyliumtile>())
+				{
+					switch (Main.rand.Next(2))
+                    {
+						case 0:
+							WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedSapling>(), false, 0, 0, false, true);
+							return;
+						case 1:
+							WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedHerb>(), false, 0, 0, false, true);
+							return;
+					}
 				}
 			}
 		}

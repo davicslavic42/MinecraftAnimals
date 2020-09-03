@@ -25,6 +25,8 @@ namespace MinecraftAnimals.Animals
             npc.aiStyle = -1;
             npc.lavaImmune = true;
             npc.value = 35f;
+            npc.scale = 1.15f;
+
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {

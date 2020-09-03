@@ -96,11 +96,11 @@ namespace MinecraftAnimals.Animals
 				AI_Timer++;
 				if (AI_Timer == 5)
 				{
-					npc.velocity = new Vector2(npc.direction * 3, -10f);
+					npc.velocity = new Vector2(npc.direction * 3, -8f);
 				}
 				if (AI_Timer == 5 && player.Distance(npc.Center) < 220f)
 				{
-					npc.velocity = new Vector2(npc.direction * 7, -7f);
+					npc.velocity = new Vector2(npc.direction * 5, -6f);
 				}
 
 				if (AI_Timer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
