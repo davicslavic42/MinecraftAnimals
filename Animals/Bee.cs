@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Animals
 			npc.width = 34;
 			npc.height = 30;
 			npc.lifeMax = 100;
-            npc.damage = 0;
+			npc.damage = 0;
 			npc.HitSound = SoundID.NPCHit1;
 			npc.DeathSound = SoundID.NPCDeath1;
 			npc.aiStyle = -1;
@@ -138,13 +138,13 @@ namespace MinecraftAnimals.Animals
 				npc.TargetClosest(true);
 				npc.damage = 25;
 			}
-            if (hostile == true)
-            {
+			if (hostile == true)
+			{
 				AI_State = State_Attack;
 			}
 		}
-        public override void HitEffect(int hitDirection, double damage)
-        {
+		public override void HitEffect(int hitDirection, double damage)
+		{
 			AI_State = State_Attack;
 			AI_Timer = 0;
 			for (int n = 0; n < 200; n++)
@@ -158,20 +158,20 @@ namespace MinecraftAnimals.Animals
 				}
 			}
 			base.HitEffect(hitDirection, damage);
-        }
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+		}
+		public override void OnHitPlayer(Player target, int damage, bool crit)
 		{
 			base.OnHitPlayer(target, damage, crit);
 			target.AddBuff(BuffID.Poisoned, 675);
 		}
 		private const int Frame_Float = 0;
-        private const int Frame_Float_2 = 1;
-        private const int Frame_Float_3 = 2;
-        private const int Frame_Float_4 = 3;
-        private const int Frame_AngryFloat = 4;
-        private const int Frame_AngryFloat_2 = 5;
-        private const int Frame_AngryFloat_3 = 6;
-        private const int Frame_AngryFloat_4 = 7;
+		private const int Frame_Float_2 = 1;
+		private const int Frame_Float_3 = 2;
+		private const int Frame_Float_4 = 3;
+		private const int Frame_AngryFloat = 4;
+		private const int Frame_AngryFloat_2 = 5;
+		private const int Frame_AngryFloat_3 = 6;
+		private const int Frame_AngryFloat_4 = 7;
 		public override void FindFrame(int frameHeight)
 		{
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.

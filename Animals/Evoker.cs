@@ -67,7 +67,6 @@ namespace MinecraftAnimals.Animals
             if (AI_State == State_Search)
             {
                 npc.velocity.X = 0;
-                npc.velocity.Y += 0.5f;
                 // TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
                 // Now we check the make sure the target is still valid and within our specified notice range (500)
                 if (npc.HasValidTarget && player.Distance(npc.Center) < 750f)
@@ -80,7 +79,6 @@ namespace MinecraftAnimals.Animals
             if (AI_State == State_Notice)
             {
                 npc.velocity.X = 1 * npc.direction;
-                npc.velocity.Y += 0.5f;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 750f)
                 {
                     AI_State = State_Search;
@@ -116,20 +114,18 @@ namespace MinecraftAnimals.Animals
                     {
                         case 0:
                             NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("Vex"), 0);
-                            AI_Timer = 0;
+                            magic = 0;
                             return;
                         case 1:
+                            Rectangle rect = new Rectangle((int)(npc.position.X / 16 - 5), (int)((npc.position.Y / 16)), 20, 10);
+                            Vector2 pos1 = new Vector2(rect.X + (rect.Width / 4), rect.Y + (rect.Height / 2));
+                            Vector2 pos2 = new Vector2(rect.X + (rect.Width / 4 * 3), rect.Y + (rect.Height / 2));
+
                             Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
-                            _ = npc.Distance(npc.position) - 50;
                             Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                            Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -75f);
-
-                            npc.velocity.X += DirToRing.X;
-                            npc.velocity.Y += DirToRing.Y;
-
-                            Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.2f) * 5f, mod.ProjectileType("Harmpot"), 14, 2, Main.LocalPlayer.whoAmI);
+                            Projectile.NewProjectile(pos1, PlayerDir, mod.ProjectileType("Harmpot"), 14, 4, Main.LocalPlayer.whoAmI);
+                            Projectile.NewProjectile(pos2, PlayerDir, mod.ProjectileType("Harmpot"), 14, 4, Main.LocalPlayer.whoAmI);
                             magic = 0;
-                            
                             return;
                     }
                 }
@@ -147,7 +143,6 @@ namespace MinecraftAnimals.Animals
             {
                 AI_Timer++;
                 npc.velocity.X = 2f * npc.direction;
-                npc.velocity.Y += 0.5f;
                 if (AI_Timer == 1)
                 {
                     // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 

@@ -10,8 +10,8 @@ namespace MinecraftAnimals.Tiles.Trees
 
 		public override int DropWood()
 		{
-			 ItemType<Items.Blocks.WarpedStem>();
-			return ItemType<Items.Herbs.WarpedFungus>();
+			ItemType<Items.Herbs.WarpedFungus>();
+			return ItemType<Items.Blocks.WarpedStem>();
 		}
 
 		public override int GrowthFXGore()
