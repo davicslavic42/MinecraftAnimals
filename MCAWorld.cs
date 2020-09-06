@@ -62,38 +62,30 @@ namespace MinecraftAnimals
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
 				}
 			}
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 2E-02); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 5E-02); k++)
 			{
 				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
-				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
+				int y = WorldGen.genRand.Next(Main.maxTilesY - 180, Main.maxTilesY - 110);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
 				if ((!Main.tile[x, y - 1].active()) && tile.active() && tile.type == TileID.Ash)
 				{
-					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<WarpedNyliumtile>(), false, 0, 0, false, true);
+					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(3, 4), 1, TileType<WarpedNyliumtile>(), false, 0, 0, false, true);
 				}
 			}
 		}
 		private void Plants(GenerationProgress progress)
         {
 			progress.Message = "plants";
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.25); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.2); k++)
 			{
 				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
 				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
-				if ((Main.tile[x, y - 1].active()) && !tile.active() && Main.tile[x, y - 1].type == TileType<WarpedNyliumtile>())
+				if ((Main.tile[x, y + 1].active()) && !tile.active() && Main.tile[x, y + 1].type == TileType<WarpedNyliumtile>())
 				{
-					switch (Main.rand.Next(2))
-                    {
-						case 0:
-							WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedSapling>(), false, 0, 0, false, true);
-							return;
-						case 1:
-							WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedHerb>(), false, 0, 0, false, true);
-							return;
-					}
+					WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedHerb>(), false, 0, 0, false, true);
 				}
 			}
 		}

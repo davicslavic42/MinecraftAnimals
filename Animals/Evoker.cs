@@ -18,9 +18,9 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 64;
-            npc.height = 80;
-            npc.lifeMax = 300;
+            npc.width = 60;
+            npc.height = 60;
+            npc.lifeMax = 210;
             npc.knockBackResist = 1f;
             npc.damage = 20;
             npc.HitSound = SoundID.NPCHit1;
@@ -106,7 +106,6 @@ namespace MinecraftAnimals.Animals
             {
                 magic++;
                 npc.velocity.X = 0;
-                npc.velocity.Y += 0.5f;
 
                 if (magic == 200)
                 {
@@ -117,15 +116,14 @@ namespace MinecraftAnimals.Animals
                             magic = 0;
                             return;
                         case 1:
-                            Rectangle rect = new Rectangle((int)(npc.position.X / 16 - 5), (int)((npc.position.Y / 16)), 20, 10);
-                            Vector2 pos1 = new Vector2(rect.X + (rect.Width / 4), rect.Y + (rect.Height / 2));
-                            Vector2 pos2 = new Vector2(rect.X + (rect.Width / 4 * 3), rect.Y + (rect.Height / 2));
-
-                            Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
-                            Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                            Projectile.NewProjectile(pos1, PlayerDir, mod.ProjectileType("Harmpot"), 14, 4, Main.LocalPlayer.whoAmI);
-                            Projectile.NewProjectile(pos2, PlayerDir, mod.ProjectileType("Harmpot"), 14, 4, Main.LocalPlayer.whoAmI);
-                            magic = 0;
+                            if (Main.netMode != 1)
+                            {
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    Projectile.NewProjectile((npc.Center.X - 65) + (i * 130), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                }
+                            }
+                            magic = 25;
                             return;
                     }
                 }

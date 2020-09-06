@@ -29,24 +29,13 @@ namespace MinecraftAnimals.Miscellaneous
 		}
 		public override bool UseItem(Player player)
 		{
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.25); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.2); k++)
 			{
 				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
-				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
+				int y = WorldGen.genRand.Next(Main.maxTilesY - 145, Main.maxTilesY - 125);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
-				if ((Main.tile[x, y - 1].active()) && !tile.active() && Main.tile[x, y - 1].type == TileType<WarpedNyliumtile>())
-				{
-					WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedSapling>(), false, 0, 0, false, true);
-				}
-			}
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.25); k++)
-			{
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
-				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
-				Tile tile = Framing.GetTileSafely(x, y);
-				WorldGen.SquareTileFrame(x, y);
-				if ((Main.tile[x, y - 1].active()) && !tile.active() && Main.tile[x, y - 1].type == TileType<WarpedNyliumtile>())
+				if ((Main.tile[x, y + 1].active()) && !tile.active() && Main.tile[x, y + 1].type == TileType<WarpedNyliumtile>())
 				{
 					WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedHerb>(), false, 0, 0, false, true);
 				}

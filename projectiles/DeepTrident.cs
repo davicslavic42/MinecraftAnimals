@@ -94,7 +94,7 @@ namespace MinecraftAnimals.projectiles
 			{
 				// Change these multiplication factors to alter the javelin's movement change after reaching maxTicks
 				const float velXmult = 0.98f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
-				const float velYmult = 0.35f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
+				const float velYmult = 0.45f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
 				TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
 				projectile.velocity.X *= velXmult;
 				projectile.velocity.Y += velYmult;

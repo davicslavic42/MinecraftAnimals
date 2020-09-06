@@ -15,7 +15,6 @@ namespace MinecraftAnimals.projectiles
 			// while the sprite is actually bigger than 15x15, we use 15x15 since it lets the projectile clip into tiles as it bounces. It looks better.
 			projectile.width = 15;
 			projectile.height = 15;
-			projectile.friendly = true;
 			projectile.penetrate = -1;
 			projectile.friendly = false;
 			projectile.hostile = true;

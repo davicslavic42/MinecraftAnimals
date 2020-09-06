@@ -26,6 +26,7 @@ namespace MinecraftAnimals.Items.Herbs
 			item.useTime = 10;
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
+			item.createTile = TileType<Tiles.WarpedHerb>();
 		}
 		public override void AddRecipes()
 		{
