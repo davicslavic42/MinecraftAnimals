@@ -5,7 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace MinecraftAnimals.projectiles
+namespace MinecraftAnimals.projectiles.Passive
 {
 	public class TridentProjectile : ModProjectile
 	{

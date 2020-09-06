@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
 
-namespace MinecraftAnimals.Tiles
+namespace MinecraftAnimals.Tiles.Plants
 {
 	//An enum on the 3 stages of herb growth.
 	public enum PlantStage : byte

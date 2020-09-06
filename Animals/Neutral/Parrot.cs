@@ -3,7 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 
-namespace MinecraftAnimals.Animals
+namespace MinecraftAnimals.Animals.Neutral
 {
 	public class Parrot : ModNPC
 	{

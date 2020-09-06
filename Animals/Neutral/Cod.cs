@@ -2,7 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace MinecraftAnimals.Animals
+namespace MinecraftAnimals.Animals.Neutral
 {
 	public class Cod : ModNPC
 	{
