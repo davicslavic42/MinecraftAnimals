@@ -49,11 +49,9 @@ namespace MinecraftAnimals.Animals
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            npc.ai[0] = 1;
 
             if(Phase == (int)AIStates.Passive)
             {
-                npc.friendly = true;
                 if (GlobalTimer == 5)
                 {
                     switch (Main.rand.Next(2))
@@ -67,14 +65,13 @@ namespace MinecraftAnimals.Animals
                     }
                 }
                 float change = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
-                if (GlobalTimer >= 900)
+                if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
                 }
             }
             if (Phase == (int)AIStates.Attack)
             {
-                npc.friendly = false;
                 Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.damage = 30;
@@ -83,7 +80,8 @@ namespace MinecraftAnimals.Animals
 
                 if (AttackTimer == 600)
                 {
-                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16) , 150, 150);
+                    npc.netUpdate = true;
+                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16) , (int)20f, (int)20f);
                     if (RectangeIntersectsTiles(rect) == true)
                     {
                         new Vector2(Main.rand.Next(rect.Width), rect.Height).RotatedByRandom(MathHelper.TwoPi);
@@ -115,6 +113,26 @@ namespace MinecraftAnimals.Animals
             Phase = (int)AIStates.Attack;
             GlobalTimer = 0;
             base.HitEffect(hitDirection, damage);
+        }
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (npc.spriteDirection == 1)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            Texture2D texture = Main.npcTexture[npc.type];
+            int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+            int startY = npc.frame.Y;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+
+            Color drawColor = npc.GetAlpha(lightColor);
+            Main.spriteBatch.Draw(texture,
+                npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            return false;
         }
         // The npc starts in the asleep state, waiting for a player to enter range
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.

@@ -19,7 +19,7 @@ namespace MinecraftAnimals.projectiles
 			projectile.friendly = false;
 			projectile.hostile = true;
 			projectile.penetrate = 3;
-			projectile.hide = false;
+			projectile.hide = true;
 			projectile.damage = 5;
 			projectile.timeLeft = 100;
 		}

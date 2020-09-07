@@ -85,7 +85,7 @@ namespace MinecraftAnimals
 				WorldGen.SquareTileFrame(x, y);
 				if ((Main.tile[x, y + 1].active()) && !tile.active() && Main.tile[x, y + 1].type == TileType<WarpedNyliumtile>())
 				{
-					WorldGen.TileRunner(x, y, 1, 1, TileType<WarpedHerb>(), false, 0, 0, false, true);
+					WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.Plants.WarpedHerb>(), false, 0, 0, false, true);
 				}
 			}
 		}

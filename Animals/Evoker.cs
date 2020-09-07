@@ -153,6 +153,7 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
+
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;

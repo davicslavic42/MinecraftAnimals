@@ -32,7 +32,7 @@ namespace MinecraftAnimals.Items.Weapons
 			item.value = Item.sellPrice(silver: 5);
 			// Look at the javelin projectile for a lot of custom code
 			// If you are in an editor like Visual Studio, you can hold CTRL and Click ExampleJavelinProjectile
-			item.shoot = ProjectileType<TridentProjectile>();
+			item.shoot = ProjectileType<projectiles.Passive.TridentProjectile>();
 		}
 	}
 }

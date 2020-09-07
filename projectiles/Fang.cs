@@ -23,7 +23,7 @@ namespace MinecraftAnimals.projectiles
 			projectile.hostile = true;
 			projectile.hide = false;
 			projectile.penetrate = 20;
-			projectile.timeLeft = 30;
+			projectile.timeLeft = 28;
 
 			//1: projectile.penetrate = 1; // Will hit even if npc is currently immune to player
 			//2a: projectile.penetrate = -1; // Will hit and unless 3 is use, set 10 ticks of immunity
@@ -35,22 +35,18 @@ namespace MinecraftAnimals.projectiles
 		public override bool OnTileCollide(Vector2 oldVelocity)
 		{
 			// Die immediately if ai[1] isn't 0 (We set this to 1 for the 5 extra explosives we spawn in Kill)
-			if (projectile.timeLeft != 0)
-			{
-				projectile.timeLeft = 30;
-			}
 			return false;
 		}
 	
 		public override void AI()
 		{
 			projectile.frameCounter++;
-			if (++projectile.frameCounter >= 5)
+			if (++projectile.frameCounter >= 14)
 			{
 				projectile.frameCounter = 0;
 				projectile.frame = ++projectile.frame % Main.projFrames[projectile.type];
 			}           // Kill this projectile after 1 second
-			if (projectile.ai[0] >= 60f)
+			if (projectile.timeLeft == 0)
 			{
 				projectile.Kill();
 			}
