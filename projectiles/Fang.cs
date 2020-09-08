@@ -14,6 +14,7 @@ namespace MinecraftAnimals.projectiles
 		{
 			Main.projFrames[projectile.type] = 3;
 		}
+		int delay = 0;
 
 		public override void SetDefaults()
 		{
@@ -23,7 +24,7 @@ namespace MinecraftAnimals.projectiles
 			projectile.hostile = true;
 			projectile.hide = false;
 			projectile.penetrate = 20;
-			projectile.timeLeft = 28;
+			projectile.timeLeft = 32;
 
 			//1: projectile.penetrate = 1; // Will hit even if npc is currently immune to player
 			//2a: projectile.penetrate = -1; // Will hit and unless 3 is use, set 10 ticks of immunity
@@ -40,12 +41,20 @@ namespace MinecraftAnimals.projectiles
 	
 		public override void AI()
 		{
-			projectile.frameCounter++;
-			if (++projectile.frameCounter >= 14)
-			{
-				projectile.frameCounter = 0;
-				projectile.frame = ++projectile.frame % Main.projFrames[projectile.type];
-			}           // Kill this projectile after 1 second
+			delay++;
+			if (delay <= 4)
+            {
+				projectile.frame = 0;
+			}
+            else
+            {
+				projectile.frameCounter++;
+				if (++projectile.frameCounter >= 14)
+				{
+					projectile.frameCounter = 0;
+					projectile.frame = ++projectile.frame % Main.projFrames[projectile.type];
+				}           // Kill this projectile after 1 second
+			}
 			if (projectile.timeLeft == 0)
 			{
 				projectile.Kill();

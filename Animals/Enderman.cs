@@ -39,7 +39,6 @@ namespace MinecraftAnimals.Animals
             Passive = 0,
             Attack = 1
         }
-
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
@@ -81,7 +80,7 @@ namespace MinecraftAnimals.Animals
                 if (AttackTimer == 600)
                 {
                     npc.netUpdate = true;
-                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16) , (int)20f, (int)20f);
+                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16) , 200, 200);
                     if (RectangeIntersectsTiles(rect) == true)
                     {
                         new Vector2(Main.rand.Next(rect.Width), rect.Height).RotatedByRandom(MathHelper.TwoPi);

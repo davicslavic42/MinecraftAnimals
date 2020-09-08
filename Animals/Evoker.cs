@@ -34,86 +34,50 @@ namespace MinecraftAnimals.Animals
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
-        private const int AI_State_Slot = 0;
-        private const int AI_Timer_Slot = 1;
-        // Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-        private const int State_Search = 0;
-        private const int State_Notice = 1;
-        private const int State_Magic = 2;
-        private const int State_Jump = 3;
-        public int magic = 0;
-
-        // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-        // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-        // Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-        // This is all to just make beautiful, manageable, and clean code.
-        public float AI_State
+        public enum AIStates
         {
-            get => npc.ai[AI_State_Slot];
-            set => npc.ai[AI_State_Slot] = value;
+            Normal = 0,
+            Attack = 1
         }
-
-        public float AI_Timer
-        {
-            get => npc.ai[AI_Timer_Slot];
-            set => npc.ai[AI_Timer_Slot] = value;
-        }
+        internal ref float GlobalTimer => ref npc.ai[0];
+        internal ref float Phase => ref npc.ai[1];
+        internal ref float AttackPhase => ref npc.ai[2];
+        internal ref float AttackTimer => ref npc.ai[3];
         public override void AI()
         {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+            GlobalTimer++;
             Player player = Main.player[npc.target];
             npc.TargetClosest(true);
-            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-            // The npc starts in the asleep state, waiting for a player to enter range
-            if (AI_State == State_Search)
+            if (Phase == (int)AIStates.Normal)
             {
-                npc.velocity.X = 0;
-                // TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
-                // Now we check the make sure the target is still valid and within our specified notice range (500)
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 750f)
+                npc.velocity.X = 0 * npc.direction;
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 780f)
                 {
-                    AI_State = State_Notice;
-                    AI_Timer = 0;
+                   
+                    npc.velocity.X = 1.5f * npc.direction;
+                }
+                if (player.Distance(npc.Center) < 275f)
+                {
+                    Phase = (int)AIStates.Attack;
+                    GlobalTimer = 0;
                 }
             }
             // In this state, a player has been targeted
-            if (AI_State == State_Notice)
+            if (Phase == (int)AIStates.Attack)
             {
-                npc.velocity.X = 1 * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 750f)
-                {
-                    AI_State = State_Search;
-                    AI_Timer = 0;
-                }
-                // If the targeted player is in attack range (250).
-                if (player.Distance(npc.Center) < 275f)
-                {
-                    AI_State = State_Magic;
-                    AI_Timer = 0;
-                }
-                else
-                {
-                    npc.TargetClosest(true);
-                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 750f)
-                    {
-                        // Out targeted player seems to have left our range, so we'll go back to sleep.
-                        AI_State = State_Search;
-                        AI_Timer = 0;
-                    }
-                }
-            }
-            // In this state, we are in the throw. 
-            if (AI_State == State_Magic)
-            {
-                magic++;
+                int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y - 2), npc.width, (npc.height / 2 - 1), 31, 0f, 0f, 100, default(Color), 1f);
+                Main.dust[dustIndex].scale = 0.2f + (float)Main.rand.Next(5) * 0.1f;
+                npc.ai[3]++;
                 npc.velocity.X = 0;
 
-                if (magic == 200)
+                if (npc.ai[3] == 200)
                 {
                     switch (Main.rand.Next(2))
                     {
                         case 0:
                             NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("Vex"), 0);
-                            magic = 0;
+                            npc.ai[3] = 0;
                             return;
                         case 1:
                             if (Main.netMode != 1)
@@ -123,7 +87,7 @@ namespace MinecraftAnimals.Animals
                                     Projectile.NewProjectile((npc.Center.X - 65) + (i * 130), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
                                 }
                             }
-                            magic = 25;
+                            npc.ai[3] = 25;
                             return;
                     }
                 }
@@ -132,24 +96,16 @@ namespace MinecraftAnimals.Animals
                     if (!npc.HasValidTarget || player.Distance(npc.Center) > 275f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
-                        AI_State = State_Notice;
-                        AI_Timer = 0;
+                        Phase = (int)AIStates.Normal;
+                        GlobalTimer = 0;
                     }
                 }
             }
-            else if (AI_State == State_Jump)
+            if (Collision.SolidCollision(npc.position, (npc.width / 2 + 1), npc.height))
             {
-                AI_Timer++;
-                npc.velocity.X = 2f * npc.direction;
-                if (AI_Timer == 1)
+                for (int i = 0; i < 1; i++)
                 {
-                    // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -6f);
-                }
-                else if (AI_Timer > 15)
-                {
-                    AI_State = State_Search;
-                    AI_Timer = 0;
+                    npc.velocity = new Vector2(npc.direction * 2, -6f);
                 }
             }
         }
@@ -171,66 +127,52 @@ namespace MinecraftAnimals.Animals
         {
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
-            if (AI_State == State_Search)
+            if (Phase == (int)AIStates.Normal)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 10)
                 {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
+                    if (npc.frameCounter < 7)
+                    {
+                        npc.frame.Y = Frame_Walk * frameHeight;
+                    }
+                    else if (npc.frameCounter < 14)
+                    {
+                        npc.frame.Y = Frame_Walk_2 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 28)
+                    {
+                        npc.frame.Y = Frame_Walk_3 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 35)
+                    {
+                        npc.frame.Y = Frame_Walk_4 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 38)
+                    {
+                        npc.frame.Y = Frame_Walk_5 * frameHeight;
+                    }
+                    else
+                    {
+                        npc.frameCounter = 0;
+                    }
                 }
             }
-            else if (AI_State == State_Notice)
+            if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 10)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else if (npc.frameCounter < 20)
-                {
-                    npc.frame.Y = Frame_Walk_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 30)
-                {
-                    npc.frame.Y = Frame_Walk_3 * frameHeight;
-                }
-                else if (npc.frameCounter < 40)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else if (npc.frameCounter < 50)
-                {
-                    npc.frame.Y = Frame_Walk_4 * frameHeight;
-                }
-                else if (npc.frameCounter < 60)
-                {
-                    npc.frame.Y = Frame_Walk_5 * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
-                }
-            }
-            else if (AI_State == State_Magic)
-            {
-                npc.frameCounter++;
-                if (npc.frameCounter < 10)
+                if (npc.frameCounter < 7)
                 {
                     npc.frame.Y = Frame_Magic * frameHeight;
                 }
-                if (npc.frameCounter < 20)
+                else if (npc.frameCounter < 14)
                 {
                     npc.frame.Y = Frame_Magic_2 * frameHeight;
                 }
-                if (npc.frameCounter < 30)
+                else if (npc.frameCounter < 28)
                 {
                     npc.frame.Y = Frame_Magic_3 * frameHeight;
                 }
-                if (npc.frameCounter < 37)
+                else if (npc.frameCounter < 35)
                 {
                     npc.frame.Y = Frame_Magic_4 * frameHeight;
                 }
@@ -238,10 +180,6 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frameCounter = 0;
                 }
-            }
-            else if (AI_State == State_Jump)
-            {
-                npc.frame.Y = Frame_Walk_3 * frameHeight;
             }
         }
     }
