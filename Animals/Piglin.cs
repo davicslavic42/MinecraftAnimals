@@ -41,6 +41,7 @@ namespace MinecraftAnimals.Animals
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
+            AttackTimer++;
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
@@ -82,12 +83,17 @@ namespace MinecraftAnimals.Animals
                     GlobalTimer = 0;
                 }
             }
-            if (Collision.SolidCollision(npc.position, (npc.width / 2 + 1), npc.height))
+            if (Collision.SolidCollision(npc.position, (npc.width / 2), npc.height - 1) && AttackTimer >= 50)
             {
                 for (int i = 0; i < 1; i++)
                 {
                     npc.velocity = new Vector2(npc.direction * 2, -6f);
                 }
+                AttackTimer = 0;
+            }
+            if (player.Distance(npc.Center) < 45f)
+            {
+                npc.velocity.X = 0;
             }
         }
 

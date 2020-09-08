@@ -42,7 +42,7 @@ namespace MinecraftAnimals.projectiles
 		public override void AI()
 		{
 			delay++;
-			if (delay <= 4)
+			if (delay <= 6)
             {
 				projectile.frame = 0;
 			}

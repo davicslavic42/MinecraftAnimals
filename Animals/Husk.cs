@@ -88,12 +88,13 @@ namespace MinecraftAnimals.Animals
                     GlobalTimer = 0;
                 }
             }
-            if (Collision.SolidCollision(npc.position, (npc.width / 2 + 1), npc.height))
+            if (Collision.SolidCollision(npc.position, (npc.width / 2), npc.height - 1) && AttackTimer >= 50)
             {
                 for (int i = 0; i < 1; i++)
                 {
                     npc.velocity = new Vector2(npc.direction * 2, -6f);
                 }
+                AttackTimer = 0;
             }
         }
 
