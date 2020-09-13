@@ -76,15 +76,22 @@ namespace MinecraftAnimals.Animals
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("Vex"), 0);
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 15, (int)npc.position.X + 15), Main.rand.Next((int)npc.position.Y - 25, (int)npc.position.Y ), mod.NPCType("Vex"), 0);
                             npc.ai[3] = 0;
                             return;
                         case 1:
-                            if (Main.netMode != 1)
+                            if (Main.netMode != NetmodeID.MultiplayerClient && player.Distance(npc.Center) < 150f)
                             {
                                 for (int i = 0; i < 2; i++)
                                 {
-                                    Projectile.NewProjectile((npc.Center.X - 65) + (i * 130), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    Projectile.NewProjectile((npc.Center.X - 55) + (i * 125), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                }
+                            }
+                            else if(Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    Projectile.NewProjectile((npc.direction) + (i * 80), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
                                 }
                             }
                             npc.ai[3] = 25;

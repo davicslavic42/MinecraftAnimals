@@ -25,7 +25,6 @@ namespace MinecraftAnimals
 				// Next, we insert our step directly after the original "Shinies" step. 
 				// ExampleModOres is a method seen below.
 				tasks.Insert(ShiniesIndex + 1, new PassLegacy("Tree bases", Treebases));
-				tasks.Insert(ShiniesIndex + 2, new PassLegacy("Plants", Plants));
 			}
 		}
 		private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
@@ -49,7 +48,7 @@ namespace MinecraftAnimals
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
 
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 2E-02); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 6E-02); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
@@ -57,35 +56,9 @@ namespace MinecraftAnimals
 				int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.worldSurface);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
-				if (tile.active() && tile.type == TileID.Grass)
+				if (tile.active() && !Main.tile[x, y - 1].active() && tile.type == TileID.Grass)
 				{
 					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
-				}
-			}
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 5E-02); k++)
-			{
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
-				int y = WorldGen.genRand.Next(Main.maxTilesY - 180, Main.maxTilesY - 110);
-				Tile tile = Framing.GetTileSafely(x, y);
-				WorldGen.SquareTileFrame(x, y);
-				if ((!Main.tile[x, y - 1].active()) && tile.active() && tile.type == TileID.Ash)
-				{
-					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(3, 4), 1, TileType<WarpedNyliumtile>(), false, 0, 0, false, true);
-				}
-			}
-		}
-		private void Plants(GenerationProgress progress)
-        {
-			progress.Message = "plants";
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.2); k++)
-			{
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(0, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 4, Main.maxTilesX);
-				int y = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 125);
-				Tile tile = Framing.GetTileSafely(x, y);
-				WorldGen.SquareTileFrame(x, y);
-				if ((Main.tile[x, y + 1].active()) && !tile.active() && Main.tile[x, y + 1].type == TileType<WarpedNyliumtile>())
-				{
-					WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.Plants.WarpedHerb>(), false, 0, 0, false, true);
 				}
 			}
 		}

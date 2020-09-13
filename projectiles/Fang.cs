@@ -20,7 +20,7 @@ namespace MinecraftAnimals.projectiles
 		{
 			projectile.width = 42;
 			projectile.height = 42;
-			projectile.friendly = false;
+			projectile.friendly = true;
 			projectile.hostile = true;
 			projectile.hide = false;
 			projectile.penetrate = 20;
@@ -58,6 +58,10 @@ namespace MinecraftAnimals.projectiles
 			if (projectile.timeLeft == 0)
 			{
 				projectile.Kill();
+			}
+			if (projectile.timeLeft >= 16)
+			{
+				projectile.friendly = false;
 			}
 		}
 	}

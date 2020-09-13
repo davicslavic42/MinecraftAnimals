@@ -37,12 +37,14 @@ namespace MinecraftAnimals.Animals
         public enum AIStates
         {
             Passive = 0,
-            Attack = 1
+            Attack = 1,
+            Death = 2
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
+        float Rotations = 0.1f;
 
         public override void AI()
         {
@@ -53,7 +55,7 @@ namespace MinecraftAnimals.Animals
             {
                 if (GlobalTimer == 5)
                 {
-                    int x = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+                    _ = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
                 }
                 float change = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
                 if (GlobalTimer >= 800)
@@ -72,12 +74,28 @@ namespace MinecraftAnimals.Animals
                 if (AttackTimer == 600)
                 {
                     npc.netUpdate = true;
-                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16) , 200, 200);
+                    Rectangle rect = new Rectangle((int)(player.Center.X / 16 - 40), (int)(player.Center.Y / 16) , 40, 78);
                     if (RectangeIntersectsTiles(rect) == true)
                     {
                         new Vector2(Main.rand.Next(rect.Width), rect.Height).RotatedByRandom(MathHelper.TwoPi);
                     }
                     AttackTimer = 0;
+                }
+            }
+            if (Phase == (int)AIStates.Death)
+            {
+                const float rotslow = 0.60f;
+                npc.dontTakeDamage = true;
+                npc.friendly = true;
+                npc.life = 1;
+                _ = GlobalTimer <= 30 ? npc.rotation += MathHelper.ToRadians(Rotations * 2f) : npc.rotation += MathHelper.ToRadians(90f);
+                for (int i = 0; i < 30; i++)
+                {
+                    Rotations *= rotslow;
+                }
+                if (GlobalTimer >= 50)
+                {
+
                 }
             }
         }
@@ -196,6 +214,10 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frameCounter = 0;
                 }
+            }
+            if (Phase == (int)AIStates.Death)
+            {
+                npc.frame.Y = Frame_Walk * frameHeight;
             }
         }
     }
