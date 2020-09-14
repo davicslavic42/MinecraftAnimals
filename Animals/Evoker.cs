@@ -57,7 +57,7 @@ namespace MinecraftAnimals.Animals
                    
                     npc.velocity.X = 1.5f * npc.direction;
                 }
-                if (player.Distance(npc.Center) < 275f)
+                if (player.Distance(npc.Center) < 325f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -80,18 +80,18 @@ namespace MinecraftAnimals.Animals
                             npc.ai[3] = 0;
                             return;
                         case 1:
-                            if (Main.netMode != NetmodeID.MultiplayerClient && player.Distance(npc.Center) < 150f)
+                            if (player.Distance(npc.Center) < 125f)
                             {
                                 for (int i = 0; i < 2; i++)
                                 {
                                     Projectile.NewProjectile((npc.Center.X - 55) + (i * 125), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
                                 }
                             }
-                            else if(Main.netMode != NetmodeID.MultiplayerClient)
+                            if (player.Distance(npc.Center) > 125f)
                             {
-                                for (int i = 0; i < 5; i++)
+                                for (int i = 0; i < 7; i++)
                                 {
-                                    Projectile.NewProjectile((npc.direction) + (i * 80), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    Projectile.NewProjectile((npc.direction) + (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
                                 }
                             }
                             npc.ai[3] = 25;
@@ -100,7 +100,7 @@ namespace MinecraftAnimals.Animals
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 275f)
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 325f)
                     {
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         Phase = (int)AIStates.Normal;
