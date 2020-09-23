@@ -20,8 +20,8 @@ namespace MinecraftAnimals.projectiles
 		{
 			projectile.width = 42;
 			projectile.height = 42;
-			projectile.friendly = true;
-			projectile.hostile = true;
+			projectile.friendly = false;
+			projectile.hostile = false;
 			projectile.hide = false;
 			projectile.penetrate = 20;
 			projectile.timeLeft = 32;
@@ -42,12 +42,13 @@ namespace MinecraftAnimals.projectiles
 		public override void AI()
 		{
 			delay++;
-			if (delay <= 6)
+			if (delay <= 10)
             {
 				projectile.frame = 0;
 			}
             else
             {
+				projectile.hostile = true;
 				projectile.frameCounter++;
 				if (++projectile.frameCounter >= 14)
 				{

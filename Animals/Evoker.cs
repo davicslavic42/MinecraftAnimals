@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
 {
@@ -52,7 +53,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0 * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 780f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f)
                 {
                    
                     npc.velocity.X = 1.5f * npc.direction;
@@ -66,7 +67,7 @@ namespace MinecraftAnimals.Animals
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Attack)
             {
-                int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y - 2), npc.width, (npc.height / 2 - 1), 31, 0f, 0f, 100, default(Color), 1f);
+                int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y - 2), npc.width, (npc.height / 2 - 1), DustType<Dusts.Poteffect>(), 0f, 0f, 100, default(Color), 1f);
                 Main.dust[dustIndex].scale = 0.2f + (float)Main.rand.Next(5) * 0.1f;
                 npc.ai[3]++;
                 npc.velocity.X = 0;
@@ -84,14 +85,24 @@ namespace MinecraftAnimals.Animals
                             {
                                 for (int i = 0; i < 2; i++)
                                 {
-                                    Projectile.NewProjectile((npc.Center.X - 55) + (i * 125), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
                                 }
                             }
-                            if (player.Distance(npc.Center) > 125f)
+                            else
                             {
-                                for (int i = 0; i < 7; i++)
+                                if(npc.direction == 1)
                                 {
-                                    Projectile.NewProjectile((npc.direction) + (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Projectile.NewProjectile((npc.Center.X + 1) + (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Projectile.NewProjectile((npc.Center.X - 1) - (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    }
                                 }
                             }
                             npc.ai[3] = 25;

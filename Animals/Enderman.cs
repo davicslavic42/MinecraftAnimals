@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
 {
@@ -44,7 +44,7 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        float Rotations = 4.6f;
+        float Rotations = 2.6f;
 
         public override void AI()
         {
@@ -53,6 +53,8 @@ namespace MinecraftAnimals.Animals
 
             if(Phase == (int)AIStates.Passive)
             {
+                npc.damage = 0;
+                npc.TargetClosest(false);
                 if (GlobalTimer == 5)
                 {
                     _ = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
@@ -72,22 +74,29 @@ namespace MinecraftAnimals.Animals
                 npc.velocity.X = 2 * npc.direction;
                 AttackTimer++;
 
-                if (AttackTimer == 600)
+                if (AttackTimer == 500)
                 {
-                    npc.netUpdate = true;
-                    Rectangle rect = new Rectangle((int)(player.Center.X / 16 - 40), (int)(player.Center.Y / 16) , 30, 70);
+                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16), 150, 150);
                     if (RectangeIntersectsTiles(rect) == true)
                     {
-                        new Vector2(Main.rand.Next(rect.Width), rect.Height).RotatedByRandom(MathHelper.TwoPi);
+                        npc.netUpdate = true;
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f);
+                        Main.dust[dustIndex].noGravity = true;
+                        npc.Center = new Vector2(Main.rand.Next(rect.Width), Main.rand.Next(rect.Height));
+                        AttackTimer = 0;
                     }
-                    AttackTimer = 0;
+                }
+                if (player.Distance(npc.Center) > 825f)
+                {
+                    Phase = (int)AIStates.Passive;
                 }
             }
             if (Phase == (int)AIStates.Death)
             {
+                GlobalTimer = 0;
                 npc.velocity.X = 0;
-                const float rotslow = 0.60f;
-                _ = GlobalTimer <= 60 ? npc.rotation += MathHelper.ToRadians(Rotations * 4.5f) : npc.rotation = MathHelper.ToRadians(90f);
+                float rotslow = 0.60f;
+                _ = GlobalTimer <= 60 ? npc.rotation += MathHelper.ToRadians(Rotations * 2.5f) : npc.rotation = MathHelper.ToRadians(90f);
                 for (int i = 0; i < 60; i++)
                 {
                     Rotations *= rotslow;
@@ -97,11 +106,12 @@ namespace MinecraftAnimals.Animals
         public override bool CheckDead()
         {
             Phase = (int)AIStates.Death;
-            if (GlobalTimer <= 100)
+            if (Phase == (int)AIStates.Death && GlobalTimer <= 100)
             {
                 npc.dontTakeDamage = true;
                 npc.friendly = true;
-                npc.life = 1;
+                npc.damage = 0;
+                npc.netUpdate = true;
                 return false;
             }
             return true;
@@ -164,19 +174,19 @@ namespace MinecraftAnimals.Animals
                     {
                         npc.frame.Y = Frame_Walk_2 * frameHeight;
                     }
-                    else if (npc.frameCounter < 28)
+                    else if (npc.frameCounter < 21)
                     {
                         npc.frame.Y = Frame_Walk_3 * frameHeight;
                     }
-                    else if (npc.frameCounter < 35)
+                    else if (npc.frameCounter < 28)
                     {
                         npc.frame.Y = Frame_Walk_4 * frameHeight;
                     }
-                    else if (npc.frameCounter < 42)
+                    else if (npc.frameCounter < 35)
                     {
                         npc.frame.Y = Frame_Walk_5 * frameHeight;
                     }
-                    else if (npc.frameCounter < 50)
+                    else if (npc.frameCounter < 42)
                     {
                         npc.frame.Y = Frame_Walk_6 * frameHeight;
                     }
@@ -201,19 +211,19 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frame.Y = Frame_Attack_2 * frameHeight;
                 }
-                else if (npc.frameCounter < 28)
+                else if (npc.frameCounter < 21)
                 {
                     npc.frame.Y = Frame_Attack_3 * frameHeight;
                 }
-                else if (npc.frameCounter < 35)
+                else if (npc.frameCounter < 28)
                 {
                     npc.frame.Y = Frame_Attack_4 * frameHeight;
                 }
-                else if (npc.frameCounter < 42)
+                else if (npc.frameCounter < 35)
                 {
                     npc.frame.Y = Frame_Attack_5 * frameHeight;
                 }
-                else if (npc.frameCounter < 50)
+                else if (npc.frameCounter < 42)
                 {
                     npc.frame.Y = Frame_Attack_6 * frameHeight;
                 }
