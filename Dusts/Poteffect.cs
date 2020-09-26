@@ -9,12 +9,15 @@ namespace MinecraftAnimals.Dusts
 		public override void OnSpawn(Dust dust)
 		{
 			dust.noGravity = true;
-			dust.velocity *= 0.75f;
-			dust.velocity.Y *= -1.5f;
+			dust.velocity.X = 0.75f;
+			dust.velocity.Y = -1.25f;
+			dust.scale = 5f;
 		}
 
 		public override bool Update(Dust dust)
 		{
+			dust.velocity.Y *= 1.05f;
+			dust.velocity.X *= 0.45f;
 			dust.position += dust.velocity;
 			dust.rotation += dust.velocity.X * 0.1f;
 			dust.scale -= 0.02f;

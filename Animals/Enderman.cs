@@ -6,6 +6,8 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
+using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MinecraftAnimals.Animals
 {
@@ -38,20 +40,22 @@ namespace MinecraftAnimals.Animals
         {
             Passive = 0,
             Attack = 1,
-            Death = 2
+            Death = 2,
+            TP = 3,
+            TPFail = 4
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        float Rotations = 2.6f;
+        private float Rotations = 6.6f;
 
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-
-            if(Phase == (int)AIStates.Passive)
+            Player player = Main.player[npc.target];
+            if (Phase == (int)AIStates.Passive)
             {
                 npc.damage = 0;
                 npc.TargetClosest(false);
@@ -68,27 +72,18 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Attack)
             {
-                Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
                 npc.damage = 30;
                 npc.velocity.X = 2 * npc.direction;
                 AttackTimer++;
-
-                if (AttackTimer == 500)
-                {
-                    Rectangle rect = new Rectangle((int)(player.Center.X / 16), (int)(player.Center.Y / 16), 150, 150);
-                    if (RectangeIntersectsTiles(rect) == true)
-                    {
-                        npc.netUpdate = true;
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f);
-                        Main.dust[dustIndex].noGravity = true;
-                        npc.Center = new Vector2(Main.rand.Next(rect.Width), Main.rand.Next(rect.Height));
-                        AttackTimer = 0;
-                    }
-                }
-                if (player.Distance(npc.Center) > 825f)
+                if (player.Distance(npc.Center) > 925f)
                 {
                     Phase = (int)AIStates.Passive;
+                }
+                if (AttackTimer >= 600)
+                {
+                    Phase = (int)AIStates.TP;
+                    AttackTimer = 0;
                 }
             }
             if (Phase == (int)AIStates.Death)
@@ -96,25 +91,57 @@ namespace MinecraftAnimals.Animals
                 GlobalTimer = 0;
                 npc.velocity.X = 0;
                 float rotslow = 0.60f;
-                _ = GlobalTimer <= 60 ? npc.rotation += MathHelper.ToRadians(Rotations * 2.5f) : npc.rotation = MathHelper.ToRadians(90f);
                 for (int i = 0; i < 60; i++)
                 {
                     Rotations *= rotslow;
                 }
+                _ = GlobalTimer <= 60 ? npc.rotation *= MathHelper.ToRadians(Rotations * 3.5f) : npc.rotation = MathHelper.ToRadians(90f);
+            }
+            if (Phase == (int)AIStates.TP)
+            {
+                AttackTimer++;
+                npc.velocity.X = 0;
+                AttackTimer = 0;
+                for (int i = 0; i < 15; i++)
+                {
+                    int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f);
+                    Main.dust[dustIndex].noGravity = true;
+                }
+                if ( Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
+                    npc.position.X = player.Center.X + (int)(Main.rand.Next(55, 125) * angle.X);
+                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 65) * angle.Y);
+                    npc.netUpdate = true;
+                    if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
+                    {
+                        AttackTimer = 0;
+                        Phase = (int)AIStates.TPFail;
+                    }
+                    else
+                    {
+                        AttackTimer = 0;
+                        Phase = (int)AIStates.Attack;
+                    }
+                }
+
+            }
+            if (Phase == (int)AIStates.TPFail)
+            {
+                _ = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255;
             }
         }
         public override bool CheckDead()
         {
             Phase = (int)AIStates.Death;
-            if (Phase == (int)AIStates.Death && GlobalTimer <= 100)
+            if (GlobalTimer <= 100)
             {
                 npc.dontTakeDamage = true;
                 npc.friendly = true;
                 npc.damage = 0;
                 npc.netUpdate = true;
-                return false;
             }
-            return true;
+            return false;
         }
         //Thanks oli//
         private bool RectangeIntersectsTiles(Rectangle rectangle)
@@ -231,6 +258,10 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frameCounter = 0;
                 }
+            }
+            if (Phase == (int)AIStates.TP)
+            {
+                npc.frame.Y = Frame_Walk * frameHeight;
             }
             if (Phase == (int)AIStates.Death)
             {
