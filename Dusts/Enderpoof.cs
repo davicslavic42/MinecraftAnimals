@@ -17,7 +17,7 @@ namespace MinecraftAnimals.Dusts
 		{
 			dust.position += dust.velocity;
 			dust.rotation += dust.velocity.X * 0.1f;
-			dust.scale -= 0.02f;
+			dust.scale -= 0.015f;
 			if (dust.scale < 0.5f)
 			{
 				dust.active = false;
