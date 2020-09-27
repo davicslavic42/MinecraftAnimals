@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 34;
+            npc.width = 38;
             npc.height = 60;
             npc.lifeMax = 100;
             npc.damage = 25;
@@ -69,7 +69,7 @@ namespace MinecraftAnimals.Animals
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 575f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 675f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -81,14 +81,14 @@ namespace MinecraftAnimals.Animals
             {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
-
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 575f)
+                _ = player.Distance(npc.Center) < 29f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
             }
-            if (Collision.SolidCollision(npc.position, (npc.width / 2), npc.height - 1) && AttackTimer >= 50)
+            if (Collision.SolidCollision(npc.position, (npc.width / 16 + 1), npc.height) && AttackTimer >= 50)
             {
                 for (int i = 0; i < 1; i++)
                 {
@@ -150,7 +150,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (player.Distance(npc.Center) < 55f)
+                if (player.Distance(npc.Center) < 34f)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter < 7)

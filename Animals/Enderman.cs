@@ -57,6 +57,7 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
+                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -86,17 +87,6 @@ namespace MinecraftAnimals.Animals
                     AttackTimer = 0;
                 }
             }
-            if (Phase == (int)AIStates.Death)
-            {
-                GlobalTimer = 0;
-                npc.velocity.X = 0;
-                float rotslow = 0.60f;
-                for (int i = 0; i < 60; i++)
-                {
-                    Rotations *= rotslow;
-                }
-                _ = GlobalTimer <= 60 ? npc.rotation *= MathHelper.ToRadians(Rotations * 3.5f) : npc.rotation = MathHelper.ToRadians(90f);
-            }
             if (Phase == (int)AIStates.TP)
             {
                 AttackTimer++;
@@ -110,8 +100,8 @@ namespace MinecraftAnimals.Animals
                 if ( Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int)(Main.rand.Next(55, 125) * angle.X);
-                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 65) * angle.Y);
+                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 155) * angle.X);
+                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 75) * angle.Y);
                     npc.netUpdate = true;
                     if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
                     {
@@ -130,18 +120,32 @@ namespace MinecraftAnimals.Animals
             {
                 _ = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255;
             }
+            if (Phase == (int)AIStates.Death)
+            {
+                GlobalTimer = 0;
+                npc.velocity.X = 0;
+                npc.dontTakeDamage = true;
+                npc.damage = 0;
+                float rotslow = 0.60f;
+                for (int i = 0; i < 60; i++)
+                {
+                    Rotations *= rotslow;
+                    npc.rotation *= MathHelper.ToRadians(Rotations * 3.5f);
+                }
+                if(GlobalTimer >= 65)
+                {
+                    npc.rotation = MathHelper.ToRadians(180f);
+                }
+            }
         }
         public override bool CheckDead()
         {
             Phase = (int)AIStates.Death;
             if (GlobalTimer <= 100)
             {
-                npc.dontTakeDamage = true;
-                npc.friendly = true;
-                npc.damage = 0;
-                npc.netUpdate = true;
+                return false;
             }
-            return false;
+            return true;
         }
         //Thanks oli//
         private bool RectangeIntersectsTiles(Rectangle rectangle)
@@ -163,6 +167,7 @@ namespace MinecraftAnimals.Animals
 
         public override void HitEffect(int hitDirection, double damage)
         {
+            npc.friendly = false;
             Phase = (int)AIStates.Attack;
             GlobalTimer = 0;
             base.HitEffect(hitDirection, damage);

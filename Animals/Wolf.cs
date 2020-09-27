@@ -6,6 +6,9 @@ using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.Items;
+using System;
 
 namespace MinecraftAnimals.Animals
 {
@@ -29,105 +32,104 @@ namespace MinecraftAnimals.Animals
 		{
 			return SpawnCondition.OverworldDay.Chance * 0.05f;
 		}
-		private const int AI_State_Slot = 0;
-		private const int AI_Timer_Slot = 1;
-		// Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-		private const int State_Walk = 0;
-		private const int State_Idle = 1;
-		private const int State_Follow = 2;
-		private const int State_Attack = 3;
+		public enum AIStates
+		{
+			Passive = 0,
+			Attack = 1,
+			Death = 2,
+			Follow = 3
+		}
+		internal ref float GlobalTimer => ref npc.ai[0];
+		internal ref float Phase => ref npc.ai[1];
+		internal ref float AttackPhase => ref npc.ai[2];
+		internal ref float AttackTimer => ref npc.ai[3];
+		public float Rotations = 6.6f;
 		public bool hostile = false;
 
-		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-		// Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-		// This is all to just make beautiful, manageable, and clean code.
-		public float AI_State
-		{
-			get => npc.ai[AI_State_Slot];
-			set => npc.ai[AI_State_Slot] = value;
-		}
-
-		public float AI_Timer
-		{
-			get => npc.ai[AI_Timer_Slot];
-			set => npc.ai[AI_Timer_Slot] = value;
-		}
 		public override void AI()
 		{
 			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+			GlobalTimer++;
 			Player player = Main.player[npc.target];
-			if (AI_State == State_Walk)
+			if (Phase == (int)AIStates.Passive)
 			{
-				AI_Timer++;
-				npc.velocity.X = 1 * npc.direction;
-				npc.velocity.Y += 0.5f;
-				if (AI_Timer == 5)
+				npc.damage = 0;
+				npc.TargetClosest(false);
+				if (GlobalTimer == 5)
 				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							npc.direction = -1;
-							return;
-						case 1:
-							npc.direction = 1;
-							return;
-					}
+					_ = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
 				}
-				if (AI_Timer == 500)
+
+				_ = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
+				if (GlobalTimer >= 800)
 				{
-					AI_State = State_Idle;
-					AI_Timer = 0;
+					GlobalTimer = 0;
 				}
+				if (player.HeldItem.type == ItemType<Bone>()) Phase = (int)AIStates.Follow;
 			}
-			else if (AI_State == State_Follow)
+			if (Phase == (int)AIStates.Attack)
 			{
 				npc.TargetClosest(true);
-				AI_Timer++;
-				npc.velocity.X = 1.5f * npc.target;
-				npc.velocity.Y += 0.5f;
-				if (!(player.HeldItem.type == mod.ItemType("Bone")))
+				npc.damage = 30;
+				npc.velocity.X = 2 * npc.direction;
+				AttackTimer++;
+				if (player.Distance(npc.Center) > 925f)
 				{
-					AI_State = State_Walk;
-					AI_Timer = 0;
+					hostile = false;
+					Phase = (int)AIStates.Passive;
 				}
 			}
-			else if (AI_State == State_Idle)
+			if (Phase == (int)AIStates.Death)
 			{
-				AI_Timer++;
+				GlobalTimer = 0;
 				npc.velocity.X = 0;
-				npc.velocity.Y += 0.5f;
-				if (AI_Timer == 300)
+				float rotslow = 0.60f;
+				for (int i = 0; i < 60; i++)
 				{
-					AI_State = State_Walk;
-					AI_Timer = 0;
+					Rotations *= rotslow;
+				}
+				_ = GlobalTimer <= 60 ? npc.rotation *= MathHelper.ToRadians(Rotations * 3.5f) : npc.rotation = MathHelper.ToRadians(90f);
+			}
+			if (Phase == (int)AIStates.Follow)
+			{
+				npc.TargetClosest(true);
+				npc.velocity.X = 1.5f * npc.direction;
+				if (player.Distance(npc.Center) < 45f)
+				{
+					npc.velocity.X = 0;
+				}
+				if (player.HeldItem.type != ItemType<Bone>())
+                {
+					Phase = (int)AIStates.Passive;
 				}
 			}
-			if (player.HeldItem.type == mod.ItemType("Bone"))
-			{
-				AI_State = State_Follow;
-				AI_Timer = 0;
-			}
-			else if (AI_State == State_Attack)
-			{
-				npc.velocity.X = 1.5f * npc.direction;
-				npc.velocity.Y += 0.5f;
-				npc.TargetClosest(true);
-				npc.damage = 25;
-			}
-            if (hostile == true)
+			if(hostile == true)
             {
-				AI_State = State_Attack;
+				Phase = (int)AIStates.Attack;
 			}
 		}
-        public override void HitEffect(int hitDirection, double damage)
-        {
-			AI_State = State_Attack;
-			AI_Timer = 0;
+		public override bool CheckDead()
+		{
+			Phase = (int)AIStates.Death;
+			if (GlobalTimer <= 100)
+			{
+				npc.dontTakeDamage = true;
+				npc.friendly = true;
+				npc.damage = 0;
+				npc.netUpdate = true;
+			}
+			return false;
+		}
+		//Thanks oli//
+
+		public override void HitEffect(int hitDirection, double damage)
+		{
+			Phase = (int)AIStates.Attack;
+			GlobalTimer = 0;
 			for (int n = 0; n < 200; n++)
 			{
 				NPC N = Main.npc[n];
-				if (N.active && N.Distance(npc.Center) < 275f && (N.type == mod.NPCType("Wolf")))
+				if (N.active && N.Distance(npc.Center) < 475f && (N.type == ModContent.NPCType<Wolf>()))
 				{
 					N.target = npc.target;
 					N.netUpdate = true;
@@ -135,7 +137,9 @@ namespace MinecraftAnimals.Animals
 				}
 			}
 			base.HitEffect(hitDirection, damage);
-        }
+		}
+		// The npc starts in the asleep state, waiting for a player to enter range
+		// Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
 		private const int Frame_Walk = 0;
 		private const int Frame_Walk_2 = 1;
 		private const int Frame_Walk_3 = 2;
@@ -152,122 +156,141 @@ namespace MinecraftAnimals.Animals
 		private const int Frame_Angry_6 = 13;
 		private const int Frame_Angry_7 = 14;
 		private const int Frame_Angry_8 = 15;
+
+		// Here in FindFrame, we want to set the animation frame our npc will use depending on what it is doing.
+		// We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
 		public override void FindFrame(int frameHeight)
 		{
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
+			Player player = Main.player[npc.target];
 			npc.spriteDirection = npc.direction;
-			if (AI_State == State_Idle)
+			if (Phase == (int)AIStates.Passive)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (GlobalTimer <= 500)
 				{
-					npc.frame.Y = Frame_Walk * frameHeight;
+					if (npc.frameCounter < 7)
+					{
+						npc.frame.Y = Frame_Walk * frameHeight;
+					}
+					else if (npc.frameCounter < 14)
+					{
+						npc.frame.Y = Frame_Walk_2 * frameHeight;
+					}
+					else if (npc.frameCounter < 21)
+					{
+						npc.frame.Y = Frame_Walk_3 * frameHeight;
+					}
+					else if (npc.frameCounter < 28)
+					{
+						npc.frame.Y = Frame_Walk_4 * frameHeight;
+					}
+					else if (npc.frameCounter < 35)
+					{
+						npc.frame.Y = Frame_Walk_5 * frameHeight;
+					}
+					else if (npc.frameCounter < 42)
+					{
+						npc.frame.Y = Frame_Walk_6 * frameHeight;
+					}
+					else if (npc.frameCounter < 49)
+					{
+						npc.frame.Y = Frame_Walk_7 * frameHeight;
+					}
+					else if (npc.frameCounter < 56)
+					{
+						npc.frame.Y = Frame_Walk_8 * frameHeight;
+					}
+					else
+					{
+						npc.frameCounter = 0;
+					}
 				}
 				else
 				{
-					npc.frameCounter = 0;
-				}
-			}
-			else if (AI_State == State_Walk)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 8)
-				{
 					npc.frame.Y = Frame_Walk * frameHeight;
 				}
-				else if (npc.frameCounter < 16)
-				{
-					npc.frame.Y = Frame_Walk_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Walk_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 32)
-				{
-					npc.frame.Y = Frame_Walk_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 40)
-				{
-					npc.frame.Y = Frame_Walk_5 * frameHeight;
-				}
-				else if (npc.frameCounter < 48)
-				{
-					npc.frame.Y = Frame_Walk_6 * frameHeight;
-				}
-				else if (npc.frameCounter < 56)
-				{
-					npc.frame.Y = Frame_Walk_7 * frameHeight;
-				}
-				else if (npc.frameCounter < 64)
-				{
-					npc.frame.Y = Frame_Walk_8 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
 			}
-			else if (AI_State == State_Follow)
-			{
+			if (Phase == (int)AIStates.Follow)
+            {
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
-				{
+				if (player.Distance(npc.Center) < 45f)
+                {
 					npc.frame.Y = Frame_Walk * frameHeight;
 				}
-				else if (npc.frameCounter < 20)
-				{
-					npc.frame.Y = Frame_Walk_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 30)
-				{
-					npc.frame.Y = Frame_Walk_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 40)
-				{
-					npc.frame.Y = Frame_Walk_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 50)
-				{
-					npc.frame.Y = Frame_Walk_5 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
+                else
+                {
+					if (npc.frameCounter < 7)
+					{
+						npc.frame.Y = Frame_Walk * frameHeight;
+					}
+					else if (npc.frameCounter < 14)
+					{
+						npc.frame.Y = Frame_Walk_2 * frameHeight;
+					}
+					else if (npc.frameCounter < 21)
+					{
+						npc.frame.Y = Frame_Walk_3 * frameHeight;
+					}
+					else if (npc.frameCounter < 28)
+					{
+						npc.frame.Y = Frame_Walk_4 * frameHeight;
+					}
+					else if (npc.frameCounter < 35)
+					{
+						npc.frame.Y = Frame_Walk_5 * frameHeight;
+					}
+					else if (npc.frameCounter < 42)
+					{
+						npc.frame.Y = Frame_Walk_6 * frameHeight;
+					}
+					else if (npc.frameCounter < 49)
+					{
+						npc.frame.Y = Frame_Walk_7 * frameHeight;
+					}
+					else if (npc.frameCounter < 56)
+					{
+						npc.frame.Y = Frame_Walk_8 * frameHeight;
+					}
+					else
+					{
+						npc.frameCounter = 0;
+					}
 				}
 			}
-			if (AI_State == State_Attack)
+
+			if (Phase == (int)AIStates.Attack)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 8)
+				if (npc.frameCounter < 7)
 				{
 					npc.frame.Y = Frame_Angry * frameHeight;
 				}
-				else if (npc.frameCounter < 16)
+				else if (npc.frameCounter < 14)
 				{
 					npc.frame.Y = Frame_Angry_2 * frameHeight;
 				}
-				else if (npc.frameCounter < 24)
+				else if (npc.frameCounter < 21)
 				{
 					npc.frame.Y = Frame_Angry_3 * frameHeight;
 				}
-				else if (npc.frameCounter < 32)
+				else if (npc.frameCounter < 28)
 				{
 					npc.frame.Y = Frame_Angry_4 * frameHeight;
 				}
-				else if (npc.frameCounter < 40)
+				else if (npc.frameCounter < 35)
 				{
 					npc.frame.Y = Frame_Angry_5 * frameHeight;
 				}
-				else if (npc.frameCounter < 48)
+				else if (npc.frameCounter < 42)
 				{
 					npc.frame.Y = Frame_Angry_6 * frameHeight;
 				}
-				else if (npc.frameCounter < 56)
+				else if (npc.frameCounter < 49)
 				{
 					npc.frame.Y = Frame_Angry_7 * frameHeight;
 				}
-				else if (npc.frameCounter < 64)
+				else if (npc.frameCounter < 56)
 				{
 					npc.frame.Y = Frame_Angry_8 * frameHeight;
 				}

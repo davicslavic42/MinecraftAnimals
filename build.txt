@@ -1,5 +1,7 @@
 displayName = Minecraft Animals
-author = Davslav
+author = Davslav, Pootistweet
 version = 0.1.1.1
 includeSource = true
 includePDB = true
+homepage = https://discord.gg/4S8qRrn
+hideCode = true

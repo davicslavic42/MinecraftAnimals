@@ -1,4 +1,10 @@
 Minecraft Animals is a mod that adds in different mobs and such from minecraft as you'd expect, and a small amount of other things
 to create a little minecraft ambience in your world. Note, this is still wip and not every single mc thing is going to be put in.
-Team: Davslav(spriter/coder), Pootistweet(spriter)
 Thanks to: Gameraiders101 for showing the mod,  rebmiami the previous lead dev and creator, Chem (collaberator), GabeHasWon (massive code help),
+
+Check out the mod's forum page for more information! We hope you enjoy the mod, and please report any issues you encounter :)
+
+
+Changes from latest version on Mod Browser:
+v0.1.1.1:
+-Added more Nether mobs, overworld trees, fixed spawn rates.

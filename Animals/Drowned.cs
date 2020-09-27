@@ -87,6 +87,7 @@ namespace MinecraftAnimals.Animals
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
+                _ = player.Distance(npc.Center) < 29f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
             }
             if (Collision.SolidCollision(npc.position, (npc.width / 2), npc.height - 1) && AttackTimer >= 50)
             {
@@ -154,7 +155,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (player.Distance(npc.Center) < 55f)
+                if (player.Distance(npc.Center) < 34f)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter < 7)

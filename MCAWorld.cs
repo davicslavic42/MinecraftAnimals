@@ -48,7 +48,7 @@ namespace MinecraftAnimals
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
 
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 9E-02); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.3); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.

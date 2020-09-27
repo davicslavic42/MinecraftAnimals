@@ -65,5 +65,6 @@ namespace MinecraftAnimals.projectiles
 				projectile.friendly = false;
 			}
 		}
+		
 	}
 }

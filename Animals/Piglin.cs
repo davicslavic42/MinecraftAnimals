@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 28;
+            npc.width = 34;
             npc.height = 50;
             npc.lifeMax = 125;
             npc.damage = 28;
@@ -75,7 +75,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.TargetClosest(true);
-                npc.velocity.X = 0.75f * npc.direction;
+                npc.velocity.X = 1f * npc.direction;
 
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 575f)
                 {
@@ -83,18 +83,7 @@ namespace MinecraftAnimals.Animals
                     GlobalTimer = 0;
                 }
             }
-            if (Collision.SolidCollision(npc.position, (npc.width / 2), npc.height - 1) && AttackTimer >= 50)
-            {
-                for (int i = 0; i < 1; i++)
-                {
-                    npc.velocity = new Vector2(npc.direction * 2, -6f);
-                }
-                AttackTimer = 0;
-            }
-            if (player.Distance(npc.Center) < 45f)
-            {
-                npc.velocity.X = 0;
-            }
+            _ = player.Distance(npc.Center) < 27f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
         }
 
 
@@ -154,7 +143,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (player.Distance(npc.Center) < 55f)
+                if (player.Distance(npc.Center) < 30f)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter < 7)

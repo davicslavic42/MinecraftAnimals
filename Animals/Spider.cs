@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Animals
             npc.width = 40;
             npc.height = 40;
             npc.lifeMax = 68;
-            npc.damage = 38;
+            npc.damage = 0;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -29,53 +29,63 @@ namespace MinecraftAnimals.Animals
         {
             return SpawnCondition.Overworld.Chance * 0.03f;
         }
-        private const int AI_State_Slot = 0;
-        private const int AI_Timer_Slot = 1;
-        // Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-        private const int State_Find = 0;
-        private const int State_Attack = 1;
-        public float AI_State
+        public enum AIStates
         {
-            get => npc.ai[AI_State_Slot];
-            set => npc.ai[AI_State_Slot] = value;
+            Normal = 0,
+            Attack = 1
         }
-
-        public float AI_Timer
-        {
-            get => npc.ai[AI_Timer_Slot];
-            set => npc.ai[AI_Timer_Slot] = value;
-        }
-
+        internal ref float GlobalTimer => ref npc.ai[0];
+        internal ref float Phase => ref npc.ai[1];
+        internal ref float AttackPhase => ref npc.ai[2];
+        internal ref float AttackTimer => ref npc.ai[3];
         public override void AI()
         {
 
-            if (AI_State == State_Find)
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+            GlobalTimer++;
+            Player player = Main.player[npc.target];
+            if (Phase == (int)AIStates.Normal)
             {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 0;
-                npc.velocity.Y += 0.5f;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 650f)
+                npc.damage = 0;
+                npc.TargetClosest(false);
+                npc.velocity.X = 1 * npc.direction;
+                if (GlobalTimer == 5)
                 {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
+                    switch (Main.rand.Next(2))
+                    {
+                        case 0:
+                            npc.direction = 1;
+                            return;
+                        case 1:
+                            npc.direction = -1;
+                            return;
+                    }
+                }
+                float change = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
+                if (GlobalTimer >= 800)
+                {
+                    GlobalTimer = 0;
                 }
             }
             // thanks oli for the tile checks
-            else if (AI_State == State_Attack)
+            if (Phase == (int)AIStates.Attack)
             {
-                Player player = Main.player[npc.target];
+                npc.damage = 38;
+                npc.friendly = false;
                 npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
-                npc.velocity.Y += 0.5f;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 650f)
+                npc.velocity.X = 1 * npc.direction;
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 775f)
                 {
-                    AI_State = State_Find;
-                    AI_Timer = 0;
+                    npc.velocity.X = 1.4f * npc.direction;
                 }
+            }
+            if (Collision.SolidCollision(npc.position, (npc.width / 16 + 1), npc.height) && AttackTimer >= 50)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    npc.velocity = new Vector2(npc.direction * 2, -6f);
+                }
+                AttackTimer = 0;
             }
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             if (npc.type == mod.NPCType("Spider") && Main.netMode != NetmodeID.MultiplayerClient && npc.velocity.Y > 1f)
@@ -98,6 +108,17 @@ namespace MinecraftAnimals.Animals
                     npc.Transform(mod.NPCType("SpiderWall"));
                 }
             }
+            if (Main.dayTime == false) // half brightness
+            {
+                Phase = (int)AIStates.Attack;
+            }
+        }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            npc.friendly = false;
+            Phase = (int)AIStates.Attack;
+            GlobalTimer = 0;
+            base.HitEffect(hitDirection, damage);
         }
 
         private const int Frame_Walk = 0;
