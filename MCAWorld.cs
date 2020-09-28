@@ -28,19 +28,18 @@ namespace MinecraftAnimals
 			}
 		}
 		private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
-		{
-			if (maxDepth == -1) maxDepth = (int)WorldGen.worldSurface; //Set default
-			while (true)
-			{
-				if (y >= maxDepth)
-					break;
-				if (Main.tile[x, y].active() && types.Any(i => i == Main.tile[x, y].type))
-					return y; //Returns first valid tile under intitial Y pos, -1 if max depth is reached
-				y++;
-			}
-			return -1; //fallout case
-		}
-
+        {
+            if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface); //Set default
+            while (true)
+            {
+                if (y >= maxDepth)
+                    break;
+                if (Main.tile[x, y].active() && types.Any(i => i == Main.tile[x, y].type))
+                    return y; //Returns first valid tile under intitial Y pos, -1 if max depth is reached
+                y++;
+            }
+            return -1; //fallout case
+        }
 		private void Treebases(GenerationProgress progress)
 		{
 			// progress.Message is the message shown to the user while the following code is running. Try to make your message clear. You can be a little bit clever, but make sure it is descriptive enough for troubleshooting purposes. 
@@ -48,17 +47,18 @@ namespace MinecraftAnimals
 
 			// "6E-05" is "scientific notation". It simply means 0.00006 but in some ways is easier to read.
 
-			for (int k = 0; k < (int)((Main.maxTilesX * Main.maxTilesY) * 0.9); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.5); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
-				int y = WorldGen.genRand.Next((int)WorldGen.worldSurfaceLow, (int)WorldGen.worldSurface);
+				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
+				int y = (int)(WorldGen.worldSurface * 0.55);
+				FindType(x, y, -1, TileID.Grass);
 				Tile tile = Framing.GetTileSafely(x, y);
 				WorldGen.SquareTileFrame(x, y);
-				if (tile.active() && !Main.tile[x, y - 1].active() && tile.type == TileID.Grass)
+				if (tile.active() && tile.type == TileID.Grass)
 				{
-					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
+					WorldGen.TileRunner(x, y, WorldGen.genRand.Next(4, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>());
 				}
 			}
 		}

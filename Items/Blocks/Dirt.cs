@@ -11,7 +11,6 @@ namespace MinecraftAnimals.Items.Blocks
 		public override void SetStaticDefaults()
 		{
 			Tooltip.SetDefault("Not as expensive over seas ");
-			ItemID.Sets.ExtractinatorMode[item.type] = item.type;
 		}
 
 		public override void SetDefaults()
@@ -27,5 +26,14 @@ namespace MinecraftAnimals.Items.Blocks
 			item.consumable = true;
 			item.createTile = TileType<Tiles.Dirttile>();
 		}
+		public override void AddRecipes()
+		{
+			ModRecipe recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock, 1);
+			recipe.AddTile(TileID.WorkBenches);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
+		}
+
 	}
 }
