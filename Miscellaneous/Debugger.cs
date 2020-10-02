@@ -43,7 +43,7 @@ namespace MinecraftAnimals.Miscellaneous
 		}
 		public override bool UseItem(Player player)
 		{
-			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.5); k++)
+			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.75); k++)
 			{
 				// The inside of this for loop corresponds to one single splotch of our Ore.
 				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
@@ -51,7 +51,7 @@ namespace MinecraftAnimals.Miscellaneous
 				int y = (int)(WorldGen.worldSurface * 0.35);
 				y = FindType(x, y, -1, TileID.Grass);
 				if (y > 1)
-                {
+				{
 					Tile tile = Framing.GetTileSafely(x, y);
 					WorldGen.SquareTileFrame(x, y);
 					if (tile.active() && tile.type == TileID.Grass)
@@ -61,7 +61,7 @@ namespace MinecraftAnimals.Miscellaneous
 					Main.NewText(k);
 				}
 			}
-			return base.UseItem(player);
+				return base.UseItem(player);
         }
     }
 }
