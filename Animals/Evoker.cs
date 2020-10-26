@@ -77,7 +77,7 @@ namespace MinecraftAnimals.Animals
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 15, (int)npc.position.X + 15), Main.rand.Next((int)npc.position.Y - 25, (int)npc.position.Y ), mod.NPCType("Vex"), 0);
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 25, (int)npc.position.X + 25), Main.rand.Next((int)npc.position.Y - 25, (int)npc.position.Y), NPCType<Vex>(), 0);
                             npc.ai[3] = 0;
                             return;
                         case 1:

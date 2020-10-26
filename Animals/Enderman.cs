@@ -48,7 +48,8 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        private float Rotations = 6.6f;
+        int r = 1;
+        float Rotations = 18.5f;
 
         public override void AI()
         {
@@ -57,7 +58,6 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
-                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -118,34 +118,34 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.TPFail)
             {
-                _ = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255;
+                float tpfail = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255;
             }
             if (Phase == (int)AIStates.Death)
             {
+                npc.netUpdate = true;
                 GlobalTimer = 0;
+                GlobalTimer++;
                 npc.velocity.X = 0;
-                npc.dontTakeDamage = true;
                 npc.damage = 0;
-                float rotslow = 0.60f;
-                for (int i = 0; i < 60; i++)
+                while (GlobalTimer <= 65 )
                 {
-                    Rotations *= rotslow;
-                    npc.rotation *= MathHelper.ToRadians(Rotations * 3.5f);
+                    npc.rotation = MathHelper.ToRadians(Rotations * 5.5f);
+                    Rotations *= 0.80f;
                 }
-                if(GlobalTimer >= 65)
+                if (GlobalTimer >= 65)
                 {
-                    npc.rotation = MathHelper.ToRadians(180f);
+                    npc.rotation = MathHelper.ToRadians(90f);
                 }
             }
         }
         public override bool CheckDead()
         {
             Phase = (int)AIStates.Death;
-            if (GlobalTimer <= 100)
+            if (GlobalTimer >= 150)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
         //Thanks oli//
         private bool RectangeIntersectsTiles(Rectangle rectangle)

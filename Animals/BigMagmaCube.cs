@@ -2,6 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
 {
@@ -28,87 +29,85 @@ namespace MinecraftAnimals.Animals
 		{
 			return SpawnCondition.Underworld.Chance * 0.02f;
 		}
-		private const int AI_State_Slot = 0;
-		private const int AI_Timer_Slot = 1;
-		// Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-		private const int State_Search = 0;
-		private const int State_Notice = 1;
-		private const int State_Jump = 2;
-
-		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-		// Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-		// This is all to just make beautiful, manageable, and clean code.
-		public float AI_State
+		public enum AIStates
 		{
-			get => npc.ai[AI_State_Slot];
-			set => npc.ai[AI_State_Slot] = value;
+			Passive = 0,
+			Jump = 1,
+			Crouch = 2,
+		    Death = 3
 		}
-
-		public float AI_Timer
-		{
-			get => npc.ai[AI_Timer_Slot];
-			set => npc.ai[AI_Timer_Slot] = value;
-		}
+		internal ref float GlobalTimer => ref npc.ai[0];
+		internal ref float Phase => ref npc.ai[1];
+		internal ref float AttackPhase => ref npc.ai[2];
+		internal ref float AttackTimer => ref npc.ai[3];
+		public float Rotations = 6.6f;
 		// Our AI here makes our NPC sit waiting for a player to enter range, jumps to attack, flutter mid-fall to stay afloat a little longer, then falls to the ground. Note that animation should happen in FindFrame
 		public override void AI()
 		{
 			Player player = Main.player[npc.target];
 			npc.TargetClosest(true);
+			GlobalTimer++;
 			// The npc starts in the asleep state, waiting for a player to enter range
-			if (AI_State == State_Search)
+			if (Phase == (int)AIStates.Passive)
 			{
-				// TargetClosest sets npc.target to the player.whoAmI of the closest player. the faceTarget parameter means that npc.direction will automatically be 1 or -1 if the targeted player is to the right or left. This is also automatically flipped if npc.confused
-				// Now we check the make sure the target is still valid and within our specified notice range (500)
-				if (npc.HasValidTarget && player.Distance(npc.Center) < 640f)
+				if (GlobalTimer == 5)
+				{
+					_ = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+					npc.velocity = new Vector2(npc.direction * 2, -4f);
+				}
+				if (GlobalTimer >= 245 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+				{
+					GlobalTimer = 0;
+				}
+				if (npc.HasValidTarget && player.Distance(npc.Center) < 740f)
 				{
 					// Since we have a target in range, we change to the Notice state. (and zero out the Timer for good measure)
-					AI_State = State_Notice;
-					AI_Timer = 0;
+					Phase = (int)AIStates.Crouch;
+					GlobalTimer = 0;
 				}
 			}
 			// In this state, a player has been targeted
-			else if (AI_State == State_Notice)
+			if(Phase == (int)AIStates.Crouch)
 			{
 				npc.velocity.X = npc.direction * 0;
 				// If the targeted player is in attack range (250).
-				if (player.Distance(npc.Center) < 620f)
+				if (player.Distance(npc.Center) < 720f)
 				{
-					AI_Timer++;
-					if (AI_Timer >= 20)
+					AttackTimer++;
+					if (AttackTimer >= 20)
 					{
-						AI_State = State_Jump;
-						AI_Timer = 0;
+						Phase = (int)AIStates.Jump;
+						AttackTimer = 0;
+						GlobalTimer = 0;
 					}
 				}
 				else
 				{
-					if (!npc.HasValidTarget || player.Distance(npc.Center) > 640f)
+					if (!npc.HasValidTarget || player.Distance(npc.Center) > 740f)
 					{
 						// Out targeted player seems to have left our range, so we'll go back to sleep.
-						AI_State = State_Search;
-						AI_Timer = 0;
+						Phase = (int)AIStates.Passive;
+						GlobalTimer = 0;
 					}
 				}
 			}
-			else if (AI_State == State_Jump)
+			if (Phase == (int)AIStates.Jump)
 			{
-				AI_Timer++;
-				if (AI_Timer == 5)
+				if (GlobalTimer == 5)
 				{
 					npc.velocity = new Vector2(npc.direction * 3, -8f);
 				}
-				if (AI_Timer == 5 && player.Distance(npc.Center) < 220f)
+			    if (GlobalTimer == 5 && player.Distance(npc.Center) < 220f)
 				{
 					npc.velocity = new Vector2(npc.direction * 5, -6f);
 				}
 
-				if (AI_Timer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+				if (GlobalTimer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
-					AI_State = State_Notice;
-					AI_Timer = 0;
+					Phase = (int)AIStates.Crouch;
+					GlobalTimer = 0;
 				}
-				if (AI_Timer > 10 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+				if (GlobalTimer > 15 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
 					npc.velocity.X = npc.direction * 0;
 
@@ -119,7 +118,7 @@ namespace MinecraftAnimals.Animals
 		{
 			for (int i = 1; i <= 2; i++)
 			{
-				NPC.NewNPC((int)(npc.position.X + (float)(npc.width / 2) + npc.velocity.X), (int)(npc.position.Y + (float)(npc.height / 2) + npc.velocity.Y), mod.NPCType("MagmaCube"), 0);
+				NPC.NewNPC(Main.rand.Next((int)npc.position.X - 35, (int)npc.position.X + 35), Main.rand.Next((int)npc.position.Y - 35, (int)npc.position.Y), NPCType<MagmaCube>(), 0);
 			}
 		}
 		private const int Frame_Walk = 0;
@@ -129,10 +128,14 @@ namespace MinecraftAnimals.Animals
 		{
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
 			npc.spriteDirection = npc.direction;
-			if (AI_State == State_Search)
+			if (Phase == (int)AIStates.Passive)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (npc.frameCounter < 7)
+				{
+					npc.frame.Y = Frame_Walk * frameHeight;
+				}
+				if (npc.frameCounter < 14)
 				{
 					npc.frame.Y = Frame_Walk * frameHeight;
 				}
@@ -141,22 +144,14 @@ namespace MinecraftAnimals.Animals
 					npc.frameCounter = 0;
 				}
 			}
-			else if (AI_State == State_Notice)
+			if (Phase == (int)AIStates.Crouch)
 			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 10)
-				{
-					npc.frame.Y = Frame_Walk_2 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				npc.frame.Y = Frame_Walk_2 * frameHeight;
 			}
-			else if (AI_State == State_Jump)
+			else if (Phase == (int)AIStates.Jump)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 10)
+				if (npc.frameCounter < 6)
 				{
 					npc.frame.Y = Frame_Walk_3 * frameHeight;
 				}
