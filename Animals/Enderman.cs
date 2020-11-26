@@ -100,8 +100,8 @@ namespace MinecraftAnimals.Animals
                 if ( Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 155) * angle.X);
-                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 75) * angle.Y);
+                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 255) * angle.X); //controls the main area of the random teleport
+                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 105) * angle.Y);
                     npc.netUpdate = true;
                     if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
                     {
@@ -118,7 +118,7 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.TPFail)
             {
-                float tpfail = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255;
+                float tpfail = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
             }
             if (Phase == (int)AIStates.Death)
             {
@@ -129,7 +129,7 @@ namespace MinecraftAnimals.Animals
                 npc.damage = 0;
                 while (GlobalTimer <= 65 )
                 {
-                    npc.rotation = MathHelper.ToRadians(Rotations * 5.5f);
+                    npc.rotation = MathHelper.ToRadians(Rotations * 5.5f); // should appply a constant rotation to the enmy sprote in this time frame
                     Rotations *= 0.80f;
                 }
                 if (GlobalTimer >= 65)

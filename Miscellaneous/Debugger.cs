@@ -1,10 +1,14 @@
 ﻿using Terraria;
 using Terraria.ID;
-using MinecraftAnimals.Tiles;
+using MinecraftAnimals;
 using MinecraftAnimals.Tiles.Trees;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Terraria.Localization;
+using Terraria.ObjectData;
+
 
 namespace MinecraftAnimals.Miscellaneous
 {
@@ -41,27 +45,37 @@ namespace MinecraftAnimals.Miscellaneous
 			}
 			return 1; //fallout case
 		}
+		public override bool CanUseItem(Player player)
+		{
+			return true;
+		}
+
 		public override bool UseItem(Player player)
 		{
-			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.75); k++)
+			string key = "The Illagers are coming!";
+			Color messageColor = Color.Orange;
+			if (Main.netMode == 2) // Server
 			{
-				// The inside of this for loop corresponds to one single splotch of our Ore.
-				// First, we randomly choose any coordinate in the world by choosing a random x and y value.
-				int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
-				int y = (int)(WorldGen.worldSurface * 0.35);
-				y = FindType(x, y, -1, TileID.Grass);
-				if (y > 1)
-				{
-					Tile tile = Framing.GetTileSafely(x, y);
-					WorldGen.SquareTileFrame(x, y);
-					if (tile.active() && tile.type == TileID.Grass)
-					{
-						WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>(), false, 0, 0, false, true);
-					}
-					Main.NewText(k);
-				}
+				NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
 			}
-				return base.UseItem(player);
-        }
-    }
+			else if (Main.netMode == 0) // Single Player
+			{
+				Main.NewText(Language.GetTextValue(key), messageColor);
+			}
+
+			if (Main.netMode == 0)
+			{
+				Main.PlaySound(SoundID.Roar, player.position, 0);
+				MCAWorld.RaidEvent = true;
+			}
+			if (Main.netMode == 1 && player.whoAmI == Main.myPlayer)
+			{
+				ModPacket packet = mod.GetPacket();
+				packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
+				packet.Send();
+			}
+
+			return true;
+		}
+	}
 }
