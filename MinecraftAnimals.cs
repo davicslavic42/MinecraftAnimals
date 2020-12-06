@@ -164,7 +164,7 @@ namespace MinecraftAnimals
 
                     //draw the icon
                     int descOffset = (descBackground.Height - (int)(32f * scaleMultiplier)) / 2;
-                    Rectangle icon = new Rectangle(descBackground.X + descOffset, descBackground.Y + descOffset, (int)(32 * scaleMultiplier), (int)(32 * scaleMultiplier));
+                    Rectangle icon = new Rectangle(descBackground.X + descOffset, descBackground.Y + descOffset, (int)(24 * scaleMultiplier), (int)(48 * scaleMultiplier));
                     spriteBatch.Draw(orionIcon, icon, Color.White);
 
                     //draw text

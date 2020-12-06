@@ -36,7 +36,7 @@ namespace MinecraftAnimals.Animals
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
-        public enum AIStates
+        internal enum AIStates
         {
             Passive = 0,
             Attack = 1,
@@ -48,8 +48,8 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int r = 1;
-        float Rotations = 18.5f;
+        float rotatetimer = 0f;
+        float Rotations = 5.5f;
 
         public override void AI()
         {
@@ -123,16 +123,14 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Death)
             {
                 npc.netUpdate = true;
-                GlobalTimer = 0;
-                GlobalTimer++;
                 npc.velocity.X = 0;
                 npc.damage = 0;
-                while (GlobalTimer <= 65 )
+                if (rotatetimer <= 65)
                 {
-                    npc.rotation = MathHelper.ToRadians(Rotations * 5.5f); // should appply a constant rotation to the enmy sprote in this time frame
+                    npc.rotation += MathHelper.ToRadians(Rotations * 3.5f); // should appply a constant rotation to the enmy sprote in this time frame
                     Rotations *= 0.80f;
                 }
-                if (GlobalTimer >= 65)
+                else
                 {
                     npc.rotation = MathHelper.ToRadians(90f);
                 }
@@ -140,8 +138,8 @@ namespace MinecraftAnimals.Animals
         }
         public override bool CheckDead()
         {
-            Phase = (int)AIStates.Death;
-            if (GlobalTimer >= 150)
+            rotatetimer++;
+            if (rotatetimer > 150)
             {
                 return true;
             }

@@ -118,7 +118,7 @@ namespace MinecraftAnimals.Animals
 		{
 			for (int i = 1; i <= 2; i++)
 			{
-				NPC.NewNPC(Main.rand.Next((int)npc.position.X - 35, (int)npc.position.X + 35), Main.rand.Next((int)npc.position.Y - 35, (int)npc.position.Y), NPCType<MagmaCube>(), 0);
+				NPC.NewNPC(Main.rand.Next((int)npc.position.X -55, (int)npc.position.X + 55), Main.rand.Next((int)npc.position.Y - 55, (int)npc.position.Y), NPCType<MagmaCube>(), 0);
 			}
 		}
 		private const int Frame_Walk = 0;
