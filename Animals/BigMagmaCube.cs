@@ -29,7 +29,7 @@ namespace MinecraftAnimals.Animals
 		{
 			return SpawnCondition.Underworld.Chance * 0.02f;
 		}
-		public enum AIStates
+		internal enum AIStates
 		{
 			Passive = 0,
 			Jump = 1,
@@ -44,6 +44,7 @@ namespace MinecraftAnimals.Animals
 		// Our AI here makes our NPC sit waiting for a player to enter range, jumps to attack, flutter mid-fall to stay afloat a little longer, then falls to the ground. Note that animation should happen in FindFrame
 		public override void AI()
 		{
+			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 			Player player = Main.player[npc.target];
 			npc.TargetClosest(true);
 			GlobalTimer++;

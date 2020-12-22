@@ -37,11 +37,6 @@ namespace MinecraftAnimals.projectiles.Passive
 
 		// Are we at max charge? With c#6 you can simply use => which indicates this is a get only property
 		public bool IsAtMaxCharge => Charge == MAX_CHARGE;
-		public enum Setprefire
-		{
-			Unloaded = 0,
-			Loaded = 1
-		}
 
 		public override void SetDefaults()
 		{
@@ -50,14 +45,33 @@ namespace MinecraftAnimals.projectiles.Passive
 			projectile.friendly = true;
 			projectile.hostile = false;
 			projectile.penetrate = 3;
-			projectile.hide = false;
+			projectile.hide = true;
 			projectile.damage = 5;
 			projectile.tileCollide = true;
 			projectile.ranged = true;
 			projectile.timeLeft = 2;
 		}
 		#region ignore
-		private void Chargeprefire(Player player)
+		private void UpdatePlayer(Player player)
+		{
+			// Multiplayer support here, only run this code if the client running it is the owner of the projectile
+			if (projectile.owner == Main.myPlayer)
+			{
+				Vector2 diff = Main.MouseWorld - player.Center;
+				diff.Normalize();
+				projectile.velocity = diff;
+				projectile.direction = Main.MouseWorld.X > player.position.X ? 1 : -1;
+				projectile.netUpdate = true;
+			}
+			int dir = projectile.direction;
+			player.ChangeDir(dir); // Set player direction to where we are shooting
+			player.heldProj = projectile.whoAmI; // Update player's held projectile
+			player.itemTime = 2; // Set item time to 2 frames while we are used
+			player.itemAnimation = 2; // Set item animation time to 2 frames while we are used
+			player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir); // Set the item rotation to where we are shooting
+		}
+
+		private void Chargeshot(Player player)
 		{
 			if (!player.channel)
 			{
@@ -68,6 +82,7 @@ namespace MinecraftAnimals.projectiles.Passive
 				Charge++;
 			}
 		}
+		
 		#endregion ignore
 		public void Drawarrow2(SpriteBatch spriteBatch, Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, float maxDist = 2000f, Color color = default(Color), int transDist = 50)
 		{
@@ -115,13 +130,12 @@ namespace MinecraftAnimals.projectiles.Passive
 			// If we are fully charged, we proceed to update the laser's position
 			// Finally we spawn some effects like dusts and light
 			UpdatePlayer(player);
-			Chargeprefire(player);
+			Chargeshot(player);
 
 
 			// If laser is not charged yet, stop the AI here.
 			if (Charge < MAX_CHARGE) return;
-			SetLaserPosition(player);
-
+			projectile.hide = false;
 
 
 			NormalAI();
@@ -172,24 +186,6 @@ namespace MinecraftAnimals.projectiles.Passive
 			projectile.rotation =
 				projectile.velocity.ToRotation() +
 				MathHelper.ToRadians(90f);
-		}
-		private void UpdatePlayer(Player player)
-		{
-			// Multiplayer support here, only run this code if the client running it is the owner of the projectile
-			if (projectile.owner == Main.myPlayer)
-			{
-				Vector2 diff = Main.MouseWorld - player.Center;
-				diff.Normalize();
-				projectile.velocity = diff;
-				projectile.direction = Main.MouseWorld.X > player.position.X ? 1 : -1;
-				projectile.netUpdate = true;
-			}
-			int dir = projectile.direction;
-			player.ChangeDir(dir); // Set player direction to where we are shooting
-			player.heldProj = projectile.whoAmI; // Update player's held projectile
-			player.itemTime = 2; // Set item time to 2 frames while we are used
-			player.itemAnimation = 2; // Set item animation time to 2 frames while we are used
-			player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir); // Set the item rotation to where we are shooting
 		}
         #endregion
     }

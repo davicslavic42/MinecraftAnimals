@@ -65,11 +65,11 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Notice;
                     AI_Timer = 0;
                 }
-                if (Main.player[npc.target].position.Y < npc.position.Y + 130)
+                if (Main.player[npc.target].position.Y < npc.position.Y + 140)
                 {
                     npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
                 }
-                if (Main.player[npc.target].position.Y > npc.position.Y + 130)
+                if (Main.player[npc.target].position.Y > npc.position.Y + 120)
                 {
                     npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
                 }
@@ -87,11 +87,11 @@ namespace MinecraftAnimals.Animals
                     AI_State = State_Search;
                     AI_Timer = 0;
                 }
-                if (Main.player[npc.target].position.Y < npc.position.Y + 130)
+                if (Main.player[npc.target].position.Y < npc.position.Y + 140)
                 {
                     npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
                 }
-                if (Main.player[npc.target].position.Y > npc.position.Y + 130)
+                if (Main.player[npc.target].position.Y > npc.position.Y + 120)
                 {
                     npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
                 }

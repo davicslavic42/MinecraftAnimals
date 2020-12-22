@@ -59,9 +59,8 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0 * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // stationary until player is within a certain range
                 {
-                   
                     npc.velocity.X = 1.5f * npc.direction;
                 }
                 if (player.Distance(npc.Center) < 325f)

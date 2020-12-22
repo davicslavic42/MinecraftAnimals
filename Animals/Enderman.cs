@@ -48,8 +48,7 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float AttackPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        float rotatetimer = 0f;
-        float Rotations = 5.5f;
+        int dead = 1;
 
         public override void AI()
         {
@@ -62,10 +61,10 @@ namespace MinecraftAnimals.Animals
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
                 {
-                    _ = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
                 }
 
-                _ = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
+                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
@@ -97,11 +96,11 @@ namespace MinecraftAnimals.Animals
                     int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f);
                     Main.dust[dustIndex].noGravity = true;
                 }
-                if ( Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 255) * angle.X); //controls the main area of the random teleport
-                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 105) * angle.Y);
+                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 355) * angle.X); //controls the main area of the random teleport
+                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 155) * angle.Y);
                     npc.netUpdate = true;
                     if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
                     {
@@ -122,30 +121,41 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Death)
             {
+                GlobalTimer = 0;
+                npc.life = 1;
+                npc.dontTakeDamage = true;
                 npc.netUpdate = true;
                 npc.velocity.X = 0;
                 npc.damage = 0;
-                if (rotatetimer <= 65)
+                GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 5f);
+                if (GlobalTimer >= 100)
                 {
-                    npc.rotation += MathHelper.ToRadians(Rotations * 3.5f); // should appply a constant rotation to the enmy sprote in this time frame
-                    Rotations *= 0.80f;
-                }
-                else
-                {
-                    npc.rotation = MathHelper.ToRadians(90f);
+                    dead = 0;
+                    CheckDead();
                 }
             }
+            if (npc.life < 5)
+            {
+                Phase = (int)AIStates.Death;
+            }
+        }
+        public override bool CheckActive()
+        {
+            if (dead == 0)
+            {
+                return true;
+            }
+            return true;
         }
         public override bool CheckDead()
         {
-            rotatetimer++;
-            if (rotatetimer > 150)
+            Phase = (int)AIStates.Death;
+            if (GlobalTimer > 150)
             {
                 return true;
             }
             return false;
-        }
-        //Thanks oli//
+        }        //Thanks oli//
         private bool RectangeIntersectsTiles(Rectangle rectangle)
         {
             bool intersects = false;
@@ -168,6 +178,10 @@ namespace MinecraftAnimals.Animals
             npc.friendly = false;
             Phase = (int)AIStates.Attack;
             GlobalTimer = 0;
+            if(npc.life < 20)
+            {
+                damage *= 0.35f;
+            }
             base.HitEffect(hitDirection, damage);
         }
         // The npc starts in the asleep state, waiting for a player to enter range
@@ -189,6 +203,7 @@ namespace MinecraftAnimals.Animals
         // We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
         public override void FindFrame(int frameHeight)
         {
+            int i = 1;
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Passive)
@@ -196,34 +211,8 @@ namespace MinecraftAnimals.Animals
                 npc.frameCounter++;
                 if (GlobalTimer <= 500)
                 {
-                    if (npc.frameCounter < 7)
-                    {
-                        npc.frame.Y = Frame_Walk * frameHeight;
-                    }
-                    else if (npc.frameCounter < 14)
-                    {
-                        npc.frame.Y = Frame_Walk_2 * frameHeight;
-                    }
-                    else if (npc.frameCounter < 21)
-                    {
-                        npc.frame.Y = Frame_Walk_3 * frameHeight;
-                    }
-                    else if (npc.frameCounter < 28)
-                    {
-                        npc.frame.Y = Frame_Walk_4 * frameHeight;
-                    }
-                    else if (npc.frameCounter < 35)
-                    {
-                        npc.frame.Y = Frame_Walk_5 * frameHeight;
-                    }
-                    else if (npc.frameCounter < 42)
-                    {
-                        npc.frame.Y = Frame_Walk_6 * frameHeight;
-                    }
-                    else
-                    {
-                        npc.frameCounter = 0;
-                    }
+                    if (++npc.frameCounter % 7 == 0)
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] / 2) * frameHeight;
                 }
                 else
                 {
