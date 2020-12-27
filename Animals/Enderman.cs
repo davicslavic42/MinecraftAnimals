@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
 using System;
 using System.Security.Cryptography.X509Certificates;
+using MinecraftAnimals.BaseAI;
+
 
 namespace MinecraftAnimals.Animals
 {
@@ -20,7 +22,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 40;
+            npc.width = 30;
             npc.height = 88;
             npc.lifeMax = 150;
             npc.knockBackResist = 1f;
@@ -46,9 +48,9 @@ namespace MinecraftAnimals.Animals
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
-        internal ref float AttackPhase => ref npc.ai[2];
+        internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int dead = 1;
+        private int Distance_ = Main.rand.Next(25, 250);
 
         public override void AI()
         {
@@ -80,27 +82,47 @@ namespace MinecraftAnimals.Animals
                 {
                     Phase = (int)AIStates.Passive;
                 }
-                if (AttackTimer >= 600)
+                if (AttackTimer >= 600) //switch to tp mode
                 {
                     Phase = (int)AIStates.TP;
                     AttackTimer = 0;
                 }
             }
+            if (Phase == (int)AIStates.Death)
+            {
+                npc.damage = 0;
+                npc.ai[2] += 1f; // increase our death timer.
+                npc.netUpdate = true;
+                npc.velocity.X = 0;
+                npc.velocity.Y += 1.5f;
+                npc.dontTakeDamage = true;
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                if (npc.ai[2] >= 110f)
+                {
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    npc.life = 0;
+                }
+            }
             if (Phase == (int)AIStates.TP)
             {
+                npc.alpha = 0;
                 AttackTimer++;
                 npc.velocity.X = 0;
                 AttackTimer = 0;
                 for (int i = 0; i < 15; i++)
                 {
-                    int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f);
+                    int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
                     Main.dust[dustIndex].noGravity = true;
                 }
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int)(Main.rand.Next(25, 355) * angle.X); //controls the main area of the random teleport
-                    npc.position.Y = player.Center.Y + (int)(Main.rand.Next(25, 155) * angle.Y);
+                    npc.position.X = player.Center.X + (int) (Distance_ * angle.X); //controls the main area of the random teleport
+                    npc.position.Y = player.Center.Y + (int) (Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
                     if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
                     {
@@ -110,52 +132,84 @@ namespace MinecraftAnimals.Animals
                     else
                     {
                         AttackTimer = 0;
-                        Phase = (int)AIStates.Attack;
+                        Phase = (int)AIStates.Attack; // if all is good it attacks normally
                     }
                 }
-
             }
             if (Phase == (int)AIStates.TPFail)
             {
+                AttackTimer++;
                 float tpfail = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
             }
-            if (Phase == (int)AIStates.Death)
+            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 4) / 16;
+
+            if (Main.tile[x,y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                GlobalTimer = 0;
-                npc.life = 1;
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
-                npc.velocity.X = 0;
-                npc.damage = 0;
-                GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 5f);
-                if (GlobalTimer >= 100)
+                int i = 0;
+                i++;
+                if (i == 1 && GlobalTimer < 500)
                 {
-                    dead = 0;
-                    CheckDead();
+                    npc.velocity = new Vector2(npc.direction * 1, -7f);
+                    i = 0;
                 }
             }
-            if (npc.life < 5)
+        }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            npc.friendly = false;
+            Phase = (int)AIStates.Attack;
+            GlobalTimer = 0;
+            if (npc.life <= 0)
             {
+                npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
+            base.HitEffect(hitDirection, damage);
         }
-        public override bool CheckActive()
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
-            if (dead == 0)
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (npc.spriteDirection == 1)
             {
-                return true;
+                spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            return true;
-        }
-        public override bool CheckDead()
-        {
-            Phase = (int)AIStates.Death;
-            if (GlobalTimer > 150)
+            Texture2D texture = Main.npcTexture[npc.type];
+            int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+            int startY = npc.frame.Y;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+
+            Color drawColor = npc.GetAlpha(lightColor);
+            if(Phase == (int)AIStates.Death)  {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 40),
+                sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            }
+            else
             {
-                return true;
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY ),
+                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
-        }        //Thanks oli//
+        }
+        //                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 0.5f);
+        /*
+        public override bool CheckDead()
+        {
+            npc.ai[2] = 0f;
+            Phase = (int)AIStates.Death;
+            if (npc.ai[2] == 0f)
+            {
+                npc.ai[2] = 1f;
+                npc.damage = 0;
+                npc.life = npc.lifeMax;
+                npc.dontTakeDamage = true;
+                npc.netUpdate = true;
+                return false;
+            }
+            return false;
+        }
         private bool RectangeIntersectsTiles(Rectangle rectangle)
         {
             bool intersects = false;
@@ -172,18 +226,7 @@ namespace MinecraftAnimals.Animals
             }
             return intersects;
         }
-
-        public override void HitEffect(int hitDirection, double damage)
-        {
-            npc.friendly = false;
-            Phase = (int)AIStates.Attack;
-            GlobalTimer = 0;
-            if(npc.life < 20)
-            {
-                damage *= 0.35f;
-            }
-            base.HitEffect(hitDirection, damage);
-        }
+        */
         // The npc starts in the asleep state, waiting for a player to enter range
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;

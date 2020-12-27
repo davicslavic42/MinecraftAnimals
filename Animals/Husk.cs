@@ -41,7 +41,7 @@ namespace MinecraftAnimals.Animals
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
-        internal ref float AttackPhase => ref npc.ai[2];
+        internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
         public override void AI()
         {

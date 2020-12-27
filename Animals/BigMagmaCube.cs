@@ -38,7 +38,7 @@ namespace MinecraftAnimals.Animals
 		}
 		internal ref float GlobalTimer => ref npc.ai[0];
 		internal ref float Phase => ref npc.ai[1];
-		internal ref float AttackPhase => ref npc.ai[2];
+		internal ref float ActionPhase => ref npc.ai[2];
 		internal ref float AttackTimer => ref npc.ai[3];
 		public float Rotations = 6.6f;
 		// Our AI here makes our NPC sit waiting for a player to enter range, jumps to attack, flutter mid-fall to stay afloat a little longer, then falls to the ground. Note that animation should happen in FindFrame
@@ -94,17 +94,17 @@ namespace MinecraftAnimals.Animals
 			}
 			if (Phase == (int)AIStates.Jump)
 			{
-				if (GlobalTimer == 5)
+				if (GlobalTimer >= 5 && GlobalTimer <= 20)
 				{
-					npc.velocity = new Vector2(npc.direction * 3, -8f);
+					npc.velocity = new Vector2(npc.direction * 2, -5f);
 				}
-			    if (GlobalTimer == 5 && player.Distance(npc.Center) < 220f)
+				if (GlobalTimer >= 5 && GlobalTimer <= 20 && player.Distance(npc.Center) < 220f)
 				{
-					npc.velocity = new Vector2(npc.direction * 5, -6f);
+					npc.velocity = new Vector2(npc.direction * 4, -3f);
 				}
 
-				if (GlobalTimer >= 45 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
-                {
+				if (GlobalTimer >= 50 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
+				{
 					Phase = (int)AIStates.Crouch;
 					GlobalTimer = 0;
 				}

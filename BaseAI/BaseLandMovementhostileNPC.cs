@@ -3,92 +3,52 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.BaseAI
 {
-    public abstract class BaseLandMovementhostileNPC : ModNPC
+    public abstract class BaseLandNPC : ModNPC
     {
-        private const int AI_State_Slot = 0;
-        private const int AI_Timer_Slot = 1;
-        // Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-        private const int State_Find = 0;
-        private const int State_Attack = 1;
-        private const int State_Jump = 2;
-
-        // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-        // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-        // Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-        // This is all to just make beautiful, manageable, and clean code.
-        public float AI_State
+        public enum ExtraStates
         {
-            get => npc.ai[AI_State_Slot];
-            set => npc.ai[AI_State_Slot] = value;
+            Death = 0,
         }
 
-        public float AI_Timer
-        {
-            get => npc.ai[AI_Timer_Slot];
-            set => npc.ai[AI_Timer_Slot] = value;
-        }
+        internal ref float GlobalTimer => ref npc.ai[0];
+        internal ref float Phase => ref npc.ai[1];
+        internal ref float ActionPhase => ref npc.ai[2];
+        internal ref float AttackTimer => ref npc.ai[3];
         public override void AI()
         {
-            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-            if (AI_State == State_Find)
+            if (Phase == (int)ExtraStates.Death)
             {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
+                npc.damage = 0;
+                npc.ai[2] += 1f; // increase our death timer.
+                npc.netUpdate = true;
                 npc.velocity.X = 0;
-                npc.velocity.Y += 0.5f;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 350f)
+                npc.velocity.Y += 1.5f;
+                npc.dontTakeDamage = true;
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 5.5f);
+                if (npc.ai[2] >= 110f)
                 {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
-                }
-                if (AI_Timer == 750)
-                {
-                    npc.spriteDirection = -1;
-                    AI_Timer = 0;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 2.25f * Main.rand.Next(-1, 1), 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    npc.life = 0;
                 }
             }
-            // thanks oli for the tile checks
-            else if (AI_State == State_Attack)
+        }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            GlobalTimer = 0;
+            if (npc.life <= 0)
             {
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 0.5f * npc.direction;
-                npc.velocity.Y += 0.5f;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 350f)
-                {
-                    AI_State = State_Find;
-                    AI_Timer = 0;
-                }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height - 2))
-                {
-                    AI_State = State_Jump;
-                    AI_Timer = 0;
-                }
+                npc.life = 1;
+                Phase = (int)ExtraStates.Death;
             }
-            else if (AI_State == State_Jump)
-            {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 1 * npc.direction;
-                npc.velocity.Y += 0.5f;
-                if (AI_Timer == 1)
-                {
-                    // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -10f);
-                }
-                else if (AI_Timer > 15)
-                {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
-                }
-            }
+            base.HitEffect(hitDirection, damage);
         }
     }
 }

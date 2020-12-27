@@ -1,8 +1,14 @@
-﻿using Terraria;
+﻿using System.Linq;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
 using System;
+using System.Security.Cryptography.X509Certificates;
+using MinecraftAnimals.BaseAI;
 
 
 namespace MinecraftAnimals.Animals
