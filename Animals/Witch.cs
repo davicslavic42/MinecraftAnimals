@@ -82,8 +82,10 @@ namespace MinecraftAnimals.Animals
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Attack) { 
                 npc.TargetClosest(true);
+                AttackTimer = 0;
                 npc.velocity.X = 0 * npc.direction;
-                if (npc.frameCounter == 80)
+                AttackTimer++;
+                if (AttackTimer == 80)
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
                     _ = npc.Distance(npc.position) - 50;
@@ -100,7 +102,7 @@ namespace MinecraftAnimals.Animals
                     if (!npc.HasValidTarget || player.Distance(npc.Center) > 275f){
                         // Out targeted player seems to have left our range, so we'll go back to sleep.
                         Phase = (int)AIStates.Normal;
-                        GlobalTimer = 0;
+                        AttackTimer = 0;
                     }
                 }
             }
@@ -222,13 +224,9 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 80)
+                if (npc.frameCounter < 85)
                 {
                     npc.frame.Y = Frame_Throw * frameHeight;
-                }
-                if (npc.frameCounter < 100)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
                 }
                 else
                 {

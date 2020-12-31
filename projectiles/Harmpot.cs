@@ -15,8 +15,8 @@ namespace MinecraftAnimals.projectiles
 		}
 		public override void SetDefaults()
 		{
-			projectile.width = 14;
-			projectile.height = 14;
+			projectile.width = 20;
+			projectile.height = 25;
 			projectile.friendly = false;
 			projectile.hostile = true;
 			projectile.penetrate = 3;
@@ -51,9 +51,20 @@ namespace MinecraftAnimals.projectiles
 
 			// Make sure to set the rotation accordingly to the velocity, and add some to work around the sprite's rotation
 			// Please notice the MathHelper usage, offset the rotation by 90 degrees (to radians because rotation uses radians) because the sprite's rotation is not aligned!
-			projectile.rotation =
-				projectile.velocity.ToRotation() +
-				MathHelper.ToRadians(90f);
+		}
+		public override void Kill(int timeLeft)
+		{
+			// Play explosion sound
+			Main.PlaySound(SoundID.Item15, projectile.position);
+			// Smoke Dust spawn
+			for (int i = 0; i < 15; i++)
+			{
+				int dustIndex = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustType<Dusts.SplashPoteffect>(), 0f, 0f, 100, default(Color), 2f);
+				Main.dust[dustIndex].velocity *= 1.4f;
+				Rectangle dustHitbox = new Rectangle((int)Main.dust[dustIndex].position.X, (int)Main.dust[dustIndex].position.Y, 5, 5); //atempting to create rectangles on the dust so that they can be changed to the projectilehitbox
+				projectile.Hitbox = dustHitbox;
+
+			}
 		}
 	}
 }

@@ -77,11 +77,14 @@ namespace MinecraftAnimals.Animals
             {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
-                _ = player.Distance(npc.Center) < 29f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                float stopToAttack = player.Distance(npc.Center) < 27f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
+                }
+                if (player.Distance(npc.Center) < 30f){
+                    npc.velocity.X = 0 * npc.direction;
                 }
             }
             if (Phase == (int)AIStates.Death)
@@ -106,7 +109,7 @@ namespace MinecraftAnimals.Animals
             int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type]) //bit scuffed but the moment it gets close enough to a tile in front it will jump
             {
                 int i = 0;
                 i++;

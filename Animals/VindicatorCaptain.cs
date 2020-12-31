@@ -12,19 +12,19 @@ using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
-    public class Vindicator : ModNPC
+    public class VindicatorCaptain : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vindicator");
+            DisplayName.SetDefault("Patrol Captain");
             Main.npcFrameCount[npc.type] = 13;
         }
         public override void SetDefaults()
         {
             npc.width = 30;
-            npc.height = 40;
-            npc.lifeMax = 105;
-            npc.damage = 45;
+            npc.height = 80;
+            npc.lifeMax = 110;
+            npc.damage = 55;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -33,11 +33,11 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Overworld.Chance * 0;
+            return SpawnCondition.Overworld.Chance * 0.05f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
-      internal enum AIStates
+        internal enum AIStates
         {
             Normal = 0,
             Attack = 1,
@@ -47,6 +47,7 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
+        int patrol = 0;
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
@@ -69,6 +70,14 @@ namespace MinecraftAnimals.Animals
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
+                }
+                if (patrol == 0)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Pillager>(), 0);
+                    }
+                    patrol = 1;
                 }
             }
             if (Phase == (int)AIStates.Attack)
@@ -103,8 +112,8 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+            int x = (int)(npc.Center.X + ((npc.width / 2) + 10) * npc.direction) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 3) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
@@ -115,13 +124,6 @@ namespace MinecraftAnimals.Animals
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
                 }
-            }
-        }
-        public override void NPCLoot()
-        {
-            if (MCAWorld.RaidEvent == true)
-            {
-                MCAWorld.RaidKillCount += 1;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -151,12 +153,12 @@ namespace MinecraftAnimals.Animals
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 20),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 15),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 12),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
@@ -238,7 +240,7 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frame.Y = Frame_Swing_2 * frameHeight;
                 }
-                else if (npc.frameCounter < 31)
+                else if (npc.frameCounter < 28)
                 {
                     npc.frame.Y = Frame_Swing_3 * frameHeight;
                 }
