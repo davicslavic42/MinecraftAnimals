@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using System;
 
 
-namespace MinecraftAnimals.Animals
+namespace MinecraftAnimals.Animals.Raid
 {
     public class Vex : ModNPC
     {

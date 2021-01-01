@@ -9,23 +9,27 @@ using static Terraria.ModLoader.ModContent;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using MinecraftAnimals.BaseAI;
+using System.Collections.Generic;
+using MinecraftAnimals.Items.Weapons;
 
-namespace MinecraftAnimals.Animals
+
+
+namespace MinecraftAnimals.Animals.Raid
 {
-    public class Witch : ModNPC
+    public class Ravager : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Witch");
-            Main.npcFrameCount[npc.type] = 7;
+            DisplayName.SetDefault("Ravager");
+            Main.npcFrameCount[npc.type] = 11;
         }
         public override void SetDefaults()
         {
-            npc.width = 45;
-            npc.height = 50;
-            npc.lifeMax = 97;
+            npc.width = 80;
+            npc.height = 60;
+            npc.lifeMax = 195;
+            npc.damage = 38;
             npc.knockBackResist = 0f;
-            npc.damage = 3;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -35,19 +39,18 @@ namespace MinecraftAnimals.Animals
         {
             if (MCAWorld.RaidEvent)
             {
-                return 45f;
+                return 10f;
             }
-            else
-            {
-                return SpawnCondition.OverworldNight.Chance * 0.1f;
-            }
-        }        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
+            return SpawnCondition.Overworld.Chance * 0f;
+        }
+        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
         internal enum AIStates
         {
             Normal = 0,
             Attack = 1,
-            Death = 2
+            Death = 2,
+            Roar = 3
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
@@ -59,53 +62,61 @@ namespace MinecraftAnimals.Animals
             GlobalTimer++;
             Player player = Main.player[npc.target];
             npc.TargetClosest(true);
-            if (Phase == (int)AIStates.Normal) {
-                if (GlobalTimer == 5)
-                {
-                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
-                }
+            if (Phase == (int)AIStates.Normal)
+            {
+                npc.velocity.Y += 1.5f;
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // stationary until player is within a certain range
+
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
                 {
                     npc.velocity.X = 1.5f * npc.direction;
                 }
-                if (player.Distance(npc.Center) < 275f)
+                if (player.Distance(npc.Center) < 325f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
             }
-            // In this state, a player has been targeted
-            if (Phase == (int)AIStates.Attack) { 
+            if (Phase == (int)AIStates.Attack)
+            {
                 npc.TargetClosest(true);
-                AttackTimer = 0;
-                npc.velocity.X = 0 * npc.direction;
+                npc.velocity.X = 1.75f * npc.direction;
+                npc.velocity.Y += 1.5f;
                 AttackTimer++;
-                if (AttackTimer == 80)
+                if (player.Distance(npc.Center) > 925f)
                 {
-                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
-                    _ = npc.Distance(npc.position) - 50;
-                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -75f);
-
-                    npc.velocity.X += DirToRing.X;
-                    npc.velocity.Y += DirToRing.Y;
-
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.2f) * 5f, mod.ProjectileType("Harmpot"), 16, 3, Main.LocalPlayer.whoAmI);
+                    Phase = (int)AIStates.Normal;
+                }
+                if(AttackTimer <= 200)
+                {
+                    float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
                 }
                 else
                 {
-                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 275f){
-                        // Out targeted player seems to have left our range, so we'll go back to sleep.
-                        Phase = (int)AIStates.Normal;
-                        AttackTimer = 0;
-                    }
+                    npc.velocity = new Vector2(npc.direction * 12, -3f);
+                    AttackTimer = 0;
                 }
             }
+            if (Phase == (int)AIStates.Roar)
+            {
+                npc.velocity.X = 0f * npc.direction;
+                npc.velocity.Y += 1.5f;
+                if(GlobalTimer >= 100)
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X + (((npc.width / 2) + 32) * npc.direction), npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    Projectile.NewProjectile(npc.Center.X, npc.Center.Y, npc.velocity.X, npc.velocity.Y, ProjectileType<projectiles.RavagerRoar>(), 1, 10f, Main.myPlayer, 600f);
+                    Phase = (int)AIStates.Attack;
+                }
+            }
+            // thanks oli for the tile checks
             if (Phase == (int)AIStates.Death)
             {
                 npc.damage = 0;
@@ -114,29 +125,18 @@ namespace MinecraftAnimals.Animals
                 npc.velocity.X = 0;
                 npc.velocity.Y += 1.5f;
                 npc.dontTakeDamage = true;
-                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(180f), 18f);
                 if (npc.ai[2] >= 110f)
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 2.25f * Main.rand.Next(-1, 1), 0f, 100, default(Color), 1f); //spawns ender dust
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
                         Main.dust[dustIndex].noGravity = true;
                     }
                     npc.life = 0;
                 }
             }
-            if (Collision.SolidCollision(npc.position, (npc.width / 16 + 2) * npc.direction, npc.height / 16 - 2)){
-                GlobalTimer++;
-                npc.TargetClosest(true);
-                if (GlobalTimer == 1)
-                {
-                    // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -10f);
-                    Phase = (int)AIStates.Normal;
-                    GlobalTimer = 0;
-                }
-            }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
+            int x = (int)(npc.Center.X + ((npc.width / 2) + 16) * npc.direction) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
@@ -150,22 +150,27 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
-        public override void HitEffect(int hitDirection, double damage)
-        {
-            GlobalTimer = 0;
-            if (npc.life <= 0)
-            {
-                npc.life = 1;
-                Phase = (int)AIStates.Death;
-            }
-            base.HitEffect(hitDirection, damage);
-        }
         public override void NPCLoot()
         {
             if (MCAWorld.RaidEvent == true)
             {
                 MCAWorld.RaidKillCount += 1;
             }
+        }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (npc.life <= 0)
+            {
+                GlobalTimer = 0;
+                npc.life = 1;
+                Phase = (int)AIStates.Death;
+            }
+            if(Main.rand.Next(0,4) == 1)
+            {
+                Phase = (int)AIStates.Roar;
+                GlobalTimer = 0;
+            }
+            base.HitEffect(hitDirection, damage);
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
@@ -179,7 +184,7 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 75 : 75);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
@@ -189,23 +194,25 @@ namespace MinecraftAnimals.Animals
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
         }
-        // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
         private const int Frame_Walk_3 = 2;
         private const int Frame_Walk_4 = 3;
         private const int Frame_Walk_5 = 4;
         private const int Frame_Walk_6 = 5;
-        private const int Frame_Throw = 6;
-        // Here in FindFrame, we want to set the animation frame our npc will use depending on what it is doing.
-        // We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
+        private const int Frame_Attack = 6;
+        private const int Frame_Attack_2 = 7;
+        private const int Frame_Attack_3 = 8;
+        private const int Frame_Attack_4 = 9;
+        private const int Frame_Attack_5 = 10;
         public override void FindFrame(int frameHeight)
         {
+            int i = 1;
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Normal)
@@ -214,19 +221,61 @@ namespace MinecraftAnimals.Animals
                 if (GlobalTimer <= 500)
                 {
                     if (++npc.frameCounter % 7 == 0)
-                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 1) * frameHeight;
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 5) * frameHeight;
+                }
+                else
+                {
+                    npc.frame.Y = Frame_Walk * frameHeight;
+                }
+            }
+            if (Phase == (int)AIStates.Attack)
+            {
+                npc.frameCounter++;
+                    if (++npc.frameCounter % 7 == 0)
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 5) * frameHeight;
+            }
+            if (Phase == (int)AIStates.Roar)
+            {
+                npc.frameCounter++;
+                if (npc.frameCounter < 11)
+                {
+                    npc.frame.Y = Frame_Walk * frameHeight;
+                }
+                else if (npc.frameCounter < 22)
+                {
+                    npc.frame.Y = Frame_Attack * frameHeight;
+                }
+                else if (npc.frameCounter < 44)
+                {
+                    npc.frame.Y = Frame_Attack_2 * frameHeight;
                 }
                 else
                 {
                     npc.frameCounter = 0;
                 }
             }
-            if (Phase == (int)AIStates.Attack)
+            if ( npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 85)
+                if (npc.frameCounter < 11)
                 {
-                    npc.frame.Y = Frame_Throw * frameHeight;
+                    npc.frame.Y = Frame_Attack * frameHeight;
+                }
+                else if (npc.frameCounter < 22)
+                {
+                    npc.frame.Y = Frame_Attack_2 * frameHeight;
+                }
+                else if (npc.frameCounter < 33)
+                {
+                    npc.frame.Y = Frame_Attack_3 * frameHeight;
+                }
+                else if (npc.frameCounter < 44)
+                {
+                    npc.frame.Y = Frame_Attack_4 * frameHeight;
+                }
+                else if (npc.frameCounter < 55)
+                {
+                    npc.frame.Y = Frame_Attack_5 * frameHeight;
                 }
                 else
                 {

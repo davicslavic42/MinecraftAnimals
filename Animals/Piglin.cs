@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 29;
+            npc.width = 25;
             npc.height = 50;
             npc.lifeMax = 125;
             npc.damage = 28;
@@ -63,7 +63,7 @@ namespace MinecraftAnimals.Animals
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 755f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 675f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -76,7 +76,7 @@ namespace MinecraftAnimals.Animals
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
                 float stopToAttack = player.Distance(npc.Center) < 18f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 775f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
@@ -141,12 +141,12 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 30 : 30);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 40 : 40);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 50),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, (npc.gfxOffY + 20)),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else

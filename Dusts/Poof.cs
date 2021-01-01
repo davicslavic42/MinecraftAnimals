@@ -17,14 +17,21 @@ namespace MinecraftAnimals.Dusts
 		Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI);
 		public override void OnSpawn(Dust dust)
 		{
-			dust.velocity.X = 1f;
-			dust.velocity.Y -= 0.35f;
+			float leftOrRight = 1;
+			if (Main.rand.NextBool())
+            {
+				leftOrRight *= -1;
+            }
+			dust.velocity.X = Main.rand.NextFloat(1.5f, 5f) * leftOrRight;
+			dust.velocity.Y = -0.25f;
 			dust.noGravity = true;
 			dust.scale = 2f;
 		}
 
 		public override bool Update(Dust dust)
 		{
+			dust.velocity.Y -= 0.1f;
+			dust.velocity.X *= 0.9f;
 			dust.position += dust.velocity;
 			dust.rotation += dust.velocity.X * 0.1f;
 			dust.scale -= 0.035f;

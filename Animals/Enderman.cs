@@ -54,7 +54,7 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 16) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 4) / 16;
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
@@ -161,9 +161,9 @@ namespace MinecraftAnimals.Animals
         {
             npc.friendly = false;
             Phase = (int)AIStates.Attack;
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
+                GlobalTimer = 0;
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
@@ -212,6 +212,8 @@ namespace MinecraftAnimals.Animals
             }
             return false;
         }
+                */
+
         private bool RectangeIntersectsTiles(Rectangle rectangle)
         {
             bool intersects = false;
@@ -228,7 +230,6 @@ namespace MinecraftAnimals.Animals
             }
             return intersects;
         }
-        */
         // The npc starts in the asleep state, waiting for a player to enter range
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
