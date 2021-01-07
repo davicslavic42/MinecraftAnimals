@@ -61,10 +61,10 @@ namespace MinecraftAnimals.projectiles
 			{
 				int dustIndex = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustType<Dusts.SplashPoteffect>(), 0f, 0f, 100, default(Color), 2f);
 				Main.dust[dustIndex].velocity *= 1.4f;
-				Rectangle dustHitbox = new Rectangle((int)Main.dust[dustIndex].position.X, (int)Main.dust[dustIndex].position.Y, 5, 5); //atempting to create rectangles on the dust so that they can be changed to the projectilehitbox
-				projectile.Hitbox = dustHitbox;
-
 			}
+			//				Rectangle dustHitbox = new Rectangle((int)Main.dust[dustIndex].position.X, (int)Main.dust[dustIndex].position.Y, 5, 5); //atempting to create rectangles on the dust so that they can be changed to the projectilehitbox
+			//projectile.Hitbox = dustHitbox;
+
 		}
 	}
 }

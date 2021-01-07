@@ -71,11 +71,11 @@ namespace MinecraftAnimals.Animals
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
-                if (patrol == 0)
+                if (patrol == 0 && player.Distance(npc.Center) < 825f)
                 {
                     for (int i = 0; i < 6; i++)
                     {
-                        NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Pillager>(), 0);
+                        NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Pillager>(), 0);
                     }
                     patrol = 1;
                 }
