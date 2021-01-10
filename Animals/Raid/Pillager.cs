@@ -98,8 +98,6 @@ namespace MinecraftAnimals.Animals.Raid
                 npc.TargetClosest(true);
                 npc.velocity.X = 0f * npc.direction;
                 npc.velocity.Y += 0.5f;
-                npc.velocity.X = 0 * npc.direction;
-                npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 144)
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
@@ -110,7 +108,7 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, mod.ProjectileType("Arrow"), 22, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 22, 3, Main.LocalPlayer.whoAmI);
                 }
                 if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
                 {
@@ -140,14 +138,13 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -183,7 +180,7 @@ namespace MinecraftAnimals.Animals.Raid
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 28 : 28);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)

@@ -81,7 +81,7 @@ namespace MinecraftAnimals.Animals.Raid
                 npc.damage = 30;
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (player.Distance(npc.Center) > 925f)
+                if (player.Distance(npc.Center) > 325f)
                 {
                     Phase = (int)AIStates.Normal;
                 }
@@ -107,14 +107,13 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) / 16)  * npc.direction;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;

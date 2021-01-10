@@ -1,8 +1,14 @@
-﻿using Terraria;
+﻿using System.Linq;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
+using System;
+using System.Security.Cryptography.X509Certificates;
+using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
@@ -40,7 +46,6 @@ namespace MinecraftAnimals.Animals
 		internal ref float Phase => ref npc.ai[1];
 		internal ref float ActionPhase => ref npc.ai[2];
 		internal ref float AttackTimer => ref npc.ai[3];
-		public float Rotations = 6.6f;
 		// Our AI here makes our NPC sit waiting for a player to enter range, jumps to attack, flutter mid-fall to stay afloat a little longer, then falls to the ground. Note that animation should happen in FindFrame
 		public override void AI()
 		{
@@ -75,7 +80,7 @@ namespace MinecraftAnimals.Animals
 				if (player.Distance(npc.Center) < 720f)
 				{
 					AttackTimer++;
-					if (AttackTimer >= 20)
+					if (AttackTimer >= 40)
 					{
 						Phase = (int)AIStates.Jump;
 						AttackTimer = 0;
@@ -114,7 +119,63 @@ namespace MinecraftAnimals.Animals
 
 				}
 			}
+			if (Phase == (int)AIStates.Death)
+			{
+				npc.damage = 0;
+				npc.ai[2] += 1f; // increase our death timer.
+				npc.netUpdate = true;
+				npc.velocity.X = 0;
+				npc.velocity.Y += 1.5f;
+				npc.dontTakeDamage = true;
+				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+				if (npc.ai[2] >= 110f)
+				{
+					for (int i = 0; i < 20; i++)
+					{
+						int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+						Main.dust[dustIndex].noGravity = true;
+					}
+					npc.life = 0;
+				}
+			}
 		}
+		public override void HitEffect(int hitDirection, double damage)
+		{
+			if (npc.life <= 0)
+			{
+				npc.life = 1;
+				Phase = (int)AIStates.Death;
+			}
+			base.HitEffect(hitDirection, damage);
+		}
+		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+		{
+			SpriteEffects spriteEffects = SpriteEffects.None;
+			if (npc.spriteDirection == 1)
+			{
+				spriteEffects = SpriteEffects.FlipHorizontally;
+			}
+			Texture2D texture = Main.npcTexture[npc.type];
+			int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+			int startY = npc.frame.Y;
+			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+			Vector2 origin = sourceRectangle.Size() / 2f;
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+
+			Color drawColor = npc.GetAlpha(lightColor);
+			if (Phase == (int)AIStates.Death)
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 20),
+				sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			else
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+				sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			return false;
+		}
+
 		private const int Frame_Walk = 0;
 		private const int Frame_Walk_2 = 1;
 		private const int Frame_Walk_3 = 2;
@@ -125,18 +186,8 @@ namespace MinecraftAnimals.Animals
 			if (Phase == (int)AIStates.Passive)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 7)
-				{
-					npc.frame.Y = Frame_Walk * frameHeight;
-				}
-				if (npc.frameCounter < 14)
-				{
-					npc.frame.Y = Frame_Walk * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				if (++npc.frameCounter % 7 == 0)
+					npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 7) * frameHeight;
 			}
 			if (Phase == (int)AIStates.Crouch)
 			{
@@ -153,6 +204,10 @@ namespace MinecraftAnimals.Animals
 				{
 					npc.frameCounter = 0;
 				}
+			}
+			if (Phase == (int)AIStates.Death)
+			{
+				npc.frame.Y = Frame_Walk * frameHeight;
 			}
 		}
 	}

@@ -106,14 +106,13 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type]) //bit scuffed but the moment it gets close enough to a tile in front it will jump
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -122,7 +121,6 @@ namespace MinecraftAnimals.Animals
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;

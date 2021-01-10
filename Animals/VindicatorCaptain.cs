@@ -33,7 +33,11 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            return SpawnCondition.Overworld.Chance * 0.05f;
+            if(NPC.downedBoss1 == true)
+            {
+                return SpawnCondition.Overworld.Chance * 0.03f;
+            }
+            return SpawnCondition.Overworld.Chance * 0f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -62,18 +66,14 @@ namespace MinecraftAnimals.Animals
                     GlobalTimer = 0;
                 }
 
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 630f) // passive player is within a certain range
-                {
-                    npc.velocity.X = 1.25f * npc.direction;
-                }
-                if (player.Distance(npc.Center) < 325f)
+                if (player.Distance(npc.Center) < 755f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
                 if (patrol == 0 && player.Distance(npc.Center) < 825f)
                 {
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Pillager>(), 0);
                     }
@@ -86,11 +86,11 @@ namespace MinecraftAnimals.Animals
                 npc.damage = 30;
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (player.Distance(npc.Center) > 725f)
+                if (player.Distance(npc.Center) > 755f)
                 {
                     Phase = (int)AIStates.Normal;
                 }
-                float stopToAttack = player.Distance(npc.Center) < 24f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                float stopToAttack = player.Distance(npc.Center) < 24f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1.75f * npc.direction;
             }
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Death)
@@ -112,14 +112,13 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 14) * npc.direction) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -128,7 +127,6 @@ namespace MinecraftAnimals.Animals
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;

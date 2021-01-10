@@ -15,13 +15,14 @@ namespace MinecraftAnimals.projectiles
 		}
 		public override void SetDefaults()
 		{
-			projectile.width = 20;
-			projectile.height = 25;
+			projectile.width = 16;
+			projectile.height = 20;
 			projectile.friendly = false;
 			projectile.hostile = true;
 			projectile.penetrate = 3;
 			projectile.hide = false;
 			projectile.damage = 5;
+			projectile.timeLeft = 30;
 		}
 		public int TargetWhoAmI
 		{
@@ -43,10 +44,17 @@ namespace MinecraftAnimals.projectiles
 			if (TargetWhoAmI >= MAX_TICKS)
 			{
 				const float velXmult = 0.99f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
-				const float velYmult = 0.55f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
+				const float velYmult = 0.25f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
 				TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
 				projectile.velocity.X *= velXmult;
 				projectile.velocity.Y += velYmult;
+			}
+			if (projectile.owner == Main.myPlayer && projectile.timeLeft <= 3)
+			{
+				projectile.tileCollide = false;
+				// Set to transparent. This projectile technically lives as  transparent for about 3 frames
+				// change the hitbox size, centered about the original projectile center. This makes the projectile damage enemies during the explosion.
+				projectile.position = projectile.Center;
 			}
 
 			// Make sure to set the rotation accordingly to the velocity, and add some to work around the sprite's rotation
@@ -57,12 +65,12 @@ namespace MinecraftAnimals.projectiles
 			// Play explosion sound
 			Main.PlaySound(SoundID.Item15, projectile.position);
 			// Smoke Dust spawn
-			for (int i = 0; i < 15; i++)
+			for (int i = 0; i < 10; i++)
 			{
 				int dustIndex = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, DustType<Dusts.SplashPoteffect>(), 0f, 0f, 100, default(Color), 2f);
 				Main.dust[dustIndex].velocity *= 1.4f;
 			}
-			//				Rectangle dustHitbox = new Rectangle((int)Main.dust[dustIndex].position.X, (int)Main.dust[dustIndex].position.Y, 5, 5); //atempting to create rectangles on the dust so that they can be changed to the projectilehitbox
+			//Rectangle dustHitbox = new Rectangle((int)Main.dust[dustIndex].position.X, (int)Main.dust[dustIndex].position.Y, 5, 5); //atempting to create rectangles on the dust so that they can be changed to the projectilehitbox
 			//projectile.Hitbox = dustHitbox;
 
 		}

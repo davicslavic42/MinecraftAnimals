@@ -64,7 +64,6 @@ namespace MinecraftAnimals.Animals.Raid
             npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
-                npc.velocity.Y += 1.5f;
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
@@ -72,10 +71,6 @@ namespace MinecraftAnimals.Animals.Raid
                 }
 
                 if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
-                {
-                    npc.velocity.X = 1.5f * npc.direction;
-                }
-                if (player.Distance(npc.Center) < 325f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -85,27 +80,27 @@ namespace MinecraftAnimals.Animals.Raid
             {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.75f * npc.direction;
-                npc.velocity.Y += 1.5f;
                 AttackTimer++;
-                if (player.Distance(npc.Center) > 925f)
-                {
+                if (player.Distance(npc.Center) > 730f){
                     Phase = (int)AIStates.Normal;
                 }
-                if(AttackTimer <= 200)
+                if (AttackTimer >= 200 && player.Distance(npc.Center) < 250f)
                 {
-                    float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                    npc.velocity.X = 0 * npc.direction;
+                    npc.velocity = new Vector2(npc.direction * 10f, -3f);
                 }
-                else
+                else{
+                    float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
+                }
+                if(AttackTimer >= 210)
                 {
-                    npc.velocity = new Vector2(npc.direction * 12, -3f);
                     AttackTimer = 0;
                 }
             }
             if (Phase == (int)AIStates.Roar)
             {
                 npc.velocity.X = 0f * npc.direction;
-                npc.velocity.Y += 1.5f;
-                if(GlobalTimer >= 100)
+                if(GlobalTimer >= 55)
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -114,6 +109,7 @@ namespace MinecraftAnimals.Animals.Raid
                     }
                     Projectile.NewProjectile(npc.Center.X, npc.Center.Y, npc.velocity.X, npc.velocity.Y, ProjectileType<projectiles.RavagerRoar>(), 1, 10f, Main.myPlayer, 600f);
                     Phase = (int)AIStates.Attack;
+                    AttackTimer = 0;
                 }
             }
             // thanks oli for the tile checks
@@ -125,7 +121,7 @@ namespace MinecraftAnimals.Animals.Raid
                 npc.velocity.X = 0;
                 npc.velocity.Y += 1.5f;
                 npc.dontTakeDamage = true;
-                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(180f), 18f);
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(180f), 14f);
                 if (npc.ai[2] >= 110f)
                 {
                     for (int i = 0; i < 20; i++)
@@ -136,14 +132,13 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 24) * npc.direction) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 25) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -154,7 +149,7 @@ namespace MinecraftAnimals.Animals.Raid
         {
             if (MCAWorld.RaidEvent == true)
             {
-                MCAWorld.RaidKillCount += 1;
+                MCAWorld.RaidKillCount += 2;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -165,7 +160,7 @@ namespace MinecraftAnimals.Animals.Raid
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
-            if(Main.rand.Next(0,4) == 1)
+            if(Main.rand.Next(0,5) == 1 && GlobalTimer > 150)
             {
                 Phase = (int)AIStates.Roar;
                 GlobalTimer = 0;
@@ -184,17 +179,17 @@ namespace MinecraftAnimals.Animals.Raid
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 75 : 75);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 85 : 85);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 20),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 20),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
@@ -220,7 +215,7 @@ namespace MinecraftAnimals.Animals.Raid
                 npc.frameCounter++;
                 if (GlobalTimer <= 500)
                 {
-                    if (++npc.frameCounter % 7 == 0)
+                    if (++npc.frameCounter % 11 == 0)
                         npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 5) * frameHeight;
                 }
                 else
@@ -231,21 +226,21 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                    if (++npc.frameCounter % 7 == 0)
+                    if (++npc.frameCounter % 11 == 0)
                         npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 5) * frameHeight;
             }
             if (Phase == (int)AIStates.Roar)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 11)
+                if (npc.frameCounter < 14)
                 {
                     npc.frame.Y = Frame_Walk * frameHeight;
                 }
-                else if (npc.frameCounter < 22)
+                else if (npc.frameCounter < 28)
                 {
                     npc.frame.Y = Frame_Attack * frameHeight;
                 }
-                else if (npc.frameCounter < 44)
+                else if (npc.frameCounter < 50)
                 {
                     npc.frame.Y = Frame_Attack_2 * frameHeight;
                 }

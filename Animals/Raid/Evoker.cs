@@ -21,7 +21,7 @@ namespace MinecraftAnimals.Animals.Raid
         {
             npc.width = 60;
             npc.height = 60;
-            npc.lifeMax = 210;
+            npc.lifeMax = 105;
             npc.knockBackResist = 1f;
             npc.damage = 20;
             npc.HitSound = SoundID.NPCHit1;
@@ -88,32 +88,25 @@ namespace MinecraftAnimals.Animals.Raid
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 25, (int)npc.position.X + 25), Main.rand.Next((int)npc.position.Y - 25, (int)npc.position.Y), NPCType<Vex>(), 0);
-                            npc.ai[3] = 0;
+                            for (int i = 0; i < 1; i++)
+                            {
+                                NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 75, (int)npc.position.Y), NPCType<Vex>(), 0);
+                            }
+                            npc.ai[3] = -200;
                             return;
                         case 1:
                             if (player.Distance(npc.Center) < 125f)
                             {
                                 for (int i = 0; i < 2; i++)
                                 {
-                                    Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
+                                    Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
                                 }
                             }
                             else
                             {
-                                if(npc.direction == 1)
+                                for (int i = 0; i < 7; i++)
                                 {
-                                    for (int i = 0; i < 7; i++)
-                                    {
-                                        Projectile.NewProjectile((npc.Center.X + 1) + (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
-                                    }
-                                }
-                                else
-                                {
-                                    for (int i = 0; i < 7; i++)
-                                    {
-                                        Projectile.NewProjectile((npc.Center.X - 1) - (i * 110), npc.position.Y - 10, 0, 2, mod.ProjectileType("Techproj"), 0, 3, Main.myPlayer);
-                                    }
+                                    Projectile.NewProjectile(((npc.Center.X + 1) + (i * 110) * npc.direction), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
                                 }
                             }
                             npc.ai[3] = 25;
@@ -149,14 +142,13 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + ((npc.width / 2) + 8) * npc.direction) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 14) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -193,7 +185,7 @@ namespace MinecraftAnimals.Animals.Raid
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 28 : 28);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)

@@ -54,8 +54,9 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
+            bool tpCheck = false;
             int x = (int)(npc.Center.X + (((npc.width / 2) + 16) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 4) / 16;
+            int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
@@ -111,8 +112,6 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.TP)
             {
-                int w = (int)(npc.Center.X + ((npc.width)) * npc.direction) / 16;
-                int z = (int)(npc.Center.Y + ((npc.height) * npc.direction)) / 16;
                 npc.alpha = 0;
                 AttackTimer++;
                 npc.velocity.X = 0;
@@ -128,8 +127,9 @@ namespace MinecraftAnimals.Animals
                     npc.position.X = player.Center.X + (int) (Distance_ * angle.X); //controls the main area of the random teleport
                     npc.position.Y = player.Center.Y + (int) (Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
-                    if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    {
+                    ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+                    if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active()) {
+
                         AttackTimer = 0;
                         Phase = (int)AIStates.TPFail;
                     }
@@ -143,14 +143,12 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.TPFail)
             {
                 AttackTimer++;
-                float tpfail = AttackTimer >= 6 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
+                float tpfail = AttackTimer >= 10 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
             }
 
-            if (Main.tile[x,y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-            {
-                int i = 0;
-                i++;
-                if (i == 1 && GlobalTimer < 500)
+            if (Main.tile[x,y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type]){
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
