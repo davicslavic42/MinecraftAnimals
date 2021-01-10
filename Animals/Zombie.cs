@@ -76,7 +76,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.TargetClosest(true);
-                npc.velocity.X = 1.4f * npc.direction;
+                npc.velocity.X = 1.5f * npc.direction;
                 float stopToAttack = player.Distance(npc.Center) < 27f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
