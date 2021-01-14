@@ -9,7 +9,7 @@ namespace MinecraftAnimals.BaseAI
 {
     public abstract class BaseLandNPC : ModNPC
     {
-        public enum ExtraStates
+        internal enum ExtraStates
         {
             Death = 0,
         }
@@ -28,12 +28,12 @@ namespace MinecraftAnimals.BaseAI
                 npc.velocity.X = 0;
                 npc.velocity.Y += 1.5f;
                 npc.dontTakeDamage = true;
-                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 5.5f);
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
                 if (npc.ai[2] >= 110f)
                 {
                     for (int i = 0; i < 20; i++)
                     {
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 2.25f * Main.rand.Next(-1, 1), 0f, 100, default(Color), 1f); //spawns ender dust
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
                         Main.dust[dustIndex].noGravity = true;
                     }
                     npc.life = 0;
@@ -42,7 +42,6 @@ namespace MinecraftAnimals.BaseAI
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;

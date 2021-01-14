@@ -87,12 +87,12 @@ namespace MinecraftAnimals.Animals.Raid
                 if (AttackTimer >= 200 && player.Distance(npc.Center) < 250f)
                 {
                     npc.velocity.X = 0 * npc.direction;
-                    npc.velocity = new Vector2(npc.direction * 10f, -3f);
+                    npc.velocity = new Vector2(npc.direction * 12f, -4f);
                 }
                 else{
                     float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
                 }
-                if(AttackTimer >= 210)
+                if(AttackTimer >= 220)
                 {
                     AttackTimer = 0;
                 }
@@ -133,7 +133,7 @@ namespace MinecraftAnimals.Animals.Raid
                 }
             }
             int x = (int)(npc.Center.X + (((npc.width / 2) + 25) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+            int y = (int)(npc.Center.Y + npc.height / 2 - 2) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
