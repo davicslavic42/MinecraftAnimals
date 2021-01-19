@@ -9,9 +9,6 @@ using static Terraria.ModLoader.ModContent;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using MinecraftAnimals.BaseAI;
-
-
-
 namespace MinecraftAnimals.Animals
 {
     public class Blaze : ModNPC
@@ -112,7 +109,7 @@ namespace MinecraftAnimals.Animals
 
                     Main.PlaySound(SoundID.Item20, npc.position); //We play a sound at the NPC's position for feedback for each shot
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.15f) * 7.5f, mod.ProjectileType("FireCharge"), 15, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.15f) * 7.5f, ProjectileType<projectiles.FireCharge>(), 15, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
                 }
                 if (AttackTimer == 230)
                 {
@@ -153,11 +150,11 @@ namespace MinecraftAnimals.Animals
                 //thanks nuova prime//
                 if (player.position.Y < npc.position.Y + 130)
                 {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .5f;
+                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .4f;
                 }
                 if (player.position.Y > npc.position.Y + 130)
                 {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .25f;
+                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .2f;
                 }
             }
         }

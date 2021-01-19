@@ -70,6 +70,71 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
+                /*
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (npc.life <= 0)
+            {
+                npc.life = 1;
+                Phase = (int)AIStates.Death;
+            }
+            base.HitEffect(hitDirection, damage);
+        }
+        public override void AI()
+        {
+            Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+            GlobalTimer++;
+            Player player = Main.player[npc.target];
+            if (Phase == (int)AIStates.Death)
+            {
+                npc.damage = 0;
+                npc.ai[2] += 1f; // increase our death timer.
+                npc.netUpdate = true;
+                npc.velocity.X = 0;
+                npc.velocity.Y += 1.5f;
+                npc.dontTakeDamage = true;
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                if (npc.ai[2] >= 110f)
+                {
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    npc.life = 0;
+                }
+            }
+        }
+
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (npc.spriteDirection == 1)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            Texture2D texture = Main.npcTexture[npc.type];
+            int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+            int startY = npc.frame.Y;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 28 : 28);
+
+            Color drawColor = npc.GetAlpha(lightColor);
+            if (Phase == (int)AIStates.Death)
+            {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
+                sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            }
+            else
+            {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            }
+            return false;
+        }
+        */
     }
 }
 

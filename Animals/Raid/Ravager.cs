@@ -225,9 +225,40 @@ namespace MinecraftAnimals.Animals.Raid
             }
             if (Phase == (int)AIStates.Attack)
             {
-                npc.frameCounter++;
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter < 11)
+                    {
+                        npc.frame.Y = Frame_Attack * frameHeight;
+                    }
+                    else if (npc.frameCounter < 22)
+                    {
+                        npc.frame.Y = Frame_Attack_2 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 33)
+                    {
+                        npc.frame.Y = Frame_Attack_3 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 44)
+                    {
+                        npc.frame.Y = Frame_Attack_4 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 55)
+                    {
+                        npc.frame.Y = Frame_Attack_5 * frameHeight;
+                    }
+                    else
+                    {
+                        npc.frameCounter = 0;
+                    }
+                }
+                else
+                {
+                    npc.frameCounter++;
                     if (++npc.frameCounter % 11 == 0)
                         npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 5) * frameHeight;
+                }
             }
             if (Phase == (int)AIStates.Roar)
             {
@@ -243,34 +274,6 @@ namespace MinecraftAnimals.Animals.Raid
                 else if (npc.frameCounter < 50)
                 {
                     npc.frame.Y = Frame_Attack_2 * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
-                }
-            }
-            if ( npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
-            {
-                npc.frameCounter++;
-                if (npc.frameCounter < 11)
-                {
-                    npc.frame.Y = Frame_Attack * frameHeight;
-                }
-                else if (npc.frameCounter < 22)
-                {
-                    npc.frame.Y = Frame_Attack_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 33)
-                {
-                    npc.frame.Y = Frame_Attack_3 * frameHeight;
-                }
-                else if (npc.frameCounter < 44)
-                {
-                    npc.frame.Y = Frame_Attack_4 * frameHeight;
-                }
-                else if (npc.frameCounter < 55)
-                {
-                    npc.frame.Y = Frame_Attack_5 * frameHeight;
                 }
                 else
                 {

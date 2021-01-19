@@ -28,53 +28,31 @@ namespace MinecraftAnimals.Animals.Neutral
         {
             return SpawnCondition.Cavern.Chance * 0.08f;
         }
-		private const int AI_State_Slot = 0;
-		private const int AI_Timer_Slot = 1;
-		// Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-		private const int State_Up = 0;
-		private const int State_Down = 1;
-		private const int State_Fly = 2;
-		private const int State_Rest = 3;
-
-		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-		// Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-		// This is all to just make beautiful, manageable, and clean code.
-		public float AI_State
+		internal enum AIStates
 		{
-			get => npc.ai[AI_State_Slot];
-			set => npc.ai[AI_State_Slot] = value;
+			Normal = 0,
+			Attack = 1,
+			Shoot = 2,
+			Death = 3
 		}
+		internal ref float GlobalTimer => ref npc.ai[0];
+		internal ref float Phase => ref npc.ai[1];
+		internal ref float ActionPhase => ref npc.ai[2];
+		internal ref float AttackTimer => ref npc.ai[3];
 
-		public float AI_Timer
-		{
-			get => npc.ai[AI_Timer_Slot];
-			set => npc.ai[AI_Timer_Slot] = value;
-		}
 		public override void AI()
 		{
-			if (AI_State == State_Up)
+			int ChangeYDir = 1;
+			float SpeedChange = Main.rand.Next(0.75f, 0.95f);
+			GlobalTimer++;
+			if (Phase == (int)AIStates.Normal)
 			{
-				AI_Timer++;
 				npc.velocity.X = 1 * npc.direction;
 				npc.velocity.Y += 0.5f;
-				npc.velocity = new Vector2(npc.direction * 3, -4f);
-				if (AI_Timer == 5)
-				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							npc.direction = -1;
-							return;
-						case 1:
-							npc.direction = 1;
-							return;
-					}
-				}
-				if (AI_Timer == 180)
-				{
-					AI_State = State_Down;
-					AI_Timer = 0;
+				if(GlobalTimer % 200 == 0)
+                {
+					ChangeYDir = Main.rand.NextBool() == true ? 1 : -1;
+					npc.velocity.Y = 0.2f * ChangeYDir;
 				}
 			}
 			else if (AI_State == State_Down)

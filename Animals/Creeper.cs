@@ -81,7 +81,7 @@ namespace MinecraftAnimals.Animals
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 55f)
+                if (player.Distance(npc.Center) < 50f)
                 {
                     Phase = (int)AIStates.Explode;
                     GlobalTimer = 0;
@@ -90,7 +90,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Explode)
             {
                 AttackTimer++;
-                npc.velocity.X = 1f * npc.direction;
+                npc.velocity.X = 0f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 //.66 seconds=40ticks //
                 float stopToAttack = player.Distance(npc.Center) < 40f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
@@ -103,12 +103,9 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
                     Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 0, ProjectileType<projectiles.CreeperExplosion>(), 5, 2, Main.LocalPlayer.whoAmI);
-                }
-                if (AttackTimer == 72)
-                {
                     npc.life = 0;
                 }
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 55f)
+                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 60f)
                 {
                     Phase = (int)AIStates.Attack;
                     AttackTimer = 0;
