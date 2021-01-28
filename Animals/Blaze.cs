@@ -150,17 +150,16 @@ namespace MinecraftAnimals.Animals
                 //thanks nuova prime//
                 if (player.position.Y < npc.position.Y + 130)
                 {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 1f : .4f;
+                    npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
                 }
                 if (player.position.Y > npc.position.Y + 130)
                 {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 1f : .2f;
+                    npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .35f;
                 }
             }
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;

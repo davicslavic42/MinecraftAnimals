@@ -54,7 +54,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.TargetClosest(false);
-                npc.velocity.X = 0.71f * npc.direction;
+                npc.velocity.X = 1.11f * npc.direction;
                 if (GlobalTimer == 5)
                 {
                     npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
@@ -101,7 +101,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8.25f, ProjectileType<projectiles.SlowArrow>(), 18, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8.25f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
                 }
                 if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
                 {
@@ -115,12 +115,12 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Death)
             {
                 npc.damage = 0;
-                npc.ai[2] += 1f; // increase our death timer.
+                npc.ai[2] += 1f; // increase the death timer.
                 npc.netUpdate = true;
                 npc.velocity.X = 0;
                 npc.velocity.Y += 1.5f;
                 npc.dontTakeDamage = true;
-                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f); //This method just ensures the enemy turns
                 if (npc.ai[2] >= 110f)
                 {
                     for (int i = 0; i < 20; i++)
@@ -134,7 +134,7 @@ namespace MinecraftAnimals.Animals
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type]) //autojump mini method
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
@@ -170,12 +170,12 @@ namespace MinecraftAnimals.Animals
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 15),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
@@ -183,11 +183,14 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             base.NPCLoot();
-            if (Main.rand.NextBool(5))
-            {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("Bone"));
-            }
         }
+        /*
+         if (Main.rand.NextBool(5))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Bone>());
+            }
+
+        */
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;

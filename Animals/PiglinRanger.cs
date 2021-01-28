@@ -202,7 +202,7 @@ namespace MinecraftAnimals.Animals
                 if (GlobalTimer <= 500)
                 {
                     if (++npc.frameCounter % 7 == 0)
-                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) / 2) * frameHeight;
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.frameCounter++;
                 if (++npc.frameCounter % 7 == 0)
-                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) / 2) * frameHeight;
+                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
             }
             if (Phase == (int)AIStates.Shoot)
             {

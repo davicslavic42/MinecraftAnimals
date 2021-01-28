@@ -16,7 +16,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 40;
+            npc.width = 65;
             npc.height = 25;
             npc.lifeMax = 70;
             npc.damage = 28;
@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.35f * npc.direction;
-                float stopToAttack = player.Distance(npc.Center) < 60f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                float stopToAttack = player.Distance(npc.Center) < 65f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
                     Phase = (int)AIStates.Normal;
@@ -130,7 +130,7 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 60 : 60);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
@@ -140,7 +140,7 @@ namespace MinecraftAnimals.Animals
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 20),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
@@ -160,7 +160,7 @@ namespace MinecraftAnimals.Animals
         public override void FindFrame(int frameHeight)
         {
             Player player = Main.player[npc.target];
-            // This makes the sprite flip horizontally in conjunction with the npc.direction.
+            int Framedetection = (npc.frame.Y / frameHeight) % (Main.npcFrameCount[npc.type]);
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Normal)
             {
@@ -177,10 +177,11 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Attack)
             {
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 75f)
+                npc.frameCounter++;
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 65f)
                 {
                     npc.frameCounter++;
-                    if (npc.frameCounter < 11)
+                    if (npc.frameCounter < 12)
                     {
                         npc.frame.Y = Frame_Attack * frameHeight;
                     }
@@ -216,6 +217,16 @@ namespace MinecraftAnimals.Animals
             {
                 npc.frame.Y = Frame_Walk * frameHeight;
             }
+            /*
+                             npc.frameCounter++;
+                if(Framedetection > 0 && Framedetection < 5) // this method should attempt to detect if frame height is eqaul to frames 1-4 and add to frame height to skip these frames within animation
+                {
+                    frameHeight = 5;
+                }
+                if (npc.frameCounter % 7 == 0)
+                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
+
+            */
         }
     }
 }

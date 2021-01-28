@@ -172,12 +172,12 @@ namespace MinecraftAnimals.Animals
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 15),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
@@ -185,11 +185,14 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             base.NPCLoot();
-            if (Main.rand.NextBool(5))
+        }
+        /*
+         if (Main.rand.NextBool(5))
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Bone>());
             }
-        }
+
+        */
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
         private const int Frame_Walk_3 = 2;
@@ -210,7 +213,7 @@ namespace MinecraftAnimals.Animals
                 if (GlobalTimer <= 500)
                 {
                     if (++npc.frameCounter % 7 == 0)
-                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) / 2) * frameHeight;
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
                 }
                 else
                 {
@@ -221,7 +224,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.frameCounter++;
                 if (++npc.frameCounter % 7 == 0)
-                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) / 2) * frameHeight;
+                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
             }
             if (Phase == (int)AIStates.Shoot)
             {
@@ -238,7 +241,7 @@ namespace MinecraftAnimals.Animals
                 {
                     npc.frame.Y = Frame_Shoot_3 * frameHeight;
                 }
-                else if (npc.frameCounter < 155)
+                else if (npc.frameCounter < 160)
                 {
                     npc.frame.Y = Frame_Shoot_4 * frameHeight;
                 }

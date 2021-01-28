@@ -29,7 +29,7 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
-            npc.scale = 1.95f;
+            npc.scale = 1.75f;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -46,7 +46,6 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int ChangeYDir = 1;
 
         public override void AI()
         {
@@ -54,15 +53,15 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
-                npc.velocity.Y = 0.25f;
+                npc.velocity.X = 0.85f * npc.direction;
                 npc.TargetClosest(false);
-                npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5)
                 {
                     npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+                    npc.velocity.Y = -1.1f;
                 }
-                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
-                if (GlobalTimer >= 800)
+                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
+                if (GlobalTimer >= 805)
                 {
                     GlobalTimer = 0;
                 }
@@ -75,13 +74,14 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.TargetClosest(true);
-                npc.velocity.X = 1f * npc.direction;
+                npc.velocity.Y = -1.1f;
+                npc.velocity.X = 0.85f * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 350f)
+                if (player.Distance(npc.Center) < 375f)
                 {
                     Phase = (int)AIStates.Shoot;
                     AttackTimer = 0;
@@ -92,7 +92,8 @@ namespace MinecraftAnimals.Animals
             {
                 AttackTimer++;
                 npc.TargetClosest(true);
-                npc.velocity.X = 0f * npc.direction;
+                npc.velocity.Y = -1.1f;
+                npc.velocity.X = 0.65f * npc.direction;
                 if ( AttackTimer == 220) //Check three states of AI_Timer, this will result in 3 shots with a delay of 15 frames
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
@@ -108,7 +109,7 @@ namespace MinecraftAnimals.Animals
                     Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.15f) * 7.5f, ProjectileType<projectiles.Ghastshot>(), 35, 2, Main.LocalPlayer.whoAmI);//Multiply velocity with a larger number for more speed
                     AttackTimer = 0;
                 }
-                if (!npc.HasValidTarget || player.Distance(npc.Center) > 350f)
+                if (!npc.HasValidTarget || player.Distance(npc.Center) > 375f)
                 {
                     // Out targeted player seems to have left our range, so we'll go back to sleep.
                     Phase = (int)AIStates.Attack;
@@ -137,10 +138,9 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (GlobalTimer % 350 == 0)
+            if (npc.ai[0] % 105 == 0)
             {
-                ChangeYDir = Main.rand.NextBool() == true ? 1 : -1;
-                npc.velocity.Y = 0.2f * ChangeYDir;
+                npc.velocity.Y = Main.rand.NextFloat(1f, 1.1f) == 1f ? npc.velocity.Y = 1.25f : npc.velocity.Y = -1.25f;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -193,17 +193,11 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
-            if (Phase == (int)AIStates.Normal)
+            if (Phase == (int)AIStates.Normal || Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
                 if (++npc.frameCounter % 7 == 0)
                     npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] / 2) * frameHeight;
-            }
-            if (Phase == (int)AIStates.Attack)
-            {
-                npc.frameCounter++;
-                if (++npc.frameCounter % 7 == 0)
-                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 4) * frameHeight;
             }
             if (Phase == (int)AIStates.Shoot)
             {

@@ -1,7 +1,12 @@
-﻿using Terraria;
+﻿using System.Linq;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals.Neutral
 {
@@ -31,8 +36,8 @@ namespace MinecraftAnimals.Animals.Neutral
 		internal enum AIStates
 		{
 			Normal = 0,
-			Attack = 1,
-			Shoot = 2,
+			Fly = 1,
+			Rest = 2,
 			Death = 3
 		}
 		internal ref float GlobalTimer => ref npc.ai[0];
@@ -42,75 +47,100 @@ namespace MinecraftAnimals.Animals.Neutral
 
 		public override void AI()
 		{
-			int ChangeYDir = 1;
-			float SpeedChange = Main.rand.Next(0.75f, 0.95f);
 			GlobalTimer++;
 			if (Phase == (int)AIStates.Normal)
 			{
-				npc.velocity.X = 1 * npc.direction;
-				npc.velocity.Y += 0.5f;
-				if(GlobalTimer % 200 == 0)
+				npc.velocity.X = 1.5f * npc.direction;
+				if ( GlobalTimer == 5) npc.velocity.Y = -1.1f;
+				if (GlobalTimer % 75 == 0)
+				{
+					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = 2.1f : npc.velocity.Y = -2.1f;
+					npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+				}
+				if (GlobalTimer >= 1500)
                 {
-					ChangeYDir = Main.rand.NextBool() == true ? 1 : -1;
-					npc.velocity.Y = 0.2f * ChangeYDir;
+					Phase = (int)AIStates.Fly;
+					GlobalTimer = 0;
+ 				}
+			}
+			if (Phase == (int)AIStates.Fly )
+			{
+				int x = (int)(npc.Center.X) / 16;
+				int y = (int)(npc.Center.Y - ((npc.height / 2) + 1)) / 16;
+				npc.velocity.Y = -1.95f;
+				npc.velocity.X = 0f * npc.direction;
+				if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+				{
+					Phase = (int)AIStates.Rest;
+					GlobalTimer = 0;
 				}
 			}
-			else if (AI_State == State_Down)
+			if (Phase == (int)AIStates.Rest)
 			{
-				AI_Timer++;
-				npc.velocity.X = 1 * npc.direction;
-				npc.velocity.Y += 0.5f;
-				npc.velocity = new Vector2(npc.direction * 3, 2f);
-				if (AI_Timer == 5)
+				npc.velocity.X = 0f * npc.direction;
+				npc.velocity.Y = 0f;
+				if (GlobalTimer >= 450)
 				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							npc.direction = -1;
-							return;
-						case 1:
-							npc.direction = 1;
-							return;
-					}
-				}
-				if (AI_Timer == 200)
-				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							AI_State = State_Fly;
-							AI_Timer = 0;
-							return;
-						case 1:
-							AI_State = State_Up;
-							AI_Timer = 0;
-							return;
-					}
+					npc.velocity = new Vector2(npc.direction * 1, 7f);
+					Phase = (int)AIStates.Normal;
+					GlobalTimer = 0;
 				}
 			}
-			else if (AI_State == State_Fly)
+			if (Phase == (int)AIStates.Death)
 			{
-				AI_Timer++;
-				npc.velocity.X = 1 * npc.direction;
-				npc.velocity.Y += 0.5f;
-				npc.velocity = new Vector2(npc.direction * 0, -5f);
-				if (Collision.SolidCollision(npc.position, (npc.width ), npc.height + 1))
-				{
-					AI_Timer = 0;
-					AI_State = State_Rest;
-				}
-			}
-			else if (AI_State == State_Rest)
-			{
-				AI_Timer++;
-				npc.velocity.X = 0 * npc.direction;
+				npc.noGravity = true;
+				npc.damage = 0;
+				npc.ai[2] += 1f; // increase our death timer.
+				npc.netUpdate = true;
 				npc.velocity.Y = 0;
-				if (AI_Timer == 600)
+				npc.dontTakeDamage = true;
+				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+				if (npc.ai[2] >= 110f)
 				{
-					AI_State = State_Down;
-					AI_Timer = 0;
+					for (int i = 0; i < 20; i++)
+					{
+						int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+						Main.dust[dustIndex].noGravity = true;
+					}
+					npc.life = 0;
 				}
 			}
+		}
+		public override void HitEffect(int hitDirection, double damage)
+		{
+			if (npc.life <= 0)
+			{
+				npc.life = 1;
+				Phase = (int)AIStates.Death;
+			}
+			base.HitEffect(hitDirection, damage);
+		}
+		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+		{
+			SpriteEffects spriteEffects = SpriteEffects.None;
+			if (npc.spriteDirection == 1)
+			{
+				spriteEffects = SpriteEffects.FlipHorizontally;
+			}
+			Texture2D texture = Main.npcTexture[npc.type];
+			int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+			int startY = npc.frame.Y;
+			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+			Vector2 origin = sourceRectangle.Size() / 2f;
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 15 : 15);
+
+			Color drawColor = npc.GetAlpha(lightColor);
+			if (Phase == (int)AIStates.Death)
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 20),
+				sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			else
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+				sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			return false;
 		}
 		private const int Frame_Float = 0;
         private const int Frame_Float_2 = 1;
@@ -123,113 +153,20 @@ namespace MinecraftAnimals.Animals.Neutral
         {
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
 			npc.spriteDirection = npc.direction;
-			if (AI_State == 0)
+			if (Phase == (int)AIStates.Normal || (Phase == (int)AIStates.Fly))
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 32)
-				{
-					npc.frame.Y = Frame_Float_5 * frameHeight;
-				}
-				else if (npc.frameCounter < 38)
-				{
-					npc.frame.Y = Frame_Float_6 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				if (++npc.frameCounter % 7 == 0)
+					npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 1) * frameHeight;
 			}
-			else if (AI_State == 2)
+			if (Phase == (int)AIStates.Rest)
 			{
 				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 32)
-				{
-					npc.frame.Y = Frame_Float_5 * frameHeight;
-				}
-				else if (npc.frameCounter < 38)
-				{
-					npc.frame.Y = Frame_Float_6 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				npc.frame.Y = Frame_Rest * frameHeight;
 			}
-			else if (AI_State == 1)
+			if (Phase == (int)AIStates.Death)
 			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 6)
-				{
-					npc.frame.Y = Frame_Float * frameHeight;
-				}
-				else if (npc.frameCounter < 12)
-				{
-					npc.frame.Y = Frame_Float_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 18)
-				{
-					npc.frame.Y = Frame_Float_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 24)
-				{
-					npc.frame.Y = Frame_Float_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 32)
-				{
-					npc.frame.Y = Frame_Float_5 * frameHeight;
-				}
-				else if (npc.frameCounter < 38)
-				{
-					npc.frame.Y = Frame_Float_6 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
-			}
-			else if (AI_State == 3)
-			{
-				npc.frameCounter++;
-				if (npc.frameCounter < 10)
-				{
-					npc.frame.Y = Frame_Rest * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				npc.frame.Y = Frame_Float * frameHeight;
 			}
 		}
 	}

@@ -47,7 +47,6 @@ namespace MinecraftAnimals.Animals.Raid
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int flying = 1;
         int SpeedLim = 1;
 
         public override void AI()
@@ -57,7 +56,6 @@ namespace MinecraftAnimals.Animals.Raid
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
-                flying = 1;
                 SpeedLim = 1;
                 npc.velocity.Y = 0.25f;
                 npc.TargetClosest(false);
@@ -80,7 +78,6 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Attack)
             {
                 SpeedLim = 1;
-                flying = 1;
                 npc.TargetClosest(true);
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
                 {
@@ -97,7 +94,6 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Charge)
             {
                 SpeedLim = 2;
-                flying = 1;
                 AttackTimer++;
                 npc.TargetClosest(true);
                 if (AttackTimer > 175 )
@@ -113,7 +109,6 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Death)
             {
                 SpeedLim = 2;
-                flying = 2;
                 npc.noGravity = true;
                 npc.damage = 0;
                 npc.ai[2] += 1f; // increase our death timer.
@@ -132,25 +127,22 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            if (flying == 1)
+            //thanks nuova prime//
+            if (player.position.Y < npc.position.Y + 35)
             {
-                //thanks nuova prime//
-                if (player.position.Y < npc.position.Y + 35)
-                {
-                    npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
-                }
-                if (player.position.Y > npc.position.Y + 35)
-                {
-                    npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .35f;
-                }
-                if (player.position.X < npc.position.X)
-                {
-                    npc.velocity.X -= npc.velocity.X > 0f ? 0.5f : 0.2f;
-                }
-                if (player.position.X > npc.position.X)
-                {
-                    npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.15f;
-                }
+                npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
+            }
+            if (player.position.Y > npc.position.Y + 35)
+            {
+                npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .35f;
+            }
+            if (player.position.X < npc.position.X)
+            {
+                npc.velocity.X -= npc.velocity.X > 0f ? 0.5f : 0.2f;
+            }
+            if (player.position.X > npc.position.X)
+            {
+                npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.15f;
             }
             if (SpeedLim == 1)//prevents the eocity from going above inputed number
             {
@@ -158,7 +150,7 @@ namespace MinecraftAnimals.Animals.Raid
                 {
                     npc.velocity.X = 1.9f * npc.direction;
                 }
-                if (npc.velocity.Y * npc.direction > 1.9f)
+                if (npc.velocity.Y > 1.9f)
                 {
                     npc.velocity.Y = 1.9f * npc.direction;
                 }

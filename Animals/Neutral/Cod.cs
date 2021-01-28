@@ -1,6 +1,13 @@
-﻿using Terraria;
+﻿using System.Linq;
+using System;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals.Neutral
 {
@@ -23,107 +30,93 @@ namespace MinecraftAnimals.Animals.Neutral
 		}
 		public override float SpawnChance(NPCSpawnInfo spawnInfo)
 		{
-			return SpawnCondition.Ocean.Chance * 0.02f;
+			return SpawnCondition.Ocean.Chance * 0.05f;
 		}
-		private const int AI_State_Slot = 0;
-		private const int AI_Timer_Slot = 1;
-		// Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-		private const int State_Swim_1 = 0;
-		private const int State_Swim_2 = 1;
-		private const int State_Swim_3 = 2;
-
-		// This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-		// Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-		// Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-		// This is all to just make beautiful, manageable, and clean code.
-		public float AI_State
+		internal enum AIStates
 		{
-			get => npc.ai[AI_State_Slot];
-			set => npc.ai[AI_State_Slot] = value;
+			Normal = 0,
+			Death = 1
 		}
-
-		public float AI_Timer
-		{
-			get => npc.ai[AI_Timer_Slot];
-			set => npc.ai[AI_Timer_Slot] = value;
-		}
+		internal ref float GlobalTimer => ref npc.ai[0];
+		internal ref float Phase => ref npc.ai[1];
+		internal ref float ActionPhase => ref npc.ai[2];
+		internal ref float AttackTimer => ref npc.ai[3];
 		public override void AI()
 		{
-			// The npc starts in the asleep state, waiting for a player to enter range
-			if (AI_State == State_Swim_1)
+			GlobalTimer++;
+			if (Phase == (int)AIStates.Normal)
 			{
-				AI_Timer++;
-				npc.velocity.X = 3.25f * npc.direction;
-				npc.velocity.Y = 0.1f;
-				if (AI_Timer == 400)
+				npc.velocity.X = 1.5f * npc.direction;
+				npc.velocity.Y = -0.95f;
+				if (GlobalTimer % 200 == 0)
 				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							AI_State = State_Swim_2;
-							AI_Timer = 0;
-							return;
-						case 1:
-							AI_State = State_Swim_3;
-							AI_Timer = 0;
-							return;
-					}
+					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = 0.91f : npc.velocity.Y = -0.91f;
+					npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+				}
+				if (GlobalTimer >= 1000)
+				{
+					GlobalTimer = 0;
 				}
 			}
-			else if (AI_State == State_Swim_2)
+			if (Phase == (int)AIStates.Death)
 			{
-				AI_Timer++;
-				npc.velocity.X = 3.25f * npc.direction;
+				npc.noGravity = true;
+				npc.damage = 0;
+				npc.ai[2] += 1f; // increase our death timer.
+				npc.netUpdate = true;
 				npc.velocity.Y = 0;
-				if (AI_Timer == 400)
+				npc.dontTakeDamage = true;
+				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(180f), 16f);
+				if (npc.ai[2] >= 110f)
 				{
-					switch (Main.rand.Next(2))
+					for (int i = 0; i < 20; i++)
 					{
-						case 0:
-							AI_State = State_Swim_1;
-							AI_Timer = 0;
-							return;
-						case 1:
-							AI_State = State_Swim_3;
-							AI_Timer = 0;
-							return;
-
+						int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+						Main.dust[dustIndex].noGravity = true;
 					}
+					npc.life = 0;
 				}
 			}
-			else if (AI_State == State_Swim_3)
+			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid < 20)
 			{
-				AI_Timer++;
-				npc.velocity.Y = -0.15f * npc.direction;
-				npc.velocity.X = 4f * npc.direction;
-				if (AI_Timer == 400)
-				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							AI_State = State_Swim_1;
-							AI_Timer = 0;
-							return;
-						case 1:
-							AI_State = State_Swim_2;
-							AI_Timer = 0;
-							return;
-					}
-					AI_Timer = 0;
-				}
-				if (AI_Timer == 5)
-				{
-					switch (Main.rand.Next(2))
-					{
-						case 0:
-							npc.direction = -1;
-							return;
-						case 1:
-							npc.direction = 1;
-							return;
-					}
-				}
+				npc.velocity.Y = 1.5f;
 			}
+		}
+		public override void HitEffect(int hitDirection, double damage)
+		{
+			if (npc.life <= 0)
+			{
+				npc.life = 1;
+				Phase = (int)AIStates.Death;
+			}
+			base.HitEffect(hitDirection, damage);
+		}
+		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+		{
+			SpriteEffects spriteEffects = SpriteEffects.None;
+			if (npc.spriteDirection == 1)
+			{
+				spriteEffects = SpriteEffects.FlipHorizontally;
+			}
+			Texture2D texture = Main.npcTexture[npc.type];
+			int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+			int startY = npc.frame.Y;
+			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+			Vector2 origin = sourceRectangle.Size() / 2f;
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 10 : 10);
+
+			Color drawColor = npc.GetAlpha(lightColor);
+			if (Phase == (int)AIStates.Death)
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+				sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			else
+			{
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+				sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+			}
+			return false;
 		}
 		private const int Frame_Walk = 0;
 		private const int Frame_Walk_2 = 1;
@@ -135,36 +128,15 @@ namespace MinecraftAnimals.Animals.Neutral
 		{
 			// This makes the sprite flip horizontally in conjunction with the npc.direction.
 			npc.spriteDirection = npc.direction;
+			if (Phase == (int)AIStates.Death)
 			{
+				npc.frame.Y = Frame_Walk * frameHeight;
+			}
+            else
+            {
 				npc.frameCounter++;
-				if (npc.frameCounter < 7)
-				{
-					npc.frame.Y = Frame_Walk * frameHeight;
-				}
-				else if (npc.frameCounter < 14)
-				{
-					npc.frame.Y = Frame_Walk_2 * frameHeight;
-				}
-				else if (npc.frameCounter < 21)
-				{
-					npc.frame.Y = Frame_Walk_3 * frameHeight;
-				}
-				else if (npc.frameCounter < 28)
-				{
-					npc.frame.Y = Frame_Walk_4 * frameHeight;
-				}
-				else if (npc.frameCounter < 35)
-				{
-					npc.frame.Y = Frame_Walk_5 * frameHeight;
-				}
-				else if (npc.frameCounter < 42)
-				{
-					npc.frame.Y = Frame_Walk_6 * frameHeight;
-				}
-				else
-				{
-					npc.frameCounter = 0;
-				}
+				if (++npc.frameCounter % 7 == 0)
+					npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
 			}
 		}
 	}

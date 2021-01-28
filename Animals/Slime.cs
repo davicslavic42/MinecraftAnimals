@@ -158,7 +158,7 @@ namespace MinecraftAnimals.Animals
 			int startY = npc.frame.Y;
 			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
 			Vector2 origin = sourceRectangle.Size() / 2f;
-			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 10 : 10);
 
 			Color drawColor = npc.GetAlpha(lightColor);
 			if (Phase == (int)AIStates.Death)
@@ -168,7 +168,7 @@ namespace MinecraftAnimals.Animals
 			}
 			else
 			{
-				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+				Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
 				sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
 			}
 			return false;
