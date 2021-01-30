@@ -44,6 +44,7 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
+        int death = 0;
         public override void AI()
         {
 
@@ -96,7 +97,7 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (npc.type == mod.NPCType("CaveSpider") && Main.netMode != NetmodeID.MultiplayerClient && npc.velocity.Y > 1f)
+            if (npc.type == NPCType<CaveSpider>() && Main.netMode != NetmodeID.MultiplayerClient && npc.velocity.Y > 1f)
             {
                 int num99 = (int)npc.Center.X / 16;
                 int num100 = (int)npc.Center.Y / 16;
@@ -113,14 +114,26 @@ namespace MinecraftAnimals.Animals
                 }
                 if (flag9)
                 {
-                    npc.Transform(mod.NPCType("CaveSpiderWall"));
+                    npc.Transform(NPCType<CaveSpiderWall>());
                 }
             }
-            if (Main.dayTime == false) // half brightness
+            if (Main.dayTime == false && death == 0) // half brightness
             {
                 Phase = (int)AIStates.Attack;
             }
-        }        
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
+
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            {
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
+                {
+                    npc.velocity = new Vector2(npc.direction * 1, -7f);
+                    i = 0;
+                }
+            }
+        }
         public override void OnHitPlayer(Player target, int damage, bool crit)
         {
             base.OnHitPlayer(target, damage, crit);
@@ -129,12 +142,17 @@ namespace MinecraftAnimals.Animals
 
         public override void HitEffect(int hitDirection, double damage)
         {
-            Phase = (int)AIStates.Attack;
             if (npc.life <= 0)
             {
+                death = 1;
+                npc.netUpdate = true;
                 GlobalTimer = 0;
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
+            }
+            if(Phase != (int)AIStates.Death)
+            {
+                Phase = (int)AIStates.Attack;
             }
             base.HitEffect(hitDirection, damage);
         }

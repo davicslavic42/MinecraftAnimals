@@ -50,10 +50,10 @@ namespace MinecraftAnimals.Animals.Neutral
 				npc.velocity.Y = -0.95f;
 				if (GlobalTimer % 200 == 0)
 				{
-					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = 0.91f : npc.velocity.Y = -0.91f;
+					npc.velocity.Y = Main.rand.Next(3) == 1 ? npc.velocity.Y = GlobalTimer / 100f * 0.85f * -1f : npc.velocity.Y = GlobalTimer / 100f * 0.85f;
 					npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
 				}
-				if (GlobalTimer >= 1000)
+				if (GlobalTimer >= 300)
 				{
 					GlobalTimer = 0;
 				}
@@ -77,9 +77,9 @@ namespace MinecraftAnimals.Animals.Neutral
 					npc.life = 0;
 				}
 			}
-			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid < 20)
+			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid < 0)
 			{
-				npc.velocity.Y = 1.5f;
+				npc.velocity.Y = 2.5f;
 			}
 		}
 		public override void HitEffect(int hitDirection, double damage)
@@ -103,7 +103,7 @@ namespace MinecraftAnimals.Animals.Neutral
 			int startY = npc.frame.Y;
 			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
 			Vector2 origin = sourceRectangle.Size() / 2f;
-			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 10 : 10);
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 15 : 15);
 
 			Color drawColor = npc.GetAlpha(lightColor);
 			if (Phase == (int)AIStates.Death)

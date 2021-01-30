@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.35f * npc.direction;
-                float stopToAttack = player.Distance(npc.Center) < 65f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                float stopToAttack = player.Distance(npc.Center) < 55f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
                     Phase = (int)AIStates.Normal;
@@ -117,6 +117,11 @@ namespace MinecraftAnimals.Animals
                 Phase = (int)AIStates.Death;
             }
             base.HitEffect(hitDirection, damage);
+        }
+        public override void OnHitPlayer(Player target, int damage, bool crit)
+        {
+            base.OnHitPlayer(target, damage, crit);
+            target.velocity = new Vector2(4f * npc.direction, -16f);
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
@@ -178,7 +183,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 65f)
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 60f)
                 {
                     npc.frameCounter++;
                     if (npc.frameCounter < 12)

@@ -19,6 +19,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
+            npc.noGravity = true;
             npc.width = 32;
             npc.height = 44;
             npc.lifeMax = 54;
@@ -49,8 +50,8 @@ namespace MinecraftAnimals.Animals
 
         public override void AI()
         {
-            GlobalTimer++;
             Player player = Main.player[npc.target];
+            GlobalTimer++;
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0.85f * npc.direction;
@@ -58,13 +59,8 @@ namespace MinecraftAnimals.Animals
                 if (GlobalTimer == 5)
                 {
                     npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
-                    npc.velocity.Y = -1.1f;
                 }
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
-                if (GlobalTimer >= 805)
-                {
-                    GlobalTimer = 0;
-                }
                 if (npc.HasValidTarget && player.Distance(npc.Center) < 725f)
                 {
                     Phase = (int)AIStates.Attack;
@@ -74,7 +70,6 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Attack)
             {
                 npc.TargetClosest(true);
-                npc.velocity.Y = -1.1f;
                 npc.velocity.X = 0.85f * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
                 {
@@ -92,7 +87,6 @@ namespace MinecraftAnimals.Animals
             {
                 AttackTimer++;
                 npc.TargetClosest(true);
-                npc.velocity.Y = -1.1f;
                 npc.velocity.X = 0.65f * npc.direction;
                 if ( AttackTimer == 220) //Check three states of AI_Timer, this will result in 3 shots with a delay of 15 frames
                 {
@@ -117,7 +111,6 @@ namespace MinecraftAnimals.Animals
                 }
                 // If the targeted player is in attack range (250).
             }
-            // In this state, we are in the Shoot. 
             if (Phase == (int)AIStates.Death)
             {
                 npc.noGravity = true;
@@ -138,9 +131,21 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (npc.ai[0] % 105 == 0)
+            if (GlobalTimer % 200 == 0 )
             {
-                npc.velocity.Y = Main.rand.NextFloat(1f, 1.1f) == 1f ? npc.velocity.Y = 1.25f : npc.velocity.Y = -1.25f;
+                npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer / 140f * 0.95f : npc.velocity.Y = GlobalTimer / 140f * 0.95f * -1f;
+            }
+            if (npc.velocity.Y > 1.5f)
+            {
+                npc.velocity.Y = 1.5f * npc.direction;
+            }
+            if (npc.velocity.Y < -1.5f)
+            {
+                npc.velocity.Y = -1.5f * npc.direction;
+            }
+            if (GlobalTimer >= 805)
+            {
+                GlobalTimer = 0;
             }
         }
         public override void HitEffect(int hitDirection, double damage)

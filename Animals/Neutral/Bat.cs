@@ -47,22 +47,28 @@ namespace MinecraftAnimals.Animals.Neutral
 
 		public override void AI()
 		{
+			int flyCount = 0;
 			GlobalTimer++;
 			if (Phase == (int)AIStates.Normal)
 			{
 				npc.velocity.X = 1.5f * npc.direction;
-				if ( GlobalTimer == 5) npc.velocity.Y = -1.1f;
 				if (GlobalTimer % 75 == 0)
 				{
-					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = 2.1f : npc.velocity.Y = -2.1f;
+					flyCount += 1;
 					npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
 				}
-				if (GlobalTimer >= 1500)
-                {
+				if (GlobalTimer % 30 == 0 && GlobalTimer > 160)
+				{
+					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer / 100 * 1.25f : npc.velocity.Y = GlobalTimer / 100 * 1.25f * -1f;
+				}
+				if (GlobalTimer > 400) GlobalTimer = 50;
+				if (flyCount == 5) 
+				{
 					Phase = (int)AIStates.Fly;
-					GlobalTimer = 0;
- 				}
+					flyCount = 0;
+                }
 			}
+
 			if (Phase == (int)AIStates.Fly )
 			{
 				int x = (int)(npc.Center.X) / 16;
@@ -93,6 +99,7 @@ namespace MinecraftAnimals.Animals.Neutral
 				npc.ai[2] += 1f; // increase our death timer.
 				npc.netUpdate = true;
 				npc.velocity.Y = 0;
+				npc.velocity.X = 0;
 				npc.dontTakeDamage = true;
 				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
 				if (npc.ai[2] >= 110f)

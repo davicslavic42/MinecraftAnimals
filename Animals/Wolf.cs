@@ -65,9 +65,10 @@ namespace MinecraftAnimals.Animals
 			}
 			if (Phase == (int)AIStates.Attack)
 			{
+				npc.dontTakeDamage = false;
 				npc.TargetClosest(true);
 				npc.damage = 30;
-				npc.velocity.X = 1.82f * npc.direction;
+				npc.velocity.X = 1.42f * npc.direction;
 				AttackTimer++;
 				if (player.Distance(npc.Center) > 625f)
 				{
@@ -107,7 +108,7 @@ namespace MinecraftAnimals.Animals
 					npc.life = 0;
 				}
 			}
-			if (npc.ai[3] == -10)
+			if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)
 			{
 				Phase = (int)AIStates.Attack;
 			}
@@ -138,7 +139,7 @@ namespace MinecraftAnimals.Animals
 			int startY = npc.frame.Y;
 			Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
 			Vector2 origin = sourceRectangle.Size() / 2f;
-			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 10 : 10);
+			origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 30 : 30);
 
 			Color drawColor = npc.GetAlpha(lightColor);
 			if (Phase == (int)AIStates.Death)
@@ -163,7 +164,7 @@ namespace MinecraftAnimals.Animals
 				npc.life = 1;
 				Phase = (int)AIStates.Death;
 			}
-			if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.15)
+			if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.1)
 			{
 				for (int n = 0; n < 50; n++)
 				{

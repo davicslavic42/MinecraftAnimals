@@ -19,11 +19,10 @@ namespace MinecraftAnimals.Dusts
 			{
 				leftOrRight *= -1;
 			}
-			dust.velocity.X = Main.rand.NextFloat(3f, 10f) * leftOrRight;
+			dust.velocity.X = Main.rand.NextFloat(2f, 6f) * leftOrRight;
 			dust.noGravity = true;
 			dust.velocity.Y = -0.15f;
 			dust.scale = 2f;
-			dust.color = Color.HotPink;
 		}
 
 		public override bool Update(Dust dust)

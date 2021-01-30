@@ -97,7 +97,7 @@ namespace MinecraftAnimals.Animals
 					}
 				}
 			}
-            if (npc.ai[3] == -10)
+            if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)
             {
 				Phase = (int)AIStates.Attack;
 			}
@@ -147,7 +147,7 @@ namespace MinecraftAnimals.Animals
 				npc.life = 1;
 				Phase = (int)AIStates.Death;
 			}
-			if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.15)
+			if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.1)
 			{
 				for (int n = 0; n < 50; n++)
 				{
