@@ -119,10 +119,11 @@ namespace MinecraftAnimals
                 Texture2D progressBg = Main.colorBarTexture;
                 Texture2D progressColor = Main.colorBarTexture;
                 Texture2D orionIcon = GetTexture("Items/Blocks/Banners/Ominousbanner"); //MAKE RAID BANNER ITEM FOR NOW
+                Texture2D RaidBar = GetTexture("RaidProgressBar");
                 const string orionDescription = "Raid";
                 Color descColor = new Color(39, 86, 134);
 
-                Color waveColor = new Color(255, 241, 51);
+                Color waveColor = new Color(255, 20, 20);
                 Color barrierColor = new Color(255, 241, 51);
 
                 try
@@ -132,12 +133,13 @@ namespace MinecraftAnimals
                     const int offsetY = 20;
                     int width = (int)(200f * scaleMultiplier);
                     int height = (int)(46f * scaleMultiplier);
-                    Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - offsetX - 100f, Main.screenHeight - offsetY - 23f), new Vector2(width, height));
+                    Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
+                    // TESTING WAVE BG POSITION CHANGE
                     Utils.DrawInvBG(spriteBatch, waveBackground, new Color(63, 65, 151, 255) * 0.785f);
 
                     //draw wave text
 
-                    string waveText = Language.GetTextValue("Raid progress") + (int)(((float)MCAWorld.RaidKillCount / 150f) * 100) + "%";
+                    string waveText = Language.GetTextValue("Raid") + (int)(((float)MCAWorld.RaidKillCount / 150f) * 100) + "%";
                     Utils.DrawBorderString(spriteBatch, waveText, new Vector2(waveBackground.X + waveBackground.Width / 2, waveBackground.Y), Color.White, scaleMultiplier, 0.5f, -0.1f);
 
                     //draw the progress bar
@@ -145,20 +147,21 @@ namespace MinecraftAnimals
                     if (MCAWorld.RaidKillCount == 0)
                     {
                     }
-                    // Main.NewText(MathHelper.Clamp((modWorld.DinoKillCount/modWorld.MaxDinoKillCount), 0f, 1f));
                     Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X + waveBackground.Width * 0.5f, waveBackground.Y + waveBackground.Height * 0.75f), new Vector2(progressColor.Width, progressColor.Height));
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)MCAWorld.RaidKillCount / 150f), 0f, 1f)), progressColor.Height);
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)MCAWorld.RaidKillCount / 100f), 0f, 1f)), progressColor.Height);
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
-
+                    /*
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
+                    */
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RaidBar, waveProgressBar.Location.ToVector2() + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
 
                     //draw the icon with the event description
 
                     //draw the background
                     const int internalOffset = 6;
                     Vector2 descSize = new Vector2(154, 40) * scaleMultiplier;
-                    Rectangle barrierBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - offsetX - 100f, Main.screenHeight - offsetY - 19f), new Vector2(width, height));
+                    Rectangle barrierBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
                     Rectangle descBackground = Utils.CenteredRectangle(new Vector2(barrierBackground.X + barrierBackground.Width * 0.5f, barrierBackground.Y - internalOffset - descSize.Y * 0.5f), descSize);
                     Utils.DrawInvBG(spriteBatch, descBackground, descColor * alpha);
 
@@ -169,7 +172,7 @@ namespace MinecraftAnimals
 
                     //draw text
 
-                    Utils.DrawBorderString(spriteBatch, Language.GetTextValue("Raid progress"), new Vector2(barrierBackground.X + barrierBackground.Width * 0.5f, barrierBackground.Y - internalOffset - descSize.Y * 0.5f), Color.White, 0.80f, 0.3f, 0.4f);
+                    Utils.DrawBorderString(spriteBatch, Language.GetTextValue("Raid"), new Vector2(barrierBackground.X + barrierBackground.Width * 0.5f, barrierBackground.Y - internalOffset - descSize.Y * 0.5f), Color.White, 0.80f, 0.3f, 0.4f);
                 }
                 catch (Exception e)
                 {

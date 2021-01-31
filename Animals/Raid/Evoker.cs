@@ -88,9 +88,9 @@ namespace MinecraftAnimals.Animals.Raid
                     switch (Main.rand.Next(2))
                     {
                         case 0:
-                            for (int i = 0; i < 1; i++)
+                            for (int i = 0; i < 2; i++)
                             {
-                                NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 75, (int)npc.position.Y), NPCType<Vex>(), 0);
+                                NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 125, (int)npc.position.Y), NPCType<Vex>(), 0);
                             }
                             npc.ai[3] = -200;
                             return;

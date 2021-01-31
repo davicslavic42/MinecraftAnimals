@@ -19,7 +19,6 @@ namespace MinecraftAnimals.Animals.Neutral
 		}
 		public override void SetDefaults()
 		{
-			npc.noGravity = true;
 			npc.width = 20;
 			npc.height = 20;
 			npc.lifeMax = 35;
@@ -88,7 +87,7 @@ namespace MinecraftAnimals.Animals.Neutral
 				npc.netUpdate = true;
 				npc.velocity.Y = 0;
 				npc.dontTakeDamage = true;
-				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(180f), 16f);
+				npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
 				if (npc.ai[2] >= 110f)
 				{
 					for (int i = 0; i < 20; i++)
@@ -168,7 +167,7 @@ namespace MinecraftAnimals.Animals.Neutral
 				{
 					npc.frameCounter++;
 					if (++npc.frameCounter % 7 == 0)
-						npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
+						npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 3) * frameHeight;
 				}
 				else
 				{

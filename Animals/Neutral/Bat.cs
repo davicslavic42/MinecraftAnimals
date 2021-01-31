@@ -61,7 +61,7 @@ namespace MinecraftAnimals.Animals.Neutral
 				{
 					npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer / 100 * 1.25f : npc.velocity.Y = GlobalTimer / 100 * 1.25f * -1f;
 				}
-				if (GlobalTimer > 400) GlobalTimer = 50;
+				if (GlobalTimer > 300) GlobalTimer = 50;
 				if (flyCount == 5) 
 				{
 					Phase = (int)AIStates.Fly;

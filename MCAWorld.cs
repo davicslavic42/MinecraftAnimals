@@ -21,10 +21,9 @@ namespace MinecraftAnimals
 	public class MCAWorld : ModWorld
 	{
 		public static bool RaidEvent = false;
-		public static int Raidkills = 0;
-		public static int RaidKillCount = 0;
-		public static int MaxRaidKillCount = 100;
-
+		public static int RaidWaves = NPC.waveNumber;
+		public static float RaidKillCount = NPC.waveKills;
+		public static int MaxRaidWaves = 7;
 		public static bool downedRaid = false;
 		public override void Initialize()
 		{
@@ -62,8 +61,24 @@ namespace MinecraftAnimals
 		}
 		public override void PreUpdate()
 		{
-			MaxRaidKillCount = 100;
-			if (RaidKillCount >= MaxRaidKillCount)
+			int progressPerWave = (new int[8]
+			{
+				0,
+				25,
+				40,
+				50,
+				80,
+				100,
+				160,
+				0
+			})[RaidWaves];
+			NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 2f, RaidWaves);
+			if (RaidKillCount >= progressPerWave)
+			{
+				RaidKillCount = 0;
+				RaidWaves += 1;
+			}
+			if (RaidWaves == MaxRaidWaves)
 			{
 				RaidEvent = false;
 				downedRaid = true;
@@ -80,7 +95,21 @@ namespace MinecraftAnimals
 					Main.NewText("The Raid has been defeated!", messageColor);
 				}
 				RaidKillCount = 0;
+				RaidWaves = 0;
 			}
+			/*
+						 * 			if (RaidEvent)
+						{
+							for (int k = 0; k < 7; k++)
+							{
+								progressPerWave = (RaidWaves * 20);
+							}
+							NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 2f, RaidWaves);
+							return;
+						}
+						int progressPerWave = (new int[8])[RaidWaves];
+
+						*/
 		}
 	}
 }

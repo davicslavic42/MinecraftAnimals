@@ -46,7 +46,7 @@ namespace MinecraftAnimals.Animals.Neutral
 			GlobalTimer++;
 			if (Phase == (int)AIStates.Normal)
 			{
-				npc.velocity.X = 1.5f * npc.direction;
+				npc.velocity.X = 2.25f * npc.direction;
 				npc.velocity.Y = -0.95f;
 				if (GlobalTimer % 200 == 0)
 				{
@@ -77,9 +77,10 @@ namespace MinecraftAnimals.Animals.Neutral
 					npc.life = 0;
 				}
 			}
-			if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid < 0)
+			if (!npc.wet)
 			{
-				npc.velocity.Y = 2.5f;
+				npc.velocity.Y = 1.5f;
+				GlobalTimer = 110;
 			}
 		}
 		public override void HitEffect(int hitDirection, double damage)
