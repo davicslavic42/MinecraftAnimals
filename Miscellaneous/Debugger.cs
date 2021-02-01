@@ -54,6 +54,8 @@ namespace MinecraftAnimals.Miscellaneous
 		{
 			string key = "The Illagers are coming!";
 			Color messageColor = Color.Orange;
+			MCAWorld.RaidWaves = 0;
+			MCAWorld.RaidKillCount = 0;
 			if (Main.netMode == 2) // Server
 			{
 				NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);

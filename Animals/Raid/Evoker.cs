@@ -56,6 +56,7 @@ namespace MinecraftAnimals.Animals.Raid
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
+            int attackType = 1;
             npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
@@ -85,32 +86,32 @@ namespace MinecraftAnimals.Animals.Raid
 
                 if (npc.ai[3] == 200)
                 {
-                    switch (Main.rand.Next(2))
+                    attackType = (Main.rand.Next(2));
+                    if(attackType == 0)
                     {
-                        case 0:
+                        for (int i = 0; i < 2; i++)
+                        {
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 125, (int)npc.position.Y), NPCType<Vex>(), 0);
+                        }
+                        npc.ai[3] = -200;
+                    }
+                    if (attackType == 1)
+                    {
+                        if (player.Distance(npc.Center) < 125f)
+                        {
                             for (int i = 0; i < 2; i++)
                             {
-                                NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 125, (int)npc.position.Y), NPCType<Vex>(), 0);
+                                Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
                             }
-                            npc.ai[3] = -200;
-                            return;
-                        case 1:
-                            if (player.Distance(npc.Center) < 125f)
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 7; i++)
                             {
-                                for (int i = 0; i < 2; i++)
-                                {
-                                    Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
-                                }
+                                Projectile.NewProjectile(((npc.Center.X + 1) + (i * 110) * npc.direction), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
                             }
-                            else
-                            {
-                                for (int i = 0; i < 7; i++)
-                                {
-                                    Projectile.NewProjectile(((npc.Center.X + 1) + (i * 110) * npc.direction), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
-                                }
-                            }
-                            npc.ai[3] = 25;
-                            return;
+                        }
+                        npc.ai[3] = 25;
                     }
                 }
                 else

@@ -15,6 +15,7 @@ using Terraria.Utilities;
 using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
 using Microsoft.Xna.Framework;
+using MinecraftAnimals.Animals.Raid;
 
 namespace MinecraftAnimals
 {
@@ -23,8 +24,17 @@ namespace MinecraftAnimals
 		public static bool RaidEvent = false;
 		public static int RaidWaves = NPC.waveNumber;
 		public static float RaidKillCount = NPC.waveKills;
-		public static int MaxRaidWaves = 7;
 		public static bool downedRaid = false;
+		static int RaidEnemyType = 0;
+		int Raiders = (new int[5]
+		{
+				NPCType<Evoker>(),
+				NPCType<Pillager>(),
+				NPCType<Ravager>(),
+				NPCType<Witch>(),
+				NPCType<Vindicator>(),
+		})[RaidEnemyType];
+
 		public override void Initialize()
 		{
 			downedRaid = false;
@@ -61,6 +71,9 @@ namespace MinecraftAnimals
 		}
 		public override void PreUpdate()
 		{
+			RaidWaves = 0;
+			RaidKillCount = 0f;
+			int MaxRaidWaves = 7;
 			int progressPerWave = (new int[8]
 			{
 				0,
@@ -72,18 +85,28 @@ namespace MinecraftAnimals
 				160,
 				0
 			})[RaidWaves];
-			NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 2f, RaidWaves);
-			if (RaidKillCount >= progressPerWave)
-			{
-				RaidKillCount = 0;
-				RaidWaves += 1;
-			}
+			Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, 1, RaidWaves);
+			int RaiderCounter = NPC.CountNPCS(Raiders);
 			if (RaidWaves == MaxRaidWaves)
+			{
+				EndRaidEvent();
+			}
+		}
+		public static void EndRaidEvent()
+		{
+			if (RaidEvent)
 			{
 				RaidEvent = false;
 				downedRaid = true;
+				if (Main.netMode != 1)
+				{
+					RaidKillCount = 0;
+					RaidWaves = 0;
+				}
 				if (Main.netMode == NetmodeID.Server)
+                {
 					NetMessage.SendData(MessageID.WorldData); // Immediately inform clients of new world state.
+				}
 				string key = "The Raid has been defeated!";
 				Color messageColor = Color.Orange;
 				if (Main.netMode == 2) // Server
@@ -94,22 +117,58 @@ namespace MinecraftAnimals
 				{
 					Main.NewText("The Raid has been defeated!", messageColor);
 				}
-				RaidKillCount = 0;
 				RaidWaves = 0;
+				RaidKillCount = 0f;
 			}
-			/*
-						 * 			if (RaidEvent)
-						{
-							for (int k = 0; k < 7; k++)
-							{
-								progressPerWave = (RaidWaves * 20);
-							}
-							NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 2f, RaidWaves);
-							return;
-						}
-						int progressPerWave = (new int[8])[RaidWaves];
-
-						*/
 		}
+
+		/*
+			 * 			if (RaidEvent)
+			{
+				for (int k = 0; k < 7; k++)
+				{
+					progressPerWave = (RaidWaves * 20);
+				}
+				NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 2f, RaidWaves);
+				return;
+			}
+			int progressPerWave = (new int[8])[RaidWaves];
+					NetMessage.SendData(78, 1, -1, null, (int)RaidKillCount, progressPerWave, 1, RaidWaves);
+					float progress = MathHelper.Clamp(nPC.ai[0] / 450f, 0f, 1f);
+					if (waveKills >= (float)num && num != 0)
+			{
+				waveKills = 0f;
+				waveNumber++;
+				num = array[waveNumber];
+				if (networkText != NetworkText.Empty)
+				{
+					if (Main.netMode == 0)
+					{
+						Main.NewText(networkText.ToString(), 175, 75);
+					}
+					else if (Main.netMode == 2)
+					{
+						NetMessage.BroadcastChatMessage(networkText, new Color(175, 75, 255));
+					}
+					if (waveNumber == 15)
+					{
+						AchievementsHelper.NotifyProgressionEvent(14);
+					}
+				}
+			}
+			if (waveKills != num3 && num2 != 0f)
+			{
+				if (Main.netMode != 1)
+				{
+					Main.ReportInvasionProgress((int)waveKills, num, 1, waveNumber);
+				}
+				if (Main.netMode == 2)
+				{
+					NetMessage.SendData(78, -1, -1, null, Main.invasionProgress, Main.invasionProgressMax, 1f, waveNumber);
+				}
+			}
+
+			*/
+
 	}
 }
