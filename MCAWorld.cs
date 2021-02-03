@@ -25,8 +25,8 @@ namespace MinecraftAnimals
 		public static int RaidWaves = NPC.waveNumber;
 		public static float RaidKillCount = NPC.waveKills;
 		public static bool downedRaid = false;
-		static int RaidEnemyType = 0;
-		int Raiders = (new int[5]
+		static int RaidEnemyType = 0; //attribute to contain the raid enemeies
+	    static int Raiders = (new int[5]
 		{
 				NPCType<Evoker>(),
 				NPCType<Pillager>(),
@@ -71,31 +71,56 @@ namespace MinecraftAnimals
 		}
 		public override void PreUpdate()
 		{
+			string wavekey = ("Wave " + (RaidWaves) + " has been defeated!");
+			Color messageColor1 = Color.Red;
 			RaidWaves = 0;
 			RaidKillCount = 0f;
-			int MaxRaidWaves = 7;
+			int RaiderCounter = NPC.CountNPCS(Raiders);
 			int progressPerWave = (new int[8]
 			{
 				0,
-				25,
+				20,
+				30,
 				40,
 				50,
-				80,
-				100,
-				160,
+				70,
+				90,
 				0
 			})[RaidWaves];
-			Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, 1, RaidWaves);
-			int RaiderCounter = NPC.CountNPCS(Raiders);
-			if (RaidWaves == MaxRaidWaves)
+			if (RaidKillCount >= progressPerWave)
+            {
+				RaidWaves += 1;
+				RaidKillCount = 0f;
+				if (Main.netMode == 2) // Server
+				{
+					NetMessage.BroadcastChatMessage(NetworkText.FromKey(wavekey), messageColor1);
+				}
+				else if (Main.netMode == 0) // Single Player
+				{
+					Main.NewText(("Wave" + (RaidWaves) + "has been defeated!"), messageColor1);
+				}
+			}
+			if (RaidWaves == 7)
 			{
 				EndRaidEvent();
+			}
+			if (RaidKillCount != NPC.waveKills ) //num3 is wavekilss and num2 is a float value added to wave kills
+			{
+				if (Main.netMode != 1)
+				{
+					Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, 1, RaidWaves);
+				}
+				if (Main.netMode == 2)
+				{
+					NetMessage.SendData(78, -1, -1, null, (int)RaidKillCount, progressPerWave, 1f, RaidWaves);
+				}
 			}
 		}
 		public static void EndRaidEvent()
 		{
 			if (RaidEvent)
 			{
+				Color messageColor = Color.Orange;
 				RaidEvent = false;
 				downedRaid = true;
 				if (Main.netMode != 1)
@@ -108,7 +133,6 @@ namespace MinecraftAnimals
 					NetMessage.SendData(MessageID.WorldData); // Immediately inform clients of new world state.
 				}
 				string key = "The Raid has been defeated!";
-				Color messageColor = Color.Orange;
 				if (Main.netMode == 2) // Server
 				{
 					NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
@@ -156,7 +180,7 @@ namespace MinecraftAnimals
 					}
 				}
 			}
-			if (waveKills != num3 && num2 != 0f)
+			if (waveKills != num3 && num2 != 0f) //num3 is wavekilss and num2 is a float value added to wave kills
 			{
 				if (Main.netMode != 1)
 				{
