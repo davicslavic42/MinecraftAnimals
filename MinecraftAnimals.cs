@@ -109,23 +109,7 @@ namespace MinecraftAnimals
                 layers.Insert(index, orionProgress);
             }
         }
-
-        public void DrawRaidEvent(SpriteBatch spriteBatch)
-        {
-            if (MCAWorld.RaidEvent && !Main.gameMenu)
-            {
-                float scaleMultiplier = 0.5f + 1 * 0.5f;
-                float alpha = 0.5f;
-                Texture2D progressBg = Main.colorBarTexture;
-                Texture2D progressColor = Main.colorBarTexture;
-                Texture2D orionIcon = GetTexture("Items/Blocks/Banners/Ominousbanner"); //MAKE RAID BANNER ITEM FOR NOW
-                Texture2D RaidBar = GetTexture("RaidProgressBar");
-                const string orionDescription = "Raid";
-                Color descColor = new Color(39, 86, 134);
-
-                Color waveColor = new Color(255, 20, 20);
-                Color barrierColor = new Color(255, 241, 51);
-
+                        /*
                 try
                 {
                     //draw the background for the waves counter
@@ -152,7 +136,7 @@ namespace MinecraftAnimals
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
                     /*
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
-                    */
+
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
                     spriteBatch.Draw(RaidBar, waveProgressBar.Location.ToVector2() + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
 
@@ -178,7 +162,66 @@ namespace MinecraftAnimals
                 {
                     ErrorLogger.Log(e.ToString());
                 }
+                */
+
+        public void DrawRaidEvent(SpriteBatch spriteBatch)
+        {
+            if (MCAWorld.RaidEvent && !Main.gameMenu)
+            {
+                float scaleMultiplier = 0.5f + 1 * 0.5f;
+                float alpha = 0.5f;
+                Texture2D progressBg = Main.colorBarTexture;
+                Texture2D progressColor = Main.colorBarTexture;
+                Texture2D orionIcon = GetTexture("Items/Blocks/Banners/Ominousbanner"); //MAKE RAID BANNER ITEM FOR NOW
+                Texture2D RaidBar = GetTexture("RaidProgressBar");
+                const string orionDescription = "Raid";
+                Color descColor = new Color(39, 86, 134);
+
+                Color waveColor = new Color(255, 20, 20);
+                Color barrierColor = new Color(255, 241, 51);
+                try
+                {
+                    //draw the background for the waves counter
+                    const int offsetX = 20;
+                    const int offsetY = 20;
+                    int width = (int)(200f * scaleMultiplier);
+                    int height = (int)(46f * scaleMultiplier);
+                    Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
+                    // TESTING WAVE BG POSITION CHANGE
+                    Vector2 raidBarPosition = new Vector2((Main.screenWidth - (Main.screenWidth / 2)), ((Main.screenHeight * 0.2f) - offsetY - 23f));
+                    //draw wave text
+
+                    string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(MCAWorld.progressPerWave - MCAWorld.RaidKillCount) / 150f) * 100);
+                    Utils.DrawBorderString(spriteBatch, waveText, raidBarPosition, Color.White, scaleMultiplier, 0.5f, -0.1f);
+
+                    //draw the progress bar
+
+                    if (MCAWorld.RaidKillCount == 0)
+                    {
+                    }
+                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X + waveBackground.Width * 0.5f, waveBackground.Y + waveBackground.Height * 0.75f), new Vector2(progressColor.Width, progressColor.Height));
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)MCAWorld.RaiderCounter / 100f), 0f, 1f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
+                    Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
+                    /*
+                    spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
+                    */
+                    spriteBatch.Draw(progressBg, raidBarPosition + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier * 2, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RaidBar, raidBarPosition + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier * 2, SpriteEffects.None, 0f);
+
+                    //draw the icon with the event description
+
+                    //draw the background
+
+                    //draw text
+
+                }
+                catch (Exception e)
+                {
+                    ErrorLogger.Log(e.ToString());
+                }
             }
+
         }
+
     }
 }

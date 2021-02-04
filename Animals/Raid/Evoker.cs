@@ -159,14 +159,13 @@ namespace MinecraftAnimals.Animals.Raid
 
         public override void NPCLoot()
         {
-            if(MCAWorld.RaidEvent == true)
+            if(MCAWorld.RaidEvent)
             {
-                MCAWorld.RaidKillCount += 1;
+                MCAWorld.RaidKillCount += 1f;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;

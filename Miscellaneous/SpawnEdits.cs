@@ -16,9 +16,17 @@ namespace MinecraftAnimals
 {
     class SpawnEdits : GlobalNPC
     {
-        public override void EditSpawnPool(System.Collections.Generic.IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
+        public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)//thanks oli
         {
-            pool.Clear();
+            if(MCAWorld.RaidEvent == true)
+            {
+                pool.Clear();
+                pool.Add(MCAWorld.Raiders, 20f);
+                if(MCAWorld.RaiderCounter >= MCAWorld.progressPerWave)
+                {
+                    pool.Clear();
+                }
+            }
         }
     }
 }
