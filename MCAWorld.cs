@@ -1,6 +1,4 @@
-﻿using MinecraftAnimals.Tiles;
-using MinecraftAnimals.Tiles.Trees;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,16 +23,16 @@ namespace MinecraftAnimals
 		public static int RaidWaves = NPC.waveNumber;
 		public static float RaidKillCount = NPC.waveKills;
 		public static bool downedRaid = false;
-		static int RaidEnemyType = 0; //attribute to contain the raid enemeies
-	    public static int Raiders = (new int[5]
+		public static int RaidEnemyType = 0; //attribute to contain the raid enemeies
+		public static int[] Raiders = (new int[5]
 		{
 				NPCType<Evoker>(),
 				NPCType<Pillager>(),
 				NPCType<Ravager>(),
 				NPCType<Witch>(),
 				NPCType<Vindicator>()
-		})[RaidEnemyType];
-		public static int RaiderCounter = NPC.CountNPCS(RaidEnemyType);// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
+		});
+		public static int RaiderCounter = NPC.CountNPCS(Raiders.Length);// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
 		public static int progressPerWave = (new int[8]
 		{
 				0,
@@ -84,6 +82,8 @@ namespace MinecraftAnimals
 		}
 		public override void PreUpdate()
 		{
+			int printTimer = 0;
+			printTimer++;
 			string wavekey = ("Wave has been defeated!");
 			Color messageColor1 = Color.Red;
 			RaidWaves = 0;
@@ -116,10 +116,14 @@ namespace MinecraftAnimals
 					NetMessage.SendData(78, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
 				}
 			}
-			if(RaidKillCount % 10f == 0 && RaidKillCount != 0)
+			if(printTimer % 100 == 0)
             {
-				Main.NewText("your raidkills are actually working!");
-            }
+				Main.NewText(RaiderCounter + "enemy counter");
+				Main.NewText(RaidKillCount + " kills");
+				Main.NewText(progressPerWave + "progress per wave");
+				Main.NewText(RaidWaves + "current wave");
+			}
+
 		}
 		public static void EndRaidEvent()
 		{
@@ -336,6 +340,19 @@ namespace MinecraftAnimals
 				killCount[i] = 0;
 			}
 		}
+					for (int i = 0; i <= progressPerWave.Length; i++)
+			{
+				progressPerWave[i] = RaidWaves * 20;
+			}
+				public static int RaidEnemyType = 0; //attribute to contain the raid enemeies
+	    public static int Raiders = (new int[5]
+		{
+				NPCType<Evoker>(),
+				NPCType<Pillager>(),
+				NPCType<Ravager>(),
+				NPCType<Witch>(),
+				NPCType<Vindicator>()
+		})[RaidEnemyType];
 
 
 			*/

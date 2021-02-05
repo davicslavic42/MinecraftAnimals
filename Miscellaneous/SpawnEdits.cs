@@ -21,8 +21,8 @@ namespace MinecraftAnimals
             if(MCAWorld.RaidEvent == true)
             {
                 pool.Clear();
-                pool.Add(MCAWorld.Raiders, 20f);
-                if(MCAWorld.RaiderCounter >= MCAWorld.progressPerWave)
+                pool.Add(MCAWorld.Raiders.Length, 20f);
+                if(MCAWorld.RaiderCounter >= MCAWorld.progressPerWave + 1)
                 {
                     pool.Clear();
                 }

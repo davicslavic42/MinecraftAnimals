@@ -70,7 +70,8 @@ namespace MinecraftAnimals
 
                 case ModMessageType.StartRaidEvent:
                     MCAWorld.RaidEvent = true;
-                    MCAWorld.RaidKillCount = 0;
+                    MCAWorld.RaidKillCount = 0f;
+                    MCAWorld.RaidWaves = 0;
                     if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.SendData(MessageID.WorldData); // Immediately inform clients of new world state.

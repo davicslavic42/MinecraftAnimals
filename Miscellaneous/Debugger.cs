@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Miscellaneous
 				Main.PlaySound(SoundID.Roar, player.position, 0);
 				MCAWorld.RaidEvent = true;
 			}
-			if (Main.netMode == 1 && player.whoAmI == Main.myPlayer)
+			if (Main.netMode == 2 && player.whoAmI == Main.myPlayer)
 			{
 				ModPacket packet = mod.GetPacket();
 				packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);

@@ -41,7 +41,7 @@ namespace MinecraftAnimals.Animals.Raid
             }
         }        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
-        public enum AIStates
+        internal enum AIStates
         {
             Normal = 0,
             Attack = 1,
@@ -60,6 +60,7 @@ namespace MinecraftAnimals.Animals.Raid
             npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
+                npc.velocity.Y = 2 ;
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
