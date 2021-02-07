@@ -13,8 +13,8 @@ namespace MinecraftAnimals.Raid
     public class RaidWorld : ModWorld
     {
         public static bool RaidEvent = false;
-        public static int RaidWaves = NPC.waveNumber;
-        public static float RaidKillCount = NPC.waveKills;
+        public static int RaidWaves = 0;
+        public static float RaidKillCount = 0;
         public static bool downedRaid = false;
         public static int RaiderCounter = 0;// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
         public static int[] Raiders = (new int[5]
@@ -65,42 +65,37 @@ namespace MinecraftAnimals.Raid
             flags = new BitsByte();
             flags[1] = RaidEvent;
             writer.Write(flags);
-            writer.Write(RaidKillCount);j
-        }
+            writer.Write(RaidKillCount);
+			writer.Write(RaidWaves);
+		}
 
-        public override void NetReceive(BinaryReader reader)
+		public override void NetReceive(BinaryReader reader)
         {
             BitsByte flags = reader.ReadByte();
             downedRaid = flags[0];
             flags = reader.ReadByte();
             RaidEvent = flags[1];
             RaidKillCount = reader.ReadInt32();
-        }
+			RaidWaves = reader.ReadInt32();
+		}
         public override void PreUpdate()
         {
             if (RaidEvent)
             {
-                foreach (int RaidEnemytype in Raiders)
-                {
-                    RaiderCounter = NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
-                }
-                if (RaidWaves == 7)
+				for (int n = 0; n < 150; n++)
+				{
+					NPC N = Main.npc[n];
+					if (N.active && N.type == NPCType<Pillager>() || N.type == NPCType<Evoker>() || N.type == NPCType<Ravager>() || N.type == NPCType<Witch>() || N.type == NPCType<Vindicator>())
+					{
+						RaiderCounter += 1;
+					}
+				}
+				if (RaidWaves == 7)
                 {
                     EndRaidEvent();
                 }
-                if (RaidKillCount != 0) //num3 is wavekilss and num2 is a float value added to wave kills
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, 1, RaidWaves);
-                    }
-                    if (Main.netMode == NetmodeID.Server)
-                    {
-                        NetMessage.SendData(MessageID.InvasionProgressReport, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
-                    }
-                }
-            }
-        }
+			}
+		}
 
         public override void PostUpdate()
         {
@@ -161,7 +156,7 @@ namespace MinecraftAnimals.Raid
             }
         }
 
-        /*
+		/*
 			{
 				waveKills = 0f;
 				waveNumber++;
@@ -359,9 +354,21 @@ namespace MinecraftAnimals.Raid
 				NPCType<Witch>(),
 				NPCType<Vindicator>()
 		})[RaidEnemyType];
+		                foreach (int RaidEnemytype in Raiders)
+                {
+                    RaiderCounter += NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
+                }
 
+						if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, -1, RaidWaves);
+				}
+				if (Main.netMode == NetmodeID.Server)
+				{
+					NetMessage.SendData(MessageID.InvasionProgressReport, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
+				}
 
 			*/
 
-    }
+	}
 }

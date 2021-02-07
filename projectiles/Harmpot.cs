@@ -21,7 +21,7 @@ namespace MinecraftAnimals.projectiles
             projectile.penetrate = 3;
             projectile.hide = false;
             projectile.damage = 5;
-            projectile.timeLeft = 50;
+            projectile.timeLeft = 350;
         }
         public int TargetWhoAmI
         {
@@ -42,8 +42,8 @@ namespace MinecraftAnimals.projectiles
 
             if (TargetWhoAmI >= MAX_TICKS)
             {
-                const float velXmult = 0.99f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
-                const float velYmult = 0.1f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
+                const float velXmult = 0.98f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
+                const float velYmult = 0.15f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
                 TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
                 projectile.velocity.X *= velXmult;
                 projectile.velocity.Y += velYmult;

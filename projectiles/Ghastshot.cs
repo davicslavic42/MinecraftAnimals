@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
+using MinecraftAnimals.MCAConfigs;
 
 namespace MinecraftAnimals.projectiles
 {
@@ -124,6 +125,7 @@ namespace MinecraftAnimals.projectiles
             projectile.position.Y = projectile.position.Y - (float)(projectile.height / 2);
 
             // TODO, tmodloader helper method
+            if (ModContent.GetInstance<Configs>().MobGriefing)
             {
                 int explosionRadius = 5;
                 //if (projectile.type == 29 || projectile.type == 470 || projectile.type == 637)
@@ -190,9 +192,9 @@ namespace MinecraftAnimals.projectiles
                                 if (canKillTile)
                                 {
                                     WorldGen.KillTile(i, j, false, false, false);
-                                    if (!Main.tile[i, j].active() && Main.netMode != 0)
+                                    if (!Main.tile[i, j].active() && Main.netMode != NetmodeID.SinglePlayer)
                                     {
-                                        NetMessage.SendData(17, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
+                                        NetMessage.SendData(MessageID.TileChange, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
                                     }
                                 }
                             }
@@ -205,9 +207,9 @@ namespace MinecraftAnimals.projectiles
                                         if (Main.tile[x, y] != null && Main.tile[x, y].wall > 0 && canKillWalls && WallLoader.CanExplode(x, y, Main.tile[x, y].wall))
                                         {
                                             WorldGen.KillWall(x, y, false);
-                                            if (Main.tile[x, y].wall == 0 && Main.netMode != 0)
+                                            if (Main.tile[x, y].wall == 0 && Main.netMode != NetmodeID.SinglePlayer)
                                             {
-                                                NetMessage.SendData(17, -1, -1, null, 2, (float)x, (float)y, 0f, 0, 0, 0);
+                                                NetMessage.SendData(MessageID.TileChange, -1, -1, null, 2, (float)x, (float)y, 0f, 0, 0, 0);
                                             }
                                         }
                                     }
@@ -216,6 +218,10 @@ namespace MinecraftAnimals.projectiles
                         }
                     }
                 }
+                AchievementsHelper.CurrentlyMining = false;
+            }
+            else
+            {
                 AchievementsHelper.CurrentlyMining = false;
             }
         }

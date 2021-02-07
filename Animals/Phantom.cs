@@ -49,8 +49,15 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
-                AttackTimer++;
-                npc.velocity.Y = (float)Math.Sin(GlobalTimer * 0.02f * AttackTimer * 0.04f);
+                npc.ai[1] = -5;
+                if(npc.ai[1] == -5)
+                {
+                    npc.ai[2] = Main.rand.Next(50);
+                    npc.ai[3] = Main.rand.Next(110, 161) * 0.01f * (Main.rand.NextBool() ? -1 : 1);
+                }
+
+                npc.rotation = npc.velocity.X * 0.2f;
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[2]++ * 0.02f * npc.ai[2]) * 0.6f);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer == 5)
                 {
@@ -84,11 +91,12 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Death)
             {
+                npc.ai[2] = 0f;
                 npc.damage = 0;
                 npc.ai[2] += 1f; // increase our death timer.
                 npc.netUpdate = true;
                 npc.velocity.X = 0;
-                npc.velocity.Y += 1.5f;
+                npc.velocity.Y = 0;
                 npc.dontTakeDamage = true;
                 npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
                 if (npc.ai[2] >= 110f)

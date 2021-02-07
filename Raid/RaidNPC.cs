@@ -32,9 +32,9 @@ namespace MinecraftAnimals.Raid
         { //Spawn info for the Raid npcs and spawn info
 			new Dictionary<int, float> { //wave 1
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 5.35f},
+                {NPCType<Pillager>(), 7.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 3.73f},
+                {NPCType<Vindicator>(), 5.73f},
                 {NPCType<Witch>(), 0f},
             },
             new Dictionary<int, float> { //wave 2
@@ -103,7 +103,7 @@ namespace MinecraftAnimals.Raid
                 { //iterate through the spawn pool, and check if the killed npc's type is in the spawn pool
                     if (key.Key == npc.type)
                     { //add points
-                        RaidWorld.RaidKillCount += 1;
+                        RaidWorld.RaidKillCount += 1f;
                     }
                 }
             }

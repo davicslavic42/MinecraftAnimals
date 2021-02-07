@@ -96,6 +96,10 @@ namespace MinecraftAnimals
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             MCAWorld modWorld = (MCAWorld)GetModWorld("MCAWorld");
+            /*
+            RaidWorld modWorldInvasion = (RaidWorld)GetModWorld("RaidWorld");
+            */
+
             if (RaidWorld.RaidEvent)
             {
                 int index = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
@@ -186,20 +190,20 @@ namespace MinecraftAnimals
                     const int offsetY = 20;
                     int width = (int)(200f * scaleMultiplier);
                     int height = (int)(46f * scaleMultiplier);
-                    Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
+                    Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2 - 100), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
                     // TESTING WAVE BG POSITION CHANGE
                     Vector2 raidBarPosition = new Vector2((Main.screenWidth - (Main.screenWidth / 2)), ((Main.screenHeight * 0.2f) - offsetY - 23f));
                     //draw wave text
 
                     string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 150f) * 100);
-                    Utils.DrawBorderString(spriteBatch, waveText, raidBarPosition, Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 200, raidBarPosition.Y - 50), Color.White, scaleMultiplier, 0.5f, -0.1f);
 
                     //draw the progress bar
 
                     if (RaidWorld.RaidKillCount == 0)
                     {
                     }
-                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X - 250f, waveBackground.Y), new Vector2(progressColor.Width, progressColor.Height));
+                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X - 1250f, waveBackground.Y), new Vector2(progressColor.Width, progressColor.Height));
                     Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp((float)((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 100f), 0f, 2f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
                     /*
