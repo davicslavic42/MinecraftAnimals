@@ -14,7 +14,7 @@ using MinecraftAnimals.Items.Weapons;
 
 
 
-namespace MinecraftAnimals.Animals.Raid
+namespace MinecraftAnimals.Raid.Illagers
 {
     public class Ravager : ModNPC
     {
@@ -37,11 +37,14 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (MCAWorld.RaidEvent)
+            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
             {
-                return 10f;
+                return 3.5f;
             }
-            return SpawnCondition.Overworld.Chance * 0f;
+            else
+            {
+                return 0f;
+            }
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -147,9 +150,9 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override void NPCLoot()
         {
-            if (MCAWorld.RaidEvent == true)
+            if (RaidWorld.RaidEvent)
             {
-                MCAWorld.RaidKillCount += 2;
+                RaidWorld.RaidKillCount += 1f;
             }
         }
         public override void HitEffect(int hitDirection, double damage)

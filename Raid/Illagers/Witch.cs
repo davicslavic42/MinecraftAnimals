@@ -10,7 +10,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using MinecraftAnimals.BaseAI;
 
-namespace MinecraftAnimals.Animals.Raid
+namespace MinecraftAnimals.Raid.Illagers
 {
     public class Witch : ModNPC
     {
@@ -33,9 +33,9 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (MCAWorld.RaidEvent)
+            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
             {
-                return 25f;
+                return 3.5f;
             }
             else
             {
@@ -160,9 +160,9 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override void NPCLoot()
         {
-            if (MCAWorld.RaidEvent == true)
+            if (RaidWorld.RaidEvent)
             {
-                MCAWorld.RaidKillCount += 1;
+                RaidWorld.RaidKillCount += 1f;
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

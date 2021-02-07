@@ -60,7 +60,8 @@ namespace MinecraftAnimals
         {
             StartRaidEvent,
             UpdateLocalCursor,
-            SummonBoss
+            SummonBoss,
+            UpdateWaveInfo
         }
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
@@ -69,9 +70,9 @@ namespace MinecraftAnimals
             {
 
                 case ModMessageType.StartRaidEvent:
-                    MCAWorld.RaidEvent = true;
-                    MCAWorld.RaidKillCount = 0f;
-                    MCAWorld.RaidWaves = 0;
+                    RaidWorld.RaidEvent = true;
+                    RaidWorld.RaidKillCount = 0f;
+                    RaidWorld.RaidWaves = 1;
                     if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.SendData(MessageID.WorldData); // Immediately inform clients of new world state.
@@ -82,8 +83,8 @@ namespace MinecraftAnimals
                 case ModMessageType.SummonBoss:
                     Vector2 sumonerLocation = reader.ReadVector2();
                     int type = reader.ReadInt32();
-                    int num7 = NPC.NewNPC((int)sumonerLocation.X, (int)sumonerLocation.Y - 2000, type);
-                    if (Main.netMode == 2)
+                    int num7 = NPC.NewNPC((int)sumonerLocation.X, (int)sumonerLocation.Y - 1000, type);
+                    if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", new object[]
                         {
@@ -97,7 +98,7 @@ namespace MinecraftAnimals
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             MCAWorld modWorld = (MCAWorld)GetModWorld("MCAWorld");
-            if (MCAWorld.RaidEvent)
+            if (RaidWorld.RaidEvent)
             {
                 int index = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
                 LegacyGameInterfaceLayer orionProgress = new LegacyGameInterfaceLayer("Raid ",
@@ -167,7 +168,7 @@ namespace MinecraftAnimals
 
         public void DrawRaidEvent(SpriteBatch spriteBatch)
         {
-            if (MCAWorld.RaidEvent && !Main.gameMenu)
+            if (RaidWorld.RaidEvent && !Main.gameMenu)
             {
                 float scaleMultiplier = 0.5f + 1 * 0.5f;
                 float alpha = 0.5f;
@@ -192,22 +193,22 @@ namespace MinecraftAnimals
                     Vector2 raidBarPosition = new Vector2((Main.screenWidth - (Main.screenWidth / 2)), ((Main.screenHeight * 0.2f) - offsetY - 23f));
                     //draw wave text
 
-                    string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(MCAWorld.progressPerWave - MCAWorld.RaidKillCount) / 150f) * 100);
+                    string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 150f) * 100);
                     Utils.DrawBorderString(spriteBatch, waveText, raidBarPosition, Color.White, scaleMultiplier, 0.5f, -0.1f);
 
                     //draw the progress bar
 
-                    if (MCAWorld.RaidKillCount == 0)
+                    if (RaidWorld.RaidKillCount == 0)
                     {
                     }
-                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X + waveBackground.Width * 0.5f, waveBackground.Y + waveBackground.Height * 0.75f), new Vector2(progressColor.Width, progressColor.Height));
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)MCAWorld.RaiderCounter / 100f), 0f, 1f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
+                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X , waveBackground.Y ), new Vector2(progressColor.Width, progressColor.Height));
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)RaidWorld.RaiderCounter / 100f), 0f, 1f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
                     /*
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
                     */
-                    spriteBatch.Draw(progressBg, raidBarPosition + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier * 2, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(RaidBar, raidBarPosition + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier * 2, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(progressBg, raidBarPosition + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RaidBar, raidBarPosition + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
 
                     //draw the icon with the event description
 

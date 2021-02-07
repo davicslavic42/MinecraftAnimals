@@ -112,7 +112,7 @@ namespace MinecraftAnimals.Animals
 			{
 				Phase = (int)AIStates.Attack;
 			}
-			if (player.HeldItem.type == ItemType<Bone>() && npc.ai[3] != -10) Phase = (int)AIStates.Follow;
+			if (player.HeldItem.type == ItemType<Bone>() && npc.ai[3] != -10 && Phase != (int)AIStates.Death) Phase = (int)AIStates.Follow; //if player is holding a bone and dog is not dead nor hostile start to follow
 
 			int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
 			int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
@@ -166,7 +166,7 @@ namespace MinecraftAnimals.Animals
 			}
 			if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.1)
 			{
-				for (int n = 0; n < 50; n++)
+				for (int n = 0; n < 150; n++)
 				{
 					NPC N = Main.npc[n];
 					if (N.active && N.Distance(npc.Center) < 325f && (N.type == NPCType<Wolf>()))

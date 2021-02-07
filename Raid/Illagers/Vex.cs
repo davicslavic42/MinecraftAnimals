@@ -10,7 +10,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using MinecraftAnimals.BaseAI;
 
-namespace MinecraftAnimals.Animals.Raid
+namespace MinecraftAnimals.Raid.Illagers
 {
     public class Vex : ModNPC
     {
@@ -57,7 +57,7 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Normal)
             {
                 SpeedLim = 1;
-                npc.velocity.Y = 0.25f;
+                npc.velocity.Y = MathHelper.Clamp(0.25f, -1.9f, 1.9f);
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5)
@@ -144,6 +144,7 @@ namespace MinecraftAnimals.Animals.Raid
             {
                 npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.15f;
             }
+            /*
             if (SpeedLim == 1)//prevents the eocity from going above inputed number
             {
                 if (npc.velocity.X * npc.direction > 1.9f)
@@ -166,6 +167,7 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.velocity.Y = 3.5f * npc.direction;
                 }
             }
+            */
         }
         public override void HitEffect(int hitDirection, double damage)
         {

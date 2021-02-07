@@ -10,7 +10,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using MinecraftAnimals.BaseAI;
 
-namespace MinecraftAnimals.Animals.Raid
+namespace MinecraftAnimals.Raid.Illagers
 {
     public class Vindicator : ModNPC
     {
@@ -33,15 +33,18 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (MCAWorld.RaidEvent)
+            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
             {
-                return 35f;
+                return 3.5f;
             }
-            return SpawnCondition.Overworld.Chance * 0;
+            else
+            {
+                return 0f;
+            }
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
-      internal enum AIStates
+        internal enum AIStates
         {
             Normal = 0,
             Attack = 1,
@@ -122,9 +125,9 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override void NPCLoot()
         {
-            if (MCAWorld.RaidEvent == true)
+            if (RaidWorld.RaidEvent)
             {
-                MCAWorld.RaidKillCount += 1;
+                RaidWorld.RaidKillCount += 1f;
             }
         }
         public override void HitEffect(int hitDirection, double damage)

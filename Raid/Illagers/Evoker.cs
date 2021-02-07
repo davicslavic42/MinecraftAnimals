@@ -5,26 +5,25 @@ using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using static Terraria.ModLoader.ModContent;
-using System;
-using MinecraftAnimals.BaseAI;
 
-namespace MinecraftAnimals.Animals.Raid
+namespace MinecraftAnimals.Raid.Illagers
 {
-    public class Pillager : ModNPC
+    public class Evoker : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pillager");
+            DisplayName.SetDefault("Evoker");
             Main.npcFrameCount[npc.type] = 9;
         }
         public override void SetDefaults()
         {
-            npc.width = 32;
-            npc.height = 50;
+            npc.width = 60;
+            npc.height = 60;
             npc.lifeMax = 85;
-            npc.knockBackResist = 0f;
-            npc.damage = 8;
+            npc.knockBackResist = 1f;
+            npc.damage = 20;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -32,92 +31,100 @@ namespace MinecraftAnimals.Animals.Raid
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (MCAWorld.RaidEvent)
+            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
             {
-                return 45f;
+                return 3.5f;
             }
-            return SpawnCondition.Overworld.Chance * 0.03f;
-        }
-        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
+            else
+            {
+                return 0f;
+            }
+        }        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
         internal enum AIStates
         {
             Normal = 0,
             Attack = 1,
-            Shoot = 2,
-            Death = 3
+            Death = 2
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
+            int attackType = 1;
+            npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
-                npc.TargetClosest(false);
-                npc.velocity.X = 1 * npc.direction;
-                if (GlobalTimer == 5)
-                {
-                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
-                }
-                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
+                npc.velocity.Y = 2 ;
+                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 725f)
+
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
+                {
+                    npc.velocity.X = 1.25f * npc.direction;
+                }
+                if (player.Distance(npc.Center) < 325f)
                 {
                     Phase = (int)AIStates.Attack;
-                    GlobalTimer = 0;
-                }
-            }
-            if (Phase == (int)AIStates.Attack)
-            {
-                npc.TargetClosest(true);
-                npc.velocity.X = 1.4f * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
-                {
-                    Phase = (int)AIStates.Normal;
-                    GlobalTimer = 0;
-                }
-                if (player.Distance(npc.Center) < 350f)
-                {
-                    Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;
                 }
             }
             // In this state, a player has been targeted
-            if (Phase == (int)AIStates.Shoot)
+            if (Phase == (int)AIStates.Attack)
             {
-                npc.TargetClosest(true);
-                npc.velocity.X = 0f * npc.direction;
-                npc.velocity.Y += 0.5f;
-                if (npc.frameCounter == 144)
-                {
-                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
-                    _ = npc.Distance(npc.position) - 25;
-                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -50f);
+                int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y - 2), npc.width, (npc.height / 2 - 1), DustType<Dusts.Poteffect>(), 0f, 0f, 100, default(Color), 1f);// causes little potion effects to flaot around
+                Main.dust[dustIndex].scale = 0.2f + (float)Main.rand.Next(5) * 0.1f;
+                npc.ai[3]++;
+                npc.velocity.X = 0;
 
-                    npc.velocity.X += DirToRing.X;
-                    npc.velocity.Y += DirToRing.Y;
-
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 22, 3, Main.LocalPlayer.whoAmI);
-                }
-                if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                if (npc.ai[3] == 200)
                 {
-                    // Out targeted player seems to have left our range, so we'll go back to sleep.
-                    Phase = (int)AIStates.Attack;
-                    GlobalTimer = 0;
+                    attackType = (Main.rand.Next(2));
+                    if(attackType == 0)
+                    {
+                        for (int i = 0; i < 2; i++)
+                        {
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 125, (int)npc.position.Y), NPCType<Illagers.Vex>(), 0);
+                        }
+                        npc.ai[3] = -200;
+                    }
+                    if (attackType == 1)
+                    {
+                        if (player.Distance(npc.Center) < 125f)
+                        {
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Projectile.NewProjectile((npc.Center.X - 75) + (i * 145), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                Projectile.NewProjectile(((npc.Center.X + 1) + (i * 110) * npc.direction), npc.position.Y - 10, 0, 2, ProjectileType<projectiles.Techproj>(), 0, 3, Main.myPlayer);
+                            }
+                        }
+                        npc.ai[3] = 25;
+                    }
                 }
-                // If the targeted player is in attack range (250).
+                else
+                {
+                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 325f)
+                    {
+                        // Out targeted player seems to have left our range, so we'll go back to sleep.
+                        Phase = (int)AIStates.Normal;
+                        GlobalTimer = 0;
+                    }
+                }
             }
-            // In this state, we are in the Shoot. 
             if (Phase == (int)AIStates.Death)
             {
                 npc.damage = 0;
@@ -137,8 +144,8 @@ namespace MinecraftAnimals.Animals.Raid
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 14) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
@@ -150,16 +157,16 @@ namespace MinecraftAnimals.Animals.Raid
                 }
             }
         }
+
         public override void NPCLoot()
         {
-            if (MCAWorld.RaidEvent == true)
+            if(RaidWorld.RaidEvent)
             {
-                MCAWorld.RaidKillCount += 1;
+                RaidWorld.RaidKillCount += 1f;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            GlobalTimer = 0;
             if (npc.life <= 0)
             {
                 npc.life = 1;
@@ -189,21 +196,23 @@ namespace MinecraftAnimals.Animals.Raid
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;
         }
+
         // Our texture is 32x32 with 2 pixels of padding vertically, so 34 is the vertical spacing.  These are for my benefit and the numbers could easily be used directly in the code below, but this is how I keep code organized.
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
         private const int Frame_Walk_3 = 2;
         private const int Frame_Walk_4 = 3;
         private const int Frame_Walk_5 = 4;
-        private const int Frame_Shoot = 5;
-        private const int Frame_Shoot_2 = 6;
-        private const int Frame_Shoot_3 = 7;
-        private const int Frame_Shoot_4 = 8;
+        private const int Frame_Magic = 5;
+        private const int Frame_Magic_2 = 6;
+        private const int Frame_Magic_3 = 7;
+        private const int Frame_Magic_4 = 8;
+
         // Here in FindFrame, we want to set the animation frame our npc will use depending on what it is doing.
         // We set npc.frame.Y to x * frameHeight where x is the xth frame in our spritesheet, counting from 0. For convenience, I have defined some consts above.
         public override void FindFrame(int frameHeight)
@@ -216,7 +225,7 @@ namespace MinecraftAnimals.Animals.Raid
                 if (GlobalTimer <= 500)
                 {
                     if (++npc.frameCounter % 7 == 0)
-                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type] / 2) + 1) * frameHeight;
                 }
                 else
                 {
@@ -226,27 +235,21 @@ namespace MinecraftAnimals.Animals.Raid
             if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (++npc.frameCounter % 7 == 0)
-                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type]) - 4) * frameHeight;
-            }
-            if (Phase == (int)AIStates.Shoot)
-            {
-                npc.frameCounter++;
-                if (npc.frameCounter < 15)
+                if (npc.frameCounter < 7)
                 {
-                    npc.frame.Y = Frame_Shoot * frameHeight;
+                    npc.frame.Y = Frame_Magic * frameHeight;
                 }
-                else if (npc.frameCounter < 25)
+                else if (npc.frameCounter < 14)
                 {
-                    npc.frame.Y = Frame_Shoot_2 * frameHeight;
+                    npc.frame.Y = Frame_Magic_2 * frameHeight;
                 }
-                else if (npc.frameCounter < 135)
+                else if (npc.frameCounter < 28)
                 {
-                    npc.frame.Y = Frame_Shoot_3 * frameHeight;
+                    npc.frame.Y = Frame_Magic_3 * frameHeight;
                 }
-                else if (npc.frameCounter < 145)
+                else if (npc.frameCounter < 35)
                 {
-                    npc.frame.Y = Frame_Shoot_4 * frameHeight;
+                    npc.frame.Y = Frame_Magic_4 * frameHeight;
                 }
                 else
                 {
