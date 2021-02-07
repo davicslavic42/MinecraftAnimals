@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
@@ -88,7 +85,7 @@ namespace MinecraftAnimals.Animals
                 AttackTimer++;
                 npc.TargetClosest(true);
                 npc.velocity.X = 0.65f * npc.direction;
-                if ( AttackTimer == 220) //Check three states of AI_Timer, this will result in 3 shots with a delay of 15 frames
+                if (AttackTimer == 220) //Check three states of AI_Timer, this will result in 3 shots with a delay of 15 frames
                 {
                     Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
                     _ = npc.Distance(npc.position) - 50;
@@ -131,7 +128,7 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (GlobalTimer % 200 == 0 )
+            if (GlobalTimer % 200 == 0)
             {
                 npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer / 140f * 0.95f : npc.velocity.Y = GlobalTimer / 140f * 0.95f * -1f;
             }

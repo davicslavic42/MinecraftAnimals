@@ -1,11 +1,8 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Raid.Illagers
@@ -60,7 +57,7 @@ namespace MinecraftAnimals.Raid.Illagers
             npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
-                npc.velocity.Y = 2 ;
+                npc.velocity.Y = 2;
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
@@ -88,7 +85,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 if (npc.ai[3] == 200)
                 {
                     attackType = (Main.rand.Next(2));
-                    if(attackType == 0)
+                    if (attackType == 0)
                     {
                         for (int i = 0; i < 2; i++)
                         {
@@ -160,7 +157,7 @@ namespace MinecraftAnimals.Raid.Illagers
 
         public override void NPCLoot()
         {
-            if(RaidWorld.RaidEvent)
+            if (RaidWorld.RaidEvent)
             {
                 RaidWorld.RaidKillCount += 1f;
             }

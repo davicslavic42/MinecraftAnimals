@@ -1,13 +1,6 @@
-﻿using System.Linq;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using static Terraria.ModLoader.ModContent;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Security.Cryptography.X509Certificates;
+using Terraria;
 
 namespace MinecraftAnimals
 {
@@ -15,7 +8,7 @@ namespace MinecraftAnimals
     {
         public static float ManualMobRotation(float currentAngle, float nextAngle, float speed)
         {
-            
+
             float rotatetimer = 0f;
             int nextDirection = 1;
             float initialAngle = new Vector2((float)Math.Cos(currentAngle), (float)Math.Sin(currentAngle)).ToRotation();

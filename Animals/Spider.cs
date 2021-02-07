@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
@@ -184,9 +181,11 @@ namespace MinecraftAnimals.Animals
         {
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
-            if (Phase == (int)AIStates.Normal){
+            if (Phase == (int)AIStates.Normal)
+            {
                 npc.frameCounter++;
-                if (GlobalTimer <= 500) {
+                if (GlobalTimer <= 500)
+                {
                     if (++npc.frameCounter % 7 == 0)
                         npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type])) * frameHeight;
                 }
@@ -201,7 +200,8 @@ namespace MinecraftAnimals.Animals
                 if (++npc.frameCounter % 7 == 0)
                     npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
             }
-            if (Phase == (int)AIStates.Death)  {
+            if (Phase == (int)AIStates.Death)
+            {
                 npc.frame.Y = Frame_Walk * frameHeight;
             }
         }

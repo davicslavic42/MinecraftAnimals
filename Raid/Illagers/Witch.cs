@@ -1,14 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Raid.Illagers
 {
@@ -79,10 +74,12 @@ namespace MinecraftAnimals.Raid.Illagers
                     GlobalTimer = 0;
                 }
             }
-            if (Phase == (int)AIStates.Attack){
+            if (Phase == (int)AIStates.Attack)
+            {
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 725f){
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
+                {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
@@ -93,7 +90,8 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
             }
             // In this state, a player has been targeted
-            if (Phase == (int)AIStates.Shoot) { 
+            if (Phase == (int)AIStates.Shoot)
+            {
                 npc.TargetClosest(true);
                 AttackTimer = 0;
                 npc.velocity.X = 0 * npc.direction;
@@ -232,7 +230,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     npc.frame.Y = Frame_Throw * frameHeight;
                 }
-                else if(npc.frameCounter < 100)
+                else if (npc.frameCounter < 100)
                 {
                     npc.frame.Y = Frame_Walk * frameHeight;
                 }

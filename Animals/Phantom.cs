@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
@@ -57,7 +54,7 @@ namespace MinecraftAnimals.Animals
                 sineWaveCounter++;
                 npc.velocity.Y = (float)Math.Sin((Math.PI / 2) - sineWaveCounter + 1f);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
-                if(GlobalTimer == 5)
+                if (GlobalTimer == 5)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -5f);
                 }
@@ -140,7 +137,7 @@ namespace MinecraftAnimals.Animals
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY ),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

@@ -1,12 +1,8 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using MinecraftAnimals.BaseAI;
 using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
@@ -118,7 +114,7 @@ namespace MinecraftAnimals.Animals
                     i = 0;
                 }
             }
-            if ( Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].liquid > 40f)
+            if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].liquid > 40f)
             {
                 npc.velocity.X = 1.75f;
             }

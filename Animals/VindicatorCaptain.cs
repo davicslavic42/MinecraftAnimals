@@ -1,14 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
@@ -33,7 +28,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if(NPC.downedBoss1 == true)
+            if (NPC.downedBoss1 == true)
             {
                 return SpawnCondition.Overworld.Chance * 0.03f;
             }
@@ -75,7 +70,7 @@ namespace MinecraftAnimals.Animals
                 {
                     for (int i = 0; i < 3; i++)
                     {
-                        NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Pillager>(), 0);
+                        NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Illagers.Pillager>(), 0);
                     }
                     patrol = 1;
                 }

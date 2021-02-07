@@ -1,14 +1,10 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using MinecraftAnimals.BaseAI;
 
 
 namespace MinecraftAnimals.Animals
@@ -124,11 +120,12 @@ namespace MinecraftAnimals.Animals
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int) (Distance_ * angle.X); //controls the main area of the random teleport
-                    npc.position.Y = player.Center.Y + (int) (Distance_ * angle.Y);// this moves the npc to an area around the player
+                    npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
+                    npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
                     ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active()) {
+                    if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
+                    {
 
                         AttackTimer = 0;
                         Phase = (int)AIStates.TPFail;
@@ -146,7 +143,8 @@ namespace MinecraftAnimals.Animals
                 float tpfail = AttackTimer >= 10 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
             }
 
-            if (Main.tile[x,y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type]){
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
                 {
@@ -182,13 +180,14 @@ namespace MinecraftAnimals.Animals
             origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
 
             Color drawColor = npc.GetAlpha(lightColor);
-            if(Phase == (int)AIStates.Death)  {
+            if (Phase == (int)AIStates.Death)
+            {
                 Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 40),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY ),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

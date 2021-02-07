@@ -1,16 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using MinecraftAnimals.BaseAI;
-using System.Collections.Generic;
-using MinecraftAnimals.Items.Weapons;
 
 
 
@@ -84,7 +77,8 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (player.Distance(npc.Center) > 730f){
+                if (player.Distance(npc.Center) > 730f)
+                {
                     Phase = (int)AIStates.Normal;
                 }
                 if (AttackTimer >= 200 && player.Distance(npc.Center) < 250f)
@@ -92,10 +86,11 @@ namespace MinecraftAnimals.Raid.Illagers
                     npc.velocity.X = 0 * npc.direction;
                     npc.velocity = new Vector2(npc.direction * 12f, -4f);
                 }
-                else{
+                else
+                {
                     float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
                 }
-                if(AttackTimer >= 220)
+                if (AttackTimer >= 220)
                 {
                     AttackTimer = 0;
                 }
@@ -103,7 +98,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Phase == (int)AIStates.Roar)
             {
                 npc.velocity.X = 0f * npc.direction;
-                if(GlobalTimer >= 55)
+                if (GlobalTimer >= 55)
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -163,7 +158,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
-            if(Main.rand.Next(0,5) == 1 && GlobalTimer > 150)
+            if (Main.rand.Next(0, 5) == 1 && GlobalTimer > 150)
             {
                 Phase = (int)AIStates.Roar;
                 GlobalTimer = 0;

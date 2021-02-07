@@ -1,16 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using MinecraftAnimals.Tiles;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using Terraria.World.Generation;
 using static Terraria.ModLoader.ModContent;
-using static MinecraftAnimals.MCAWorld;
-using  MinecraftAnimals.Tiles;
 
 namespace MinecraftAnimals.Miscellaneous
 {

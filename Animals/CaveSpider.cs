@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
-using System;
-using MinecraftAnimals.BaseAI;
 
 namespace MinecraftAnimals.Animals
 {
@@ -150,7 +147,7 @@ namespace MinecraftAnimals.Animals
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
-            if(Phase != (int)AIStates.Death)
+            if (Phase != (int)AIStates.Death)
             {
                 Phase = (int)AIStates.Attack;
             }
