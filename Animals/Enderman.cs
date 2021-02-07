@@ -124,23 +124,30 @@ namespace MinecraftAnimals.Animals
                     npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
                     ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].active())
-                    {
-
-                        AttackTimer = 0;
-                        Phase = (int)AIStates.TPFail;
-                    }
-                    else
-                    {
-                        AttackTimer = 0;
-                        Phase = (int)AIStates.Attack; // if all is good it attacks normally
-                    }
+                }
+                int a = (int)(npc.position.X / 16);
+                int b = (int)(npc.position.Y / 16);
+                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type])
+                {
+                    Phase = (int)AIStates.TPFail;
+                }
+                else
+                {
+                    AttackTimer = 0;
+                    Phase = (int)AIStates.Attack; // if all is good it attacks normally
                 }
             }
             if (Phase == (int)AIStates.TPFail)
             {
+                tpCheck = true;
+                AttackTimer = 0;
                 AttackTimer++;
-                float tpfail = AttackTimer >= 10 ? Phase = (int)AIStates.TP : npc.alpha = 255; // while attack timer is less than 6 the alpha is maxxed making the enderman invisible while it attempts to tp again 
+                npc.velocity.X = 0;
+                npc.alpha = 255;
+                if (AttackTimer >= 10)
+                {
+                    Phase = (int)AIStates.TP;
+                }
             }
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
@@ -153,13 +160,16 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
+        public override bool PreAI()
+        {
+            return base.PreAI();
+        }
         public override void HitEffect(int hitDirection, double damage)
         {
             npc.friendly = false;
             Phase = (int)AIStates.Attack;
             if (npc.life <= 0)
             {
-                GlobalTimer = 0;
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }

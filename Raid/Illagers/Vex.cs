@@ -52,7 +52,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Phase == (int)AIStates.Normal)
             {
                 SpeedLim = 1;
-                npc.velocity.Y = MathHelper.Clamp(0.25f, -1.9f, 1.9f);
+                npc.velocity.Y = 0.25f;
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5)
@@ -139,16 +139,15 @@ namespace MinecraftAnimals.Raid.Illagers
             {
                 npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.15f;
             }
-            /*
             if (SpeedLim == 1)//prevents the eocity from going above inputed number
             {
                 if (npc.velocity.X * npc.direction > 1.9f)
                 {
                     npc.velocity.X = 1.9f * npc.direction;
                 }
-                if (npc.velocity.Y > 1.9f)
+                if (npc.velocity.Y > 1.5f)
                 {
-                    npc.velocity.Y = 1.9f * npc.direction;
+                    npc.velocity.Y = 1.5f * npc.direction;
                 }
             }
             else
@@ -162,7 +161,6 @@ namespace MinecraftAnimals.Raid.Illagers
                     npc.velocity.Y = 3.5f * npc.direction;
                 }
             }
-            */
         }
         public override void HitEffect(int hitDirection, double damage)
         {

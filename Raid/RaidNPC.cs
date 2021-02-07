@@ -80,7 +80,7 @@ namespace MinecraftAnimals.Raid
                 pool.Clear();
                 if (RaidWorld.RaidKillCount + RaidWorld.RaiderCounter <= RaidWorld.progressPerWave)
                 {
-                    IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves - 1); //find the spawn pool dictionary corresponding to the current tide wave
+                    IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves); //find the spawn pool dictionary corresponding to the current tide wave
                     foreach (KeyValuePair<int, float> key in spawnpool)
                     { //then add that dictionary info to the actual spawn pool
                         pool.Add(key.Key, key.Value);
@@ -98,7 +98,7 @@ namespace MinecraftAnimals.Raid
             if (RaidWorld.RaidEvent)
             { //check for ongoing raid
 
-                IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves - 1); //find the spawn pool dictionary corresponding to the current tide wave
+                IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves); //find the spawn pool dictionary corresponding to the current tide wave
                 foreach (KeyValuePair<int, float> key in spawnpool)
                 { //iterate through the spawn pool, and check if the killed npc's type is in the spawn pool
                     if (key.Key == npc.type)

@@ -65,7 +65,7 @@ namespace MinecraftAnimals.Raid
             flags = new BitsByte();
             flags[1] = RaidEvent;
             writer.Write(flags);
-            writer.Write(RaidKillCount);
+            writer.Write(RaidKillCount);j
         }
 
         public override void NetReceive(BinaryReader reader)
@@ -82,7 +82,7 @@ namespace MinecraftAnimals.Raid
             {
                 foreach (int RaidEnemytype in Raiders)
                 {
-                    RaiderCounter += NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
+                    RaiderCounter = NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
                 }
                 if (RaidWaves == 7)
                 {
@@ -94,7 +94,7 @@ namespace MinecraftAnimals.Raid
                     {
                         Main.ReportInvasionProgress((int)RaidKillCount, progressPerWave, 1, RaidWaves);
                     }
-                    if (Main.netMode == 2)
+                    if (Main.netMode == NetmodeID.Server)
                     {
                         NetMessage.SendData(MessageID.InvasionProgressReport, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
                     }

@@ -25,8 +25,7 @@ namespace MinecraftAnimals.Animals
             npc.damage = 25;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
-            npc.aiStyle = 108;
-            aiType = NPCID.DD2WyvernT1;
+            npc.aiStyle = -1;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -48,15 +47,14 @@ namespace MinecraftAnimals.Animals
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
-            int sineWaveCounter = 0;
             if (Phase == (int)AIStates.Normal)
             {
-                sineWaveCounter++;
-                npc.velocity.Y = (float)Math.Sin((Math.PI / 2) - sineWaveCounter + 1f);
+                AttackTimer++;
+                npc.velocity.Y = (float)Math.Sin(GlobalTimer * 0.02f * AttackTimer * 0.04f);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer == 5)
                 {
-                    npc.velocity = new Vector2(npc.direction * 1, -5f);
+                    npc.velocity = new Vector2(npc.direction * 1, -2f);
                 }
                 if (GlobalTimer >= 800)
                 {
