@@ -50,6 +50,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.ai[1] = -5;
+                //thanks gabe for the sinwave movement base
                 if(npc.ai[1] == -5)
                 {
                     npc.ai[2] = Main.rand.Next(50);
@@ -57,7 +58,7 @@ namespace MinecraftAnimals.Animals
                 }
 
                 npc.rotation = npc.velocity.X * 0.2f;
-                npc.velocity.Y = (float)(Math.Sin(npc.ai[2]++ * 0.02f * npc.ai[2]) * 0.6f);
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer == 5)
                 {
@@ -76,12 +77,11 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0.55f * npc.direction;
-                npc.velocity.Y = -0.15f;
-                float toPlayerRot = Vector2.Normalize(player.position - npc.position).ToRotation();
-                if (GlobalTimer >= 90 && player.Distance(npc.Center) < 280f)
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[2]++ * 0.02f * npc.ai[2]) * 0.6f);
+                if (GlobalTimer % 90 == 0 && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
                 {
-                    npc.velocity = Vector2.Normalize(npc.position - player.position).RotatedBy(toPlayerRot) * 1.25f;
-                    GlobalTimer = 0;
+                    npc.rotation = Vector2.Normalize(player.position - npc.position).ToRotation();
+                    npc.velocity = Vector2.Normalize(npc.position - player.position) * 1.55f;
                 }
                 if (player.Distance(npc.Center) > 680f)
                 {
@@ -138,7 +138,7 @@ namespace MinecraftAnimals.Animals
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else

@@ -21,7 +21,7 @@ namespace MinecraftAnimals
         {
             LocalCursor[id] = Main.MouseWorld;
 
-            if (Main.netMode == 1)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 ModPacket packet = instance.GetPacket();
                 packet.Write((byte)ModMessageType.UpdateLocalCursor); // Message type, you would need to create an enum for this

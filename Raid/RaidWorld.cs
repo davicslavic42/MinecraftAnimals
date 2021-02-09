@@ -7,6 +7,8 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.Raid;
+using System.Linq;
 
 namespace MinecraftAnimals.Raid
 {
@@ -17,7 +19,8 @@ namespace MinecraftAnimals.Raid
         public static float RaidKillCount = 0;
         public static bool downedRaid = false;
         public static int RaiderCounter = 0;// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
-        public static int[] Raiders = (new int[5]
+		public static int townNpcCount = 0;
+		public static int[] Raiders = (new int[5]
         {
                 NPCType<Evoker>(),
                 NPCType<Pillager>(),
@@ -82,15 +85,17 @@ namespace MinecraftAnimals.Raid
         {
             if (RaidEvent)
             {
-				for (int n = 0; n < 150; n++)
+				for (int i = 0; i < Main.maxNPCs; i++)
 				{
-					NPC N = Main.npc[n];
-					if (N.active && N.type == NPCType<Pillager>() || N.type == NPCType<Evoker>() || N.type == NPCType<Ravager>() || N.type == NPCType<Witch>() || N.type == NPCType<Vindicator>())
+					NPC I = Main.npc[i];
+					if (I.active && I.townNPC) townNpcCount++;
+					foreach (int RaidEnemytype in Raiders)
 					{
-						RaiderCounter += 1;
+                        if (I.active && I.type == RaidEnemytype) RaiderCounter += NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
 					}
+
 				}
-				if (RaidWaves == 7)
+				if (RaidWaves == 7 || townNpcCount <= 1)
                 {
                     EndRaidEvent();
                 }
@@ -105,7 +110,7 @@ namespace MinecraftAnimals.Raid
             }
             base.PostUpdate();
         }
-        public static void IncreaseRaidWave()
+		public static void IncreaseRaidWave()
         {
             if (RaidWaves != 0)
             {
@@ -136,6 +141,7 @@ namespace MinecraftAnimals.Raid
                 RaidEvent = false;
                 downedRaid = true;
                 string key = "The Raid has been defeated!";
+				string loseKey = "Your town members were slaughtered!";
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     RaidKillCount = 0f;
@@ -147,13 +153,15 @@ namespace MinecraftAnimals.Raid
                     RaidWaves = 0;
                     RaidKillCount = 0f;
                     // Immediately inform clients of new world state.
-                    NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
-                }
+					if(townNpcCount > 0) NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
+					else NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);
+				}
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
-                    Main.NewText((key), messageColor);
-                }
-            }
+					if (townNpcCount > 0) Main.NewText((key), messageColor);
+					else Main.NewText((loseKey), messageColor);
+				}
+			}
         }
 
 		/*
@@ -367,6 +375,7 @@ namespace MinecraftAnimals.Raid
 				{
 					NetMessage.SendData(MessageID.InvasionProgressReport, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
 				}
+							if (I.active && (I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
 
 			*/
 

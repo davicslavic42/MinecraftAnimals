@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using MinecraftAnimals.StatusEffects.Debuff;
 
 namespace MinecraftAnimals.Animals
 {
@@ -119,6 +120,11 @@ namespace MinecraftAnimals.Animals
                     i = 0;
                 }
             }
+        }
+        public override void NPCLoot()
+        {
+            Player player = Main.player[npc.target];
+            base.NPCLoot();
         }
         public override void HitEffect(int hitDirection, double damage)
         {

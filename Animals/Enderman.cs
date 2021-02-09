@@ -47,10 +47,10 @@ namespace MinecraftAnimals.Animals
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
         private int Distance_ = Main.rand.Next(25, 250);
+        bool tpCheck = false;
 
         public override void AI()
         {
-            bool tpCheck = false;
             int x = (int)(npc.Center.X + (((npc.width / 2) + 16) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
@@ -139,7 +139,6 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.TPFail)
             {
-                tpCheck = true;
                 AttackTimer = 0;
                 AttackTimer++;
                 npc.velocity.X = 0;
@@ -162,6 +161,24 @@ namespace MinecraftAnimals.Animals
         }
         public override bool PreAI()
         {
+            if (Phase == (int)AIStates.TP)
+            {
+                int a = (int)(npc.position.X / 16);
+                int b = (int)(npc.position.Y / 16);
+                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type] && tpCheck == true)
+                {
+                    tpCheck = false;
+                    Phase = (int)AIStates.Attack;
+                }
+                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type])
+                {
+                    tpCheck = true;
+                    Phase = (int)AIStates.TPFail;
+                }
+            }
+            //if the enderman goes inside a block it goes to the teleport failed state and the tp check is true, 
+            //if it goes to teleport again and tp check is true this should mean the enderman has just moved from inside a block so i 
+            //allow it to go back to normal attack if it isn't inside a nother block, if all goes well
             return base.PreAI();
         }
         public override void HitEffect(int hitDirection, double damage)

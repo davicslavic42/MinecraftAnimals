@@ -30,6 +30,7 @@ namespace MinecraftAnimals.Miscellaneous
             item.UseSound = SoundID.Item1;
             item.value = Item.sellPrice(silver: 5);
         }
+        //thanks gabe
         private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
         {
             if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface); //Set default
@@ -58,17 +59,17 @@ namespace MinecraftAnimals.Miscellaneous
             {
                 NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
             }
-            else if (Main.netMode == 0) // Single Player
+            else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
             {
                 Main.NewText(Language.GetTextValue(key), messageColor);
             }
 
-            if (Main.netMode == 0)
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
                 Main.PlaySound(SoundID.Roar, player.position, 0);
                 RaidWorld.RaidEvent = true;
             }
-            if (Main.netMode == 2 && player.whoAmI == Main.myPlayer)
+            if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
             {
                 ModPacket packet = mod.GetPacket();
                 packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
