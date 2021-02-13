@@ -19,7 +19,7 @@ namespace MinecraftAnimals.Animals
         {
             npc.width = 30;
             npc.height = 80;
-            npc.lifeMax = 110;
+            npc.lifeMax = 98;
             npc.damage = 55;
             npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
@@ -29,7 +29,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (NPC.downedBoss1 == true)
+            if (NPC.downedBoss2)
             {
                 return SpawnCondition.Overworld.Chance * 0.03f;
             }
@@ -124,6 +124,7 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             Player player = Main.player[npc.target];
+            player.AddBuff(BuffType<BadOmen>(), 500);
             base.NPCLoot();
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -180,7 +181,6 @@ namespace MinecraftAnimals.Animals
 
         public override void FindFrame(int frameHeight)
         {
-            int i = 1;
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Normal)

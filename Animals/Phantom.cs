@@ -77,11 +77,13 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0.55f * npc.direction;
-                npc.velocity.Y = (float)(Math.Sin(npc.ai[2]++ * 0.02f * npc.ai[2]) * 0.6f);
-                if (GlobalTimer % 90 == 0 && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
+                npc.velocity.Y = -0.35f;
+                Vector2 targetDir = Vector2.Normalize(player.position - npc.position);
+                if (GlobalTimer > 90  && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
                 {
-                    npc.rotation = Vector2.Normalize(player.position - npc.position).ToRotation();
-                    npc.velocity = Vector2.Normalize(npc.position - player.position) * 1.55f;
+                    npc.rotation = targetDir.ToRotation();
+                    npc.velocity += targetDir * 10.75f;
+                    GlobalTimer = 0;
                 }
                 if (player.Distance(npc.Center) > 680f)
                 {

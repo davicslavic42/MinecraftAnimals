@@ -95,7 +95,7 @@ namespace MinecraftAnimals.Raid
 					}
 
 				}
-				if (RaidWaves == 7 || townNpcCount <= 1)
+				if (RaidWaves == 7 || townNpcCount <= 0)
                 {
                     EndRaidEvent();
                 }
