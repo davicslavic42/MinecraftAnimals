@@ -28,7 +28,13 @@ namespace MinecraftAnimals.Raid
                 NPCType<Witch>(),
                 NPCType<Vindicator>()
         });
+		internal ref int progressCurrentWave => ref RaidWaves;
 
+		public static int progressPerWave = 0;
+
+
+
+		/*
         public static int progressPerWave = (new int[8]
         {
                 0,
@@ -40,9 +46,9 @@ namespace MinecraftAnimals.Raid
                 90,
                 0
         })[RaidWaves];
+		 */
 
-
-        public override void Initialize()
+		public override void Initialize()
         {
             downedRaid = false;
             RaidEvent = false;
@@ -66,10 +72,12 @@ namespace MinecraftAnimals.Raid
             flags[0] = downedRaid;
             writer.Write(flags);
             flags = new BitsByte();
+
             flags[1] = RaidEvent;
             writer.Write(flags);
             writer.Write(RaidKillCount);
 			writer.Write(RaidWaves);
+			writer.Write(progressPerWave);
 		}
 
 		public override void NetReceive(BinaryReader reader)
@@ -77,28 +85,25 @@ namespace MinecraftAnimals.Raid
             BitsByte flags = reader.ReadByte();
             downedRaid = flags[0];
             flags = reader.ReadByte();
+
             RaidEvent = flags[1];
             RaidKillCount = reader.ReadInt32();
 			RaidWaves = reader.ReadInt32();
+			progressPerWave = reader.ReadInt32();
+
 		}
         public override void PreUpdate()
         {
-            if (RaidEvent)
+			progressPerWave = (int)(10 + (progressCurrentWave * 15));
+
+			if (RaidEvent)
             {
-				for (int i = 0; i < Main.maxNPCs; i++)
+				for (int i = 0; i < Main.maxNPCs; i++)//I.active
 				{
 					NPC I = Main.npc[i];
-					if (I.active && I.townNPC) townNpcCount++;
-					foreach (int RaidEnemytype in Raiders)
-					{
-                        if (I.active && I.type == RaidEnemytype) RaiderCounter += NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
-					}
-
+					if ( I.townNPC) townNpcCount++;
+					if ((I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
 				}
-				if (RaidWaves == 7 || townNpcCount <= 0)
-                {
-                    EndRaidEvent();
-                }
 			}
 		}
 
@@ -108,7 +113,12 @@ namespace MinecraftAnimals.Raid
             {
                 IncreaseRaidWave();
             }
-            base.PostUpdate();
+			if (RaidWaves == 7 || townNpcCount <= 0)
+			{
+				EndRaidEvent();
+			}
+
+			base.PostUpdate();
         }
 		public static void IncreaseRaidWave()
         {
@@ -376,6 +386,12 @@ namespace MinecraftAnimals.Raid
 					NetMessage.SendData(MessageID.InvasionProgressReport, -1, -1, null, 1, progressPerWave, RaidKillCount, RaidWaves);
 				}
 							if (I.active && (I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
+		
+					foreach (int RaidEnemytype in Raiders)
+					{
+                        if (I.active && I.type == RaidEnemytype) RaiderCounter += NPC.CountNPCS(RaidEnemytype);//uses count npcs to check  for active enemies based on the raiders array to see if any of those enemies are active
+					}
+
 
 			*/
 

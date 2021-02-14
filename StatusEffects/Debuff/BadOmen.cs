@@ -26,7 +26,7 @@ namespace MinecraftAnimals.StatusEffects.Debuff
         {
             player.buffTime[buffIndex] = 500;
             float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(Main.spawnTileX, Main.spawnTileY));
-            if (distanceToSpawn <= 350f && RaidWorld.townNpcCount > 1)
+            if (distanceToSpawn <= 350f)//&& RaidWorld.townNpcCount > 1
             {
                 string key = "The Illagers are coming!";
                 Color messageColor = Color.Orange;

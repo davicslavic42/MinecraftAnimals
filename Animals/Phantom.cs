@@ -49,16 +49,19 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
-                npc.ai[1] = -5;
-                //thanks gabe for the sinwave movement base
-                if(npc.ai[1] == -5)
+                int flycheck = 1;
+                if (flycheck == 1)
                 {
-                    npc.ai[2] = Main.rand.Next(50);
+                    flycheck = 0;
+                    npc.ai[0] = Main.rand.Next(50);
+                    npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
                     npc.ai[3] = Main.rand.Next(110, 161) * 0.01f * (Main.rand.NextBool() ? -1 : 1);
                 }
 
-                npc.rotation = npc.velocity.X * 0.2f;
+                npc.rotation = npc.velocity.X * 0.4f;
                 npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
+                npc.velocity.X = (float)(Math.Sin(npc.ai[0]++ * 0.006f) * 0.15f) * npc.ai[3];
+                /*
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer == 5)
                 {
@@ -68,6 +71,7 @@ namespace MinecraftAnimals.Animals
                 {
                     GlobalTimer = 0;
                 }
+                                */
                 if (npc.HasValidTarget && player.Distance(npc.Center) < 680f) // passive player is within a certain range
                 {
                     Phase = (int)AIStates.Attack;

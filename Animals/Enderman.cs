@@ -125,17 +125,6 @@ namespace MinecraftAnimals.Animals
                     npc.netUpdate = true;
                     ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
                 }
-                int a = (int)(npc.position.X / 16);
-                int b = (int)(npc.position.Y / 16);
-                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type])
-                {
-                    Phase = (int)AIStates.TPFail;
-                }
-                else
-                {
-                    AttackTimer = 0;
-                    Phase = (int)AIStates.Attack; // if all is good it attacks normally
-                }
             }
             if (Phase == (int)AIStates.TPFail)
             {
@@ -159,27 +148,26 @@ namespace MinecraftAnimals.Animals
                 }
             }
         }
-        public override bool PreAI()
+        public override void PostAI()
         {
             if (Phase == (int)AIStates.TP)
             {
                 int a = (int)(npc.position.X / 16);
                 int b = (int)(npc.position.Y / 16);
-                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type] && tpCheck == true)
-                {
-                    tpCheck = false;
-                    Phase = (int)AIStates.Attack;
-                }
                 if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type])
                 {
                     tpCheck = true;
                     Phase = (int)AIStates.TPFail;
                 }
+                else
+                {
+                    AttackTimer = 0;
+                    Phase = (int)AIStates.Attack; // if all is good it attacks normally
+                }
             }
             //if the enderman goes inside a block it goes to the teleport failed state and the tp check is true, 
             //if it goes to teleport again and tp check is true this should mean the enderman has just moved from inside a block so i 
             //allow it to go back to normal attack if it isn't inside a nother block, if all goes well
-            return base.PreAI();
         }
         public override void HitEffect(int hitDirection, double damage)
         {

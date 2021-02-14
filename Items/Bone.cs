@@ -9,7 +9,7 @@ namespace MinecraftAnimals.Items
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Weapons? Remember to remove test properties before update");
+            Tooltip.SetDefault("Weapons?");
         }
 
         public override void SetDefaults()
@@ -29,10 +29,11 @@ namespace MinecraftAnimals.Items
         }
         public override bool UseItem(Player player)
         {
-            Main.NewText(RaidWorld.RaiderCounter + "enemy counter");
+            Main.NewText(RaidWorld.RaiderCounter + " enemy counter");
             Main.NewText(RaidWorld.RaidKillCount + " kills");
-            Main.NewText(RaidWorld.progressPerWave + "progress per wave");
-            Main.NewText(RaidWorld.RaidWaves + "current wave");
+            Main.NewText(RaidWorld.progressPerWave + " progress per wave");
+            Main.NewText(RaidWorld.RaidWaves + " current wave");
+            Main.NewText(RaidWorld.townNpcCount + " Town memebers");
             return true;
 
         }

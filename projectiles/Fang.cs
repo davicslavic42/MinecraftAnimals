@@ -29,6 +29,7 @@ namespace MinecraftAnimals.projectiles
             //5a: projectile.localNPCHitCooldown = -1; // 1 hit per npc max
             //5b: projectile.localNPCHitCooldown = 20; // o
         }
+        internal ref float GlobalProjectileTimer => ref projectile.ai[0];
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Die immediately if ai[1] isn't 0 (We set this to 1 for the 5 extra explosives we spawn in Kill)
@@ -36,23 +37,26 @@ namespace MinecraftAnimals.projectiles
         }
         public override void AI()
         {
-            if (projectile.timeLeft <= 500 & projectile.timeLeft >= 470)
+            GlobalProjectileTimer++;
+            if (GlobalProjectileTimer <= 20 & GlobalProjectileTimer >= 0)
             {
                 projectile.frame = 0;
-                projectile.velocity.Y = -0.5f;
+                projectile.velocity.Y = -1.85f;
+                projectile.velocity.X = 0;
             }
             else
             {
+                projectile.velocity.Y = 0;
                 projectile.frameCounter++;
-                if (++projectile.frameCounter % 12 == 0)
+                if (++projectile.frameCounter >= 13)
                 {
-                    projectile.frameCounter = 1;
-                    projectile.frame = ++projectile.frame % Main.projFrames[projectile.type];
-                }           // Kill this projectile after 1 second
+                    projectile.frameCounter = 0;
+                    projectile.frame += 1;
+                }
                 projectile.friendly = false;
                 projectile.hostile = true;
             }
-            if (projectile.frame == 2 && projectile.frameCounter > 8)
+            if (GlobalProjectileTimer > 60)
             {
                 projectile.Kill();
             }

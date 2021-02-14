@@ -2,7 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using MinecraftAnimals.StatusEffects.Buffs;
+using MinecraftAnimals.StatusEffects.Buff;
 
 namespace MinecraftAnimals.Mounts
 {

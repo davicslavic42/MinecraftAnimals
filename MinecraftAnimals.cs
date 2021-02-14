@@ -75,6 +75,12 @@ namespace MinecraftAnimals
                     {
                         NetMessage.SendData(MessageID.WorldData); // Immediately inform clients of new world state.
                     }
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        RaidWorld.RaidEvent = true;
+                        RaidWorld.RaidKillCount = 0f;
+                        RaidWorld.RaidWaves = 1;
+                    }
 
                     break;
 
@@ -196,15 +202,15 @@ namespace MinecraftAnimals
                     //draw wave text
 
                     string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 150f) * 100);
-                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 200, raidBarPosition.Y - 50), Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 400, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
 
                     //draw the progress bar
 
                     if (RaidWorld.RaidKillCount == 0)
                     {
                     }
-                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X - 1250f, waveBackground.Y), new Vector2(progressColor.Width, progressColor.Height));
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp((float)((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 100f), 0f, 2f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
+                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X - 1950f, waveBackground.Y), new Vector2(progressColor.Width, progressColor.Height));
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp((float)((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 100f), 0f, 100f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
                     /*
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);

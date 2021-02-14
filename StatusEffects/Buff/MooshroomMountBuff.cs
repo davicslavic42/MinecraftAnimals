@@ -2,7 +2,7 @@
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace MinecraftAnimals.StatusEffects.Buffs
+namespace MinecraftAnimals.StatusEffects.Buff
 {
     public class MooshroomMountBuff : ModBuff
     {

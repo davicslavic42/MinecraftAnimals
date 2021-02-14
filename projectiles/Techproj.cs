@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.projectiles
 {
@@ -19,7 +20,7 @@ namespace MinecraftAnimals.projectiles
             projectile.penetrate = 3;
             projectile.hide = true;
             projectile.damage = 5;
-            projectile.timeLeft = 100;
+            projectile.timeLeft = 200;
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -49,7 +50,7 @@ namespace MinecraftAnimals.projectiles
         }
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(projectile.position, projectile.velocity, mod.ProjectileType("Fang"), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
+            Projectile.NewProjectile(new Vector2(projectile.position.X, projectile.position.Y - 75), projectile.velocity, ProjectileType<Fang>(), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
         }
     }
 }
