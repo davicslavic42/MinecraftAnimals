@@ -28,7 +28,6 @@ namespace MinecraftAnimals.projectiles
             if (projectile.timeLeft != 0)
             {
                 projectile.timeLeft = 8;
-                return true;
             }
             return false;
         }
@@ -50,7 +49,7 @@ namespace MinecraftAnimals.projectiles
         }
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(new Vector2(projectile.position.X, projectile.position.Y - 75), projectile.velocity, ProjectileType<Fang>(), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
+            Projectile.NewProjectile(new Vector2(projectile.position.X, projectile.position.Y - 150f), projectile.velocity, ProjectileType<Fang>(), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
         }
     }
 }

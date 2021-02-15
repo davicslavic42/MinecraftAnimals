@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -38,7 +39,7 @@ namespace MinecraftAnimals.projectiles
         public override void AI()
         {
             GlobalProjectileTimer++;
-            if (GlobalProjectileTimer <= 20 & GlobalProjectileTimer >= 0)
+            if (GlobalProjectileTimer <= 20 && GlobalProjectileTimer >= 0)
             {
                 projectile.frame = 0;
                 projectile.velocity.Y = -1.85f;
@@ -61,7 +62,21 @@ namespace MinecraftAnimals.projectiles
                 projectile.Kill();
             }
         }
-
+        public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
+        {
+            int x = (int)(projectile.position.X / 16);
+            int y = (int)(projectile.position.Y / 16);
+            int tileIndex = (int)GlobalProjectileTimer;
+            if (tileIndex <= 20 && tileIndex >= 0 && Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            {
+                drawCacheProjsBehindNPCsAndTiles.Add(tileIndex);
+            }
+            else
+            {
+                drawCacheProjsBehindNPCsAndTiles.Remove(tileIndex);
+            }
+            base.DrawBehind(index, drawCacheProjsBehindNPCsAndTiles, drawCacheProjsBehindNPCs, drawCacheProjsBehindProjectiles, drawCacheProjsOverWiresUI);
+        }
         /*
         public override void AI()
         {

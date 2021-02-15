@@ -79,7 +79,7 @@ namespace MinecraftAnimals
                     {
                         RaidWorld.RaidEvent = true;
                         RaidWorld.RaidKillCount = 0f;
-                        RaidWorld.RaidWaves = 1;
+                        RaidWorld.RaidWaves = 0;
                     }
 
                     break;

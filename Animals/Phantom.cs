@@ -47,22 +47,18 @@ namespace MinecraftAnimals.Animals
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
+            int flycheck = 1;
             if (Phase == (int)AIStates.Normal)
             {
-                int flycheck = 1;
-                if (flycheck == 1)
-                {
-                    flycheck = 0;
-                    npc.ai[0] = Main.rand.Next(50);
-                    npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
-                    npc.ai[3] = Main.rand.Next(110, 161) * 0.01f * (Main.rand.NextBool() ? -1 : 1);
-                }
+                npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
+                npc.ai[3] = Main.rand.Next(110, 161) * 0.01f * (Main.rand.NextBool() ? -1 : 1);
 
                 npc.rotation = npc.velocity.X * 0.4f;
                 npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
-                npc.velocity.X = (float)(Math.Sin(npc.ai[0]++ * 0.006f) * 0.15f) * npc.ai[3];
+                npc.velocity.X = 1.25f * npc.direction;//(float)(Math.Sin(npc.ai[0]++ * 0.006f) * 0.15f) * npc.ai[3]
+                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1.25f * npc.direction : npc.velocity.X = 0f * npc.direction; //basic passive movement for 500 ticks then stationary 300
+
                 /*
-                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer == 5)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -2f);
@@ -72,7 +68,7 @@ namespace MinecraftAnimals.Animals
                     GlobalTimer = 0;
                 }
                                 */
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 680f) // passive player is within a certain range
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 580f) // passive player is within a certain range
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -81,7 +77,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.X = 0.55f * npc.direction;
-                npc.velocity.Y = -0.35f;
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
                 Vector2 targetDir = Vector2.Normalize(player.position - npc.position);
                 if (GlobalTimer > 90  && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
                 {
@@ -89,7 +85,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity += targetDir * 10.75f;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) > 680f)
+                if (player.Distance(npc.Center) > 580f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;

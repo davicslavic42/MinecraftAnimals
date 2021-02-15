@@ -1,6 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals
 {
@@ -29,6 +33,35 @@ namespace MinecraftAnimals
             }
             return initialAngle;
             //            float speedOverTime = (float)(rotatetimer >= 85f ? initialAngle = nextAngle : (speed -= 1.5f)); //slows the rotation speed down, and auto sets to target angle after time. this attempts to replicate the mc death anim effect
+        }
+        public static Vector2 GetTargetEntity(Vector2 currentPosition,  float searchRange = 500f, int TargetType = 0) //(float, float) target type 0 is npc tpye 1 is player
+        {
+            Vector2 newTarget = new Vector2(0,0);
+            int Targetwho = 0;
+            int possibleTarget = 0;
+            //float toTargetPos =  Vector2.Distance(currentPosition, targetPosition); Vector2 targetPosition,
+            if(Targetwho == 0)
+            {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC I = Main.npc[i];
+                    Vector2 toNpcTarget = (I.position - currentPosition);
+                    if (I.active && toNpcTarget.Length() < searchRange && TargetType == 0)
+                    {
+
+                    }
+                }
+                for (int y = 0; y < Main.ActivePlayersCount; y++)
+                {
+                    Player player = Main.player[y];
+                    if (player.active && player.Distance(currentPosition) < searchRange && TargetType == 1)
+                    {
+
+                    }
+                }
+
+            }
+            return newTarget;
         }
     }
 }

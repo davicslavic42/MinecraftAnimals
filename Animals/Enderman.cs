@@ -112,18 +112,22 @@ namespace MinecraftAnimals.Animals
                 AttackTimer++;
                 npc.velocity.X = 0;
                 AttackTimer = 0;
-                for (int i = 0; i < 15; i++)
+                if(AttackTimer == 10)
                 {
-                    int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
-                    Main.dust[dustIndex].noGravity = true;
-                }
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                    npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
-                    npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
-                    npc.netUpdate = true;
-                    ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+                    for (int i = 0; i < 15; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
+                        npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
+                        npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
+                        npc.netUpdate = true;
+                        ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+                    }
+
                 }
             }
             if (Phase == (int)AIStates.TPFail)

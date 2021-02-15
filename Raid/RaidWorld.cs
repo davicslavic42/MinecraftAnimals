@@ -30,7 +30,7 @@ namespace MinecraftAnimals.Raid
         });
 		internal ref int progressCurrentWave => ref RaidWaves;
 
-		public static int progressPerWave = 0;
+		public static int progressPerWave = 30;
 
 
 
@@ -94,22 +94,22 @@ namespace MinecraftAnimals.Raid
 		}
         public override void PreUpdate()
         {
-			progressPerWave = (int)(10 + (progressCurrentWave * 15));
+			//progressPerWave = (int)(10 + (progressCurrentWave * 15));
 
 			if (RaidEvent)
             {
 				for (int i = 0; i < Main.maxNPCs; i++)//I.active
 				{
 					NPC I = Main.npc[i];
-					if ( I.townNPC) townNpcCount++;
-					if ((I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
+					if (I.active && I.townNPC && I.friendly) townNpcCount++;
+					if (I.active && !I.friendly && (I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
 				}
 			}
 		}
 
         public override void PostUpdate()
         {
-            if ((int)RaidKillCount >= progressPerWave && progressPerWave != 0)
+            if (((int)RaidKillCount >= progressPerWave) && progressPerWave != 0)
             {
                 IncreaseRaidWave();
             }
