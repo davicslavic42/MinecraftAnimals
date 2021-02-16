@@ -18,7 +18,7 @@ namespace MinecraftAnimals.projectiles
             projectile.height = 38;
             projectile.friendly = false;
             projectile.hostile = false;
-            projectile.hide = false;
+            projectile.hide = true;
             projectile.penetrate = 20;
             projectile.timeLeft = 500;
             projectile.tileCollide = false;
@@ -42,11 +42,12 @@ namespace MinecraftAnimals.projectiles
             if (GlobalProjectileTimer <= 20 && GlobalProjectileTimer >= 0)
             {
                 projectile.frame = 0;
-                projectile.velocity.Y = -1.85f;
+                projectile.velocity.Y = -2.15f;
                 projectile.velocity.X = 0;
             }
             else
             {
+                projectile.hide = false;
                 projectile.velocity.Y = 0;
                 projectile.frameCounter++;
                 if (++projectile.frameCounter >= 13)
@@ -64,48 +65,9 @@ namespace MinecraftAnimals.projectiles
         }
         public override void DrawBehind(int index, List<int> drawCacheProjsBehindNPCsAndTiles, List<int> drawCacheProjsBehindNPCs, List<int> drawCacheProjsBehindProjectiles, List<int> drawCacheProjsOverWiresUI)
         {
-            int x = (int)(projectile.position.X / 16);
-            int y = (int)(projectile.position.Y / 16);
-            int tileIndex = (int)GlobalProjectileTimer;
-            if (tileIndex <= 20 && tileIndex >= 0 && Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-            {
-                drawCacheProjsBehindNPCsAndTiles.Add(tileIndex);
-            }
-            else
-            {
-                drawCacheProjsBehindNPCsAndTiles.Remove(tileIndex);
-            }
-            base.DrawBehind(index, drawCacheProjsBehindNPCsAndTiles, drawCacheProjsBehindNPCs, drawCacheProjsBehindProjectiles, drawCacheProjsOverWiresUI);
-        }
-        /*
-        public override void AI()
-        {
-            int delay = 0;
-            delay++;
-            if (delay <= 21)
-            {
-                projectile.frame = 0;
-            }
-            else
-            {
-                projectile.hostile = true;
-                projectile.frameCounter++;
-                if (++projectile.frameCounter >= 14)
-                {
-                    projectile.frameCounter = 0;
-                    projectile.frame = ++projectile.frame % Main.projFrames[projectile.type];
-                }           // Kill this projectile after 1 second
-            }
-            if (projectile.timeLeft == 0)
-            {
-                projectile.Kill();
-            }
-            if (projectile.timeLeft >= 28)
-            {
-                projectile.friendly = false;
-            }
-        }
-        */
+            if (GlobalProjectileTimer <= 60 && GlobalProjectileTimer >= 0) drawCacheProjsBehindNPCsAndTiles.Add(index);// && Main.tile[x, y].nactive() && Main.tile[x, y].active() && Main.tileSolid[Main.tile[x, y].type]
+            else drawCacheProjsBehindNPCsAndTiles.Remove(index);
 
+        }
     }
 }

@@ -28,14 +28,7 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
-            {
-                return 3.5f;
-            }
-            else
-            {
-                return 0f;
-            }
+            return 0f;
         }        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
         internal enum AIStates
@@ -141,10 +134,10 @@ namespace MinecraftAnimals.Raid.Illagers
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 14) * npc.direction)) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 10) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 25 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
@@ -155,21 +148,15 @@ namespace MinecraftAnimals.Raid.Illagers
             }
         }
 
-        public override void NPCLoot()
-        {
-            if (RaidWorld.RaidEvent)
-            {
-                RaidWorld.RaidKillCount += 1f;
-            }
-        }
         public override void HitEffect(int hitDirection, double damage)
         {
             if (npc.life <= 0)
             {
                 npc.life = 1;
+                NetMessage.SendData(MessageID.WorldData);
+                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
             }
-            base.HitEffect(hitDirection, damage);
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {

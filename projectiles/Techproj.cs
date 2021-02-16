@@ -29,7 +29,7 @@ namespace MinecraftAnimals.projectiles
             {
                 projectile.timeLeft = 8;
             }
-            return false;
+            return true;
         }
 
         // Change this number if you want to alter how the alpha changes
@@ -37,9 +37,7 @@ namespace MinecraftAnimals.projectiles
         {
             if (projectile.owner == Main.myPlayer && projectile.timeLeft <= 8)
             {
-                projectile.tileCollide = true;
                 projectile.Center = projectile.position;
-                projectile.timeLeft = 8;
             }
             else
             {
@@ -49,7 +47,7 @@ namespace MinecraftAnimals.projectiles
         }
         public override void Kill(int timeLeft)
         {
-            Projectile.NewProjectile(new Vector2(projectile.position.X, projectile.position.Y - 150f), projectile.velocity, ProjectileType<Fang>(), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
+            Projectile.NewProjectile(new Vector2(projectile.position.X, projectile.position.Y + 25f), projectile.velocity, ProjectileType<Fang>(), 20, 2, Main.LocalPlayer.whoAmI); //Multiply velocity with a larger number for more speed
         }
     }
 }

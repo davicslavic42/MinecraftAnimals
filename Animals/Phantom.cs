@@ -40,51 +40,47 @@ namespace MinecraftAnimals.Animals
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
-        internal ref float AttackTimer => ref npc.ai[3];
+        internal ref float ActionTimer => ref npc.ai[3];
 
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
-            int flycheck = 1;
             if (Phase == (int)AIStates.Normal)
             {
+                npc.TargetClosest(false);
                 npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
-                npc.ai[3] = Main.rand.Next(110, 161) * 0.01f * (Main.rand.NextBool() ? -1 : 1);
-
                 npc.rotation = npc.velocity.X * 0.4f;
                 npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
-                npc.velocity.X = 1.25f * npc.direction;//(float)(Math.Sin(npc.ai[0]++ * 0.006f) * 0.15f) * npc.ai[3]
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1.25f * npc.direction : npc.velocity.X = 0f * npc.direction; //basic passive movement for 500 ticks then stationary 300
-
-                /*
-                if (GlobalTimer == 5)
-                {
-                    npc.velocity = new Vector2(npc.direction * 1, -2f);
-                }
+ 
                 if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
                 }
-                                */
                 if (npc.HasValidTarget && player.Distance(npc.Center) < 580f) // passive player is within a certain range
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
             }
-            if (Phase == (int)AIStates.Normal)
+            if (Phase == (int)AIStates.Attack)
             {
-                npc.velocity.X = 0.55f * npc.direction;
-                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
-                Vector2 targetDir = Vector2.Normalize(player.position - npc.position);
-                if (GlobalTimer > 90  && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
+                npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
+                npc.TargetClosest(true);
+
+                npc.rotation = MathHelper.ToRadians(360f);
+                npc.velocity.X = 0.85f * npc.direction;
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f) ;
+                Vector2 targetDir = Vector2.Normalize(player.position - npc.position); // target direction
+    
+                if (GlobalTimer > 250 && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
                 {
                     npc.rotation = targetDir.ToRotation();
-                    npc.velocity += targetDir * 10.75f;
-                    GlobalTimer = 0;
+                    npc.velocity += (targetDir * 9.75f) / 3f;
                 }
+                if (GlobalTimer >= 300) GlobalTimer = 0;
                 if (player.Distance(npc.Center) > 580f)
                 {
                     Phase = (int)AIStates.Attack;
@@ -93,7 +89,6 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Death)
             {
-                npc.ai[2] = 0f;
                 npc.damage = 0;
                 npc.ai[2] += 1f; // increase our death timer.
                 npc.netUpdate = true;
@@ -118,6 +113,7 @@ namespace MinecraftAnimals.Animals
             if (npc.life <= 0)
             {
                 npc.life = 1;
+                npc.ai[2] = 0f;
                 Phase = (int)AIStates.Death;
             }
             base.HitEffect(hitDirection, damage);
@@ -165,7 +161,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.frameCounter++;
                 if (++npc.frameCounter % 7 == 0)
-                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type] / 2) + 1) * frameHeight;
+                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
             }
             if (Phase == (int)AIStates.Death)
             {

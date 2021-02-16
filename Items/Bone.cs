@@ -33,7 +33,8 @@ namespace MinecraftAnimals.Items
             Main.NewText(RaidWorld.RaidKillCount + " kills");
             Main.NewText(RaidWorld.progressPerWave + " progress per wave");
             Main.NewText(RaidWorld.RaidWaves + " current wave");
-            Main.NewText(RaidWorld.townNpcCount + " Town memebers");
+            Main.NewText(RaidWorld.townNpcCount + " Town memebers"); 
+            Main.NewText(RaidWorld.testRaidKillCount + " kill count int type"); 
             return true;
 
         }

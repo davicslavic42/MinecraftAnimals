@@ -119,60 +119,6 @@ namespace MinecraftAnimals
                 layers.Insert(index, orionProgress);
             }
         }
-                /*
-        try
-        {
-            //draw the background for the waves counter
-            const int offsetX = 20;
-            const int offsetY = 20;
-            int width = (int)(200f * scaleMultiplier);
-            int height = (int)(46f * scaleMultiplier);
-            Rectangle waveBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
-            // TESTING WAVE BG POSITION CHANGE
-            Utils.DrawInvBG(spriteBatch, waveBackground, new Color(63, 65, 151, 255) * 0.785f);
-
-            //draw wave text
-
-            string waveText = Language.GetTextValue("Raid") + (int)(((float)MCAWorld.RaidKillCount / 150f) * 100) + "%";
-            Utils.DrawBorderString(spriteBatch, waveText, new Vector2(waveBackground.X + waveBackground.Width / 2, waveBackground.Y), Color.White, scaleMultiplier, 0.5f, -0.1f);
-
-            //draw the progress bar
-
-            if (MCAWorld.RaidKillCount == 0)
-            {
-            }
-            Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X + waveBackground.Width * 0.5f, waveBackground.Y + waveBackground.Height * 0.75f), new Vector2(progressColor.Width, progressColor.Height));
-            Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp(((float)MCAWorld.RaidKillCount / 100f), 0f, 1f)), progressColor.Height);
-            Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
-            /*
-            spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
-
-            spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
-            spriteBatch.Draw(RaidBar, waveProgressBar.Location.ToVector2() + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);
-
-            //draw the icon with the event description
-
-            //draw the background
-            const int internalOffset = 6;
-            Vector2 descSize = new Vector2(154, 40) * scaleMultiplier;
-            Rectangle barrierBackground = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 2), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(width, height));
-            Rectangle descBackground = Utils.CenteredRectangle(new Vector2(barrierBackground.X + barrierBackground.Width * 0.5f, barrierBackground.Y - internalOffset - descSize.Y * 0.5f), descSize);
-            Utils.DrawInvBG(spriteBatch, descBackground, descColor * alpha);
-
-            //draw the icon
-            int descOffset = (descBackground.Height - (int)(32f * scaleMultiplier)) / 2;
-            Rectangle icon = new Rectangle(descBackground.X + descOffset, descBackground.Y + descOffset, (int)(24 * scaleMultiplier), (int)(62 * scaleMultiplier));
-            spriteBatch.Draw(orionIcon, icon, Color.White);
-
-            //draw text
-
-            Utils.DrawBorderString(spriteBatch, Language.GetTextValue("Raid"), new Vector2(barrierBackground.X + barrierBackground.Width * 0.5f, barrierBackground.Y - internalOffset - descSize.Y * 0.5f), Color.White, 0.80f, 0.3f, 0.4f);
-        }
-        catch (Exception e)
-        {
-            ErrorLogger.Log(e.ToString());
-        }
-        */
 
         public void DrawRaidEvent(SpriteBatch spriteBatch)
         {
@@ -201,16 +147,16 @@ namespace MinecraftAnimals
                     Vector2 raidBarPosition = new Vector2((Main.screenWidth - (Main.screenWidth / 2)), ((Main.screenHeight * 0.2f) - offsetY - 23f));
                     //draw wave text
 
-                    string waveText = Language.GetTextValue("Raid enemies left ") + (int)(((float)(RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 150f) * 100);
-                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 400, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    string waveText = Language.GetTextValue("Raid enemies left ") + (RaidWorld.progressPerWave - (int)RaidWorld.RaidKillCount);// / 100f) * 100
+                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 250, raidBarPosition.Y - 30), Color.White, scaleMultiplier, 0.5f, -0.1f);
 
                     //draw the progress bar
 
-                    if (RaidWorld.RaidKillCount == 0)
+                    if (RaidWorld.RaidKillCount == 0)//(waveBackground.X - 3050, waveBackground.Y)
                     {
                     }
-                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(waveBackground.X - 1950f, waveBackground.Y), new Vector2(progressColor.Width, progressColor.Height));
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)(progressColor.Width * MathHelper.Clamp((float)((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 100f), 0f, 100f)), progressColor.Height);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
+                    Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(Main.screenWidth - (Main.screenWidth / 4 * 3), (Main.screenHeight * 0.2f) - offsetY - 23f), new Vector2(progressColor.Width, progressColor.Height));
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)((waveProgressBar.Width) * MathHelper.Clamp((float)((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) / 100f), 0f, 100f)), progressColor.Height / 2);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
                     /*
                     spriteBatch.Draw(progressBg, waveProgressBar.Location.ToVector2() + offset, null, Color.White * alpha, 0f, new Vector2(0f), scaleMultiplier, SpriteEffects.None, 0f);

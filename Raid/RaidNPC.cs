@@ -4,6 +4,11 @@ using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using Microsoft.Xna.Framework;
+using System.IO;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader.IO;
 
 
 namespace MinecraftAnimals.Raid
@@ -21,9 +26,8 @@ namespace MinecraftAnimals.Raid
             }
             if (RaidWorld.RaidEvent)//&& player.ZoneOverworldHeight
             {
-                maxSpawns = (int)(10 + 1.5f * activePlayers);
-                spawnRate = 20;
-                RaidWorld.progressPerWave *= (int)(10 + 1.5f * activePlayers);
+                maxSpawns = (int)(30);
+                spawnRate = 15;
             }
 
 
@@ -32,16 +36,16 @@ namespace MinecraftAnimals.Raid
         { //Spawn info for the Raid npcs and spawn info
 			new Dictionary<int, float> { //wave 1
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 7.35f},
+                {NPCType<Pillager>(), 6.35f},
                 {NPCType<Ravager>(), 0f},
                 {NPCType<Vindicator>(), 5.73f},
                 {NPCType<Witch>(), 0f},
             },
             new Dictionary<int, float> { //wave 2
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 5.35f},
+                {NPCType<Pillager>(), 4.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 5.73f},
+                {NPCType<Vindicator>(), 4.73f},
                 {NPCType<Witch>(), 4.0f},
             },
             new Dictionary<int, float> { //wave 3
@@ -53,9 +57,9 @@ namespace MinecraftAnimals.Raid
             },
             new Dictionary<int, float> { //wave 4
 				{NPCType<Evoker>(), 3.35f},
-                {NPCType<Pillager>(), 5.35f},
+                {NPCType<Pillager>(), 4.75f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 3.73f},
+                {NPCType<Vindicator>(), 4.73f},
                 {NPCType<Witch>(), 4.135f},
             },
             new Dictionary<int, float> { //wave 5
@@ -93,6 +97,7 @@ namespace MinecraftAnimals.Raid
             }
         }
 
+
         public override void NPCLoot(NPC npc)
         {
             if (RaidWorld.RaidEvent)
@@ -103,6 +108,7 @@ namespace MinecraftAnimals.Raid
                 { //iterate through the spawn pool, and check if the killed npc's type is in the spawn pool
                     if (key.Key == npc.type)
                     { //add points
+                        npc.netUpdate = true;
                         RaidWorld.RaidKillCount += 1f;
                     }
                 }

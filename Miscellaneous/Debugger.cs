@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Miscellaneous
             item.knockBack = 5f;
             item.useStyle = ItemUseStyleID.SwingThrow;
             item.useAnimation = 1;
-            item.useTime = 5;
+            item.useTime = 2;
             item.width = 30;
             item.height = 30;
             item.maxStack = 1;
@@ -51,31 +51,34 @@ namespace MinecraftAnimals.Miscellaneous
 
         public override bool UseItem(Player player)
         {
-            string key = "The Illagers are coming!";
-            Color messageColor = Color.Orange;
-            RaidWorld.RaidKillCount = 0;
-            RaidWorld.RaidWaves = 0;
-            if (Main.netMode == NetmodeID.Server) // Server
+            if (RaidWorld.RaidWaves == 0)
             {
-                NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
-            }
-            else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
-            {
-                Main.NewText(Language.GetTextValue(key), messageColor);
-            }
+                string key = "The Illagers are coming!";
+                Color messageColor = Color.Orange;
+                RaidWorld.RaidKillCount = 0;
+                RaidWorld.RaidWaves += 1;
+                if (Main.netMode == NetmodeID.Server) // Server
+                {
+                    NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
+                }
+                else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
+                {
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
 
-            if (Main.netMode == NetmodeID.SinglePlayer)
-            {
-                Main.PlaySound(SoundID.Roar, player.position, 0);
-                RaidWorld.RaidEvent = true;
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                {
+                    Main.PlaySound(SoundID.Roar, player.position, 0);
+                    RaidWorld.RaidEvent = true;
+                }
+                if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
+                {
+                    ModPacket packet = mod.GetPacket();
+                    packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
+                    packet.Send();
+                }
             }
-            if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
-                packet.Send();
-            }
-
+            else RaidWorld.IncreaseRaidWave();
             return true;
         }
     }

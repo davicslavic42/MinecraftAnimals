@@ -47,12 +47,14 @@ namespace MinecraftAnimals.Animals
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
         private int Distance_ = Main.rand.Next(25, 250);
-        bool tpCheck = false;
 
         public override void AI()
         {
+            bool tpCheck = false;
             int x = (int)(npc.Center.X + (((npc.width / 2) + 16) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;
+            int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;//autojump check
+            int a = (int)(npc.position.X / 16);//teleport check params
+            int b = (int)(npc.position.Y / 16);
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
@@ -75,17 +77,64 @@ namespace MinecraftAnimals.Animals
             {
                 npc.TargetClosest(true);
                 npc.damage = 30;
+                npc.alpha = 0;
                 npc.velocity.X = 2 * npc.direction;
                 AttackTimer++;
                 if (player.Distance(npc.Center) > 925f)
                 {
                     Phase = (int)AIStates.Passive;
                 }
-                if (AttackTimer >= 600) //switch to tp mode
+                if (AttackTimer >= 400) //switch to tp mode
                 {
                     Phase = (int)AIStates.TP;
                     AttackTimer = 0;
                 }
+            }
+            if (Phase == (int)AIStates.TP)
+            {
+                npc.alpha = 0;
+                npc.velocity.X = 0;
+                for (int i = 0; i < 15; i++)
+                {
+                    int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                    Main.dust[dustIndex].noGravity = true;
+                }
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
+                    npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
+                    npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
+                    npc.netUpdate = true;
+                    ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+                    if (Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type])//Main.tile[a, b].active() && 
+                    {
+                        Phase = (int)AIStates.TPFail;
+                        AttackTimer = 0;
+                    }
+                    else
+                    {
+                        AttackTimer = 0;
+                        Phase = (int)AIStates.Attack; // if all is good it attacks normally
+                    }
+
+                }
+            }
+            if (Phase == (int)AIStates.TPFail)
+            {
+                AttackTimer = 0;
+                AttackTimer++;
+                npc.velocity.X = 0;
+                npc.alpha = 255;
+                Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
+                npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
+                npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
+                npc.netUpdate = true;
+                if (!(Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type]))//Main.tile[a, b].active() && 
+                {
+                    Phase = (int)AIStates.Attack;
+                    AttackTimer = 0;
+                }
+
             }
             if (Phase == (int)AIStates.Death)
             {
@@ -106,42 +155,6 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (Phase == (int)AIStates.TP)
-            {
-                npc.alpha = 0;
-                AttackTimer++;
-                npc.velocity.X = 0;
-                AttackTimer = 0;
-                if(AttackTimer == 10)
-                {
-                    for (int i = 0; i < 15; i++)
-                    {
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Enderpoof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
-                        Main.dust[dustIndex].noGravity = true;
-                    }
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        Vector2 angle = Vector2.UnitX.RotateRandom(Math.PI * 2);
-                        npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
-                        npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
-                        npc.netUpdate = true;
-                        ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    }
-
-                }
-            }
-            if (Phase == (int)AIStates.TPFail)
-            {
-                AttackTimer = 0;
-                AttackTimer++;
-                npc.velocity.X = 0;
-                npc.alpha = 255;
-                if (AttackTimer >= 10)
-                {
-                    Phase = (int)AIStates.TP;
-                }
-            }
-
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
                 int i = 1;
@@ -151,27 +164,6 @@ namespace MinecraftAnimals.Animals
                     i = 0;
                 }
             }
-        }
-        public override void PostAI()
-        {
-            if (Phase == (int)AIStates.TP)
-            {
-                int a = (int)(npc.position.X / 16);
-                int b = (int)(npc.position.Y / 16);
-                if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type])
-                {
-                    tpCheck = true;
-                    Phase = (int)AIStates.TPFail;
-                }
-                else
-                {
-                    AttackTimer = 0;
-                    Phase = (int)AIStates.Attack; // if all is good it attacks normally
-                }
-            }
-            //if the enderman goes inside a block it goes to the teleport failed state and the tp check is true, 
-            //if it goes to teleport again and tp check is true this should mean the enderman has just moved from inside a block so i 
-            //allow it to go back to normal attack if it isn't inside a nother block, if all goes well
         }
         public override void HitEffect(int hitDirection, double damage)
         {

@@ -30,14 +30,7 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
-            {
-                return 3.5f;
-            }
-            else
-            {
-                return 0f;
-            }
+            return 0f;
         }
         // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
         // Here I lay out what I will use each of the 4 npc.ai slots for.
@@ -145,17 +138,15 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override void NPCLoot()
         {
-            if (RaidWorld.RaidEvent)
-            {
-                RaidWorld.RaidKillCount += 1f;
-            }
         }
+
         public override void HitEffect(int hitDirection, double damage)
         {
             if (npc.life <= 0)
             {
-                GlobalTimer = 0;
                 npc.life = 1;
+                NetMessage.SendData(MessageID.WorldData);
+                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
             }
             if (Main.rand.Next(0, 5) == 1 && GlobalTimer > 150)

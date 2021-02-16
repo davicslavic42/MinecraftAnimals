@@ -16,8 +16,9 @@ namespace MinecraftAnimals.Raid
     {
         public static bool RaidEvent = false;
         public static int RaidWaves = 0;
-        public static float RaidKillCount = 0;
-        public static bool downedRaid = false;
+        public static float RaidKillCount = 0f;
+		public static int testRaidKillCount = 0;//(int)NPC.waveKills
+		public static bool downedRaid = false;
         public static int RaiderCounter = 0;// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
 		public static int townNpcCount = 0;
 		public static int[] Raiders = (new int[5]
@@ -78,6 +79,7 @@ namespace MinecraftAnimals.Raid
             writer.Write(RaidKillCount);
 			writer.Write(RaidWaves);
 			writer.Write(progressPerWave);
+			writer.Write(testRaidKillCount);
 		}
 
 		public override void NetReceive(BinaryReader reader)
@@ -92,54 +94,58 @@ namespace MinecraftAnimals.Raid
 			progressPerWave = reader.ReadInt32();
 
 		}
-        public override void PreUpdate()
-        {
-			//progressPerWave = (int)(10 + (progressCurrentWave * 15));
-
+		//progressPerWave = (int)(10 + (progressCurrentWave * 15));
+		public override void PreUpdate()
+		{
 			if (RaidEvent)
-            {
-				for (int i = 0; i < Main.maxNPCs; i++)//I.active
+			{
+				for (int i = 0; i <= Main.maxNPCs; i++)//I.active
 				{
 					NPC I = Main.npc[i];
 					if (I.active && I.townNPC && I.friendly) townNpcCount++;
-					if (I.active && !I.friendly && (I.type == NPCType<Pillager>() || I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())) RaiderCounter += 1;
+					//if (I.active && !I.friendly && (I.type == NPCType<Pillager>())) RaiderCounter += 1;//|| I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())
 				}
+				RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
 			}
 		}
 
-        public override void PostUpdate()
+		public override void PostUpdate()
         {
-            if (((int)RaidKillCount >= progressPerWave) && progressPerWave != 0)
+			if (RaidEvent)
             {
-                IncreaseRaidWave();
-            }
-			if (RaidWaves == 7 || townNpcCount <= 0)
-			{
-				EndRaidEvent();
+				if (((int)RaidKillCount >= progressPerWave))
+				{
+					RaidKillCount = 0f;
+					IncreaseRaidWave();
+				}
+				if (RaidWaves >= 7)//|| townNpcCount <= 0)
+				{
+					EndRaidEvent();
+				}
 			}
-
 			base.PostUpdate();
         }
 		public static void IncreaseRaidWave()
         {
             if (RaidWaves != 0)
             {
-                string wavekey = ("Wave " + (RaidWaves) + " has been defeated!");
+                string wavekey = ("Wave " + RaidWaves + " has been defeated!");
                 Color messageColor1 = Color.Red;
-                RaidKillCount = 0f;
+				RaidWaves += 1;
+				RaidKillCount = 0f;
                 if (Main.netMode == NetmodeID.Server) // Server
                 {
                     NetMessage.BroadcastChatMessage(NetworkText.FromKey(wavekey), messageColor1);
                 }
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
-                    Main.NewText("Wave has been defeated!", messageColor1);
+                    Main.NewText(wavekey, messageColor1);
                 }
-                RaidWaves += 1;
             }
             else
             {
-                RaidWaves += 1;
+				RaidKillCount = 0f;
+				RaidWaves += 1;
             }
         }
 
