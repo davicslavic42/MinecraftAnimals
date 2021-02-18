@@ -34,27 +34,36 @@ namespace MinecraftAnimals
             return initialAngle;
             //            float speedOverTime = (float)(rotatetimer >= 85f ? initialAngle = nextAngle : (speed -= 1.5f)); //slows the rotation speed down, and auto sets to target angle after time. this attempts to replicate the mc death anim effect
         }
-        public static Vector2 GetTargetEntity(Vector2 currentPosition, Player player, float searchRange = 500f, int TargetType = 0) //(float, float) target type 0 is npc tpye 1 is player
+        public static void GetTargetEntity(Vector2 currentPosition, Player player, float searchRange = 500f, int TargetType = 0) //(float, float) target type 0 is player tpye 1 is the ID of the npc you put in
         {
-            Vector2 newTarget = new Vector2(0, 0); 
+            Vector2 newTarget = new Vector2(0, 0);
             //float toTargetPos =  Vector2.Distance(currentPosition, targetPosition); Vector2 targetPosition,
-                for (int i = 0; i < Main.maxNPCs; i++)
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC I = Main.npc[i];
+                if (I.active && Vector2.Distance(currentPosition, I.position) < searchRange && I.type == TargetType)
                 {
-                    NPC I = Main.npc[i];
-                    if (I.active && Vector2.Distance(currentPosition, I.position) < searchRange && I.type == TargetType)
-                    {
-                        newTarget = I.position;
-                    }
+                    newTarget = I.position;
                 }
-                for (int y = 0; y < Main.ActivePlayersCount; y++)
+                else break;
+            }
+            for (int y = 0; y < Main.ActivePlayersCount; y++)
+            {
+                player = Main.player[y];
+                if (!player.dead && !player.ghost && player.active && Vector2.Distance(currentPosition, player.position) < searchRange && TargetType == 0) //player.Distance(currentPosition)
                 {
-                    player = Main.player[y];
-                    if (player.active && Vector2.Distance(currentPosition, player.position) < searchRange && TargetType == 0) //player.Distance(currentPosition)
-                    {
-                        newTarget = player.position;
-                    }
+                    newTarget = player.position;
                 }
-            return newTarget;
+                else break;
+            }
+            Main.NewText(newTarget);
+            /*
+            if (!player.active || player.dead || player.ghost)
+            {
+                continue;
+            }
+            */
+
         }
     }
 }

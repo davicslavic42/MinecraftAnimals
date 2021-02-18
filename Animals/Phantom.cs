@@ -52,7 +52,7 @@ namespace MinecraftAnimals.Animals
                 npc.TargetClosest(false);
                 npc.ai[2] = Main.rand.Next(70, 100) * 0.01f;
                 npc.rotation = npc.velocity.X * 0.4f;
-                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f);
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.06f * npc.ai[2]) * 0.6f);//Testing sine wave movement
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1.25f * npc.direction : npc.velocity.X = 0f * npc.direction; //basic passive movement for 500 ticks then stationary 300
  
                 if (GlobalTimer >= 800)
@@ -72,18 +72,18 @@ namespace MinecraftAnimals.Animals
 
                 npc.rotation = MathHelper.ToRadians(360f);
                 npc.velocity.X = 0.85f * npc.direction;
-                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.02f * npc.ai[2]) * 0.6f) ;
+                npc.velocity.Y = (float)(Math.Sin(npc.ai[0]++ * 0.06f * npc.ai[2]) * 0.6f) ;
                 Vector2 targetDir = Vector2.Normalize(player.position - npc.position); // target direction
     
-                if (GlobalTimer > 250 && player.Distance(npc.Center) < 280f)//should make the phantom dash at the player kind of like the etherian wyvern
+                if (GlobalTimer > 450 && player.Distance(npc.Center) < 280f)
                 {
                     npc.rotation = targetDir.ToRotation();
-                    npc.velocity += (targetDir * 9.75f) / 3f;
+                    npc.velocity += (targetDir * 12.75f) / 2f;//should make the phantom dash at the player 
                 }
-                if (GlobalTimer >= 300) GlobalTimer = 0;
+                if (GlobalTimer >= 520) GlobalTimer = 0;
                 if (player.Distance(npc.Center) > 580f)
                 {
-                    Phase = (int)AIStates.Attack;
+                    Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
             }
@@ -144,6 +144,11 @@ namespace MinecraftAnimals.Animals
                 Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
+            if (Phase == (int)AIStates.Attack && GlobalTimer >= 450 && npc.direction == -1)
+            {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, SpriteEffects.FlipVertically, 0f);
+            }
             return false;
         }
 
@@ -160,7 +165,7 @@ namespace MinecraftAnimals.Animals
             if (Phase == (int)AIStates.Normal || Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (++npc.frameCounter % 7 == 0)
+                if (++npc.frameCounter % 8 == 0)
                     npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type]) * frameHeight;
             }
             if (Phase == (int)AIStates.Death)

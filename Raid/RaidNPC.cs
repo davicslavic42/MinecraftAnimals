@@ -24,21 +24,15 @@ namespace MinecraftAnimals.Raid
                 if (Main.player[i].active)
                     activePlayers++;
             }
-            if (RaidWorld.RaidEvent)//&& player.ZoneOverworldHeight
-            {
-                maxSpawns = (int)(30);
-                spawnRate = 15;
-            }
-
-
+            spawnRate = (int)1.5;
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>
         { //Spawn info for the Raid npcs and spawn info
 			new Dictionary<int, float> { //wave 1
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 6.35f},
+                {NPCType<Pillager>(), 5.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 5.73f},
+                {NPCType<Vindicator>(), 4.73f},
                 {NPCType<Witch>(), 0f},
             },
             new Dictionary<int, float> { //wave 2
@@ -56,17 +50,17 @@ namespace MinecraftAnimals.Raid
                 {NPCType<Witch>(), 4.135f},
             },
             new Dictionary<int, float> { //wave 4
-				{NPCType<Evoker>(), 3.35f},
-                {NPCType<Pillager>(), 4.75f},
+				{NPCType<Evoker>(), 3.65f},
+                {NPCType<Pillager>(), 4.25f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 4.73f},
-                {NPCType<Witch>(), 4.135f},
+                {NPCType<Vindicator>(), 4.43f},
+                {NPCType<Witch>(), 4.235f},
             },
             new Dictionary<int, float> { //wave 5
 				{NPCType<Evoker>(), 3.85f},
                 {NPCType<Pillager>(), 5.35f},
-                {NPCType<Ravager>(), 1.15f},
-                {NPCType<Vindicator>(), 5.73f},
+                {NPCType<Ravager>(), 2.15f},
+                {NPCType<Vindicator>(), 4.73f},
                 {NPCType<Witch>(), 4.135f},
             },
             new Dictionary<int, float> { //wave 6
@@ -84,7 +78,7 @@ namespace MinecraftAnimals.Raid
                 pool.Clear();
                 if (RaidWorld.RaidKillCount + RaidWorld.RaiderCounter <= RaidWorld.progressPerWave)
                 {
-                    IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves); //find the spawn pool dictionary corresponding to the current tide wave
+                    IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves - 1); //find the spawn pool dictionary corresponding to the current tide wave
                     foreach (KeyValuePair<int, float> key in spawnpool)
                     { //then add that dictionary info to the actual spawn pool
                         pool.Add(key.Key, key.Value);
@@ -103,12 +97,11 @@ namespace MinecraftAnimals.Raid
             if (RaidWorld.RaidEvent)
             { //check for ongoing raid
 
-                IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves); //find the spawn pool dictionary corresponding to the current tide wave
+                IDictionary<int, float> spawnpool = RaidSpawnpool.ElementAt(RaidWorld.RaidWaves - 1); //find the spawn pool dictionary corresponding to the current tide wave
                 foreach (KeyValuePair<int, float> key in spawnpool)
                 { //iterate through the spawn pool, and check if the killed npc's type is in the spawn pool
                     if (key.Key == npc.type)
                     { //add points
-                        npc.netUpdate = true;
                         RaidWorld.RaidKillCount += 1f;
                     }
                 }

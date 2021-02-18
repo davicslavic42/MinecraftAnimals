@@ -18,8 +18,8 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             npc.width = 30;
             npc.height = 60;
-            npc.lifeMax = 50;
-            npc.damage = 18;
+            npc.lifeMax = 20;
+            npc.damage = 25;
             npc.knockBackResist = 0.5f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -129,7 +129,7 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (player.position.Y > npc.position.Y + 35)
             {
-                npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .35f;
+                npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .45f;
             }
             if (player.position.X < npc.position.X)
             {
@@ -137,7 +137,7 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (player.position.X > npc.position.X)
             {
-                npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.15f;
+                npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.25f;
             }
             if (SpeedLim == 1)//prevents the eocity from going above inputed number
             {

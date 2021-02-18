@@ -146,7 +146,7 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.1)
             {
-                for (int n = 0; n < 50; n++)
+                for (int n = 0; n < 150; n++)
                 {
                     NPC N = Main.npc[n];
                     if (N.active && N.Distance(npc.Center) < 325f && (N.type == NPCType<Bee>()))

@@ -65,7 +65,6 @@ namespace MinecraftAnimals.Miscellaneous
                 {
                     Main.NewText(Language.GetTextValue(key), messageColor);
                 }
-
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
                     Main.PlaySound(SoundID.Roar, player.position, 0);

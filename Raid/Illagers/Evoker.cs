@@ -82,7 +82,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 125, (int)npc.position.Y), NPCType<Illagers.Vex>(), 0);
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 150, (int)npc.position.Y - 50), NPCType<Illagers.Vex>(), 0);
                         }
                         npc.ai[3] = -200;
                     }
@@ -140,7 +140,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 25 == 0)
             {
                 int i = 1;
-                if (i == 1 && npc.velocity.X != 0)
+                if (i == 1 && npc.velocity.X != 0 && GlobalTimer % 25 == 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -153,7 +153,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                NetMessage.SendData(MessageID.WorldData);
+                //NetMessage.SendData(MessageID.WorldData);
                 RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
             }

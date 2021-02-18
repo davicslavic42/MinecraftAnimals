@@ -124,13 +124,13 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             Player player = Main.player[npc.target];
-            player.AddBuff(BuffType<BadOmen>(), 500);
-            base.NPCLoot();
+            player.AddBuff(BuffType<BadOmen>(), 7500);
         }
         public override void HitEffect(int hitDirection, double damage)
         {
             if (npc.life <= 0)
             {
+                NPCLoot();
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
@@ -148,17 +148,17 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 30 : 30);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 20),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
                 sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 12),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

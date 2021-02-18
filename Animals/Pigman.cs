@@ -11,7 +11,7 @@ namespace MinecraftAnimals.Animals
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Pigman R.I.P");
+            DisplayName.SetDefault("Pigman");
             Main.npcFrameCount[npc.type] = 8;
         }
         public override void SetDefaults()
@@ -61,12 +61,6 @@ namespace MinecraftAnimals.Animals
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 755f)
-                {
-                    Phase = (int)AIStates.Attack;
-                    GlobalTimer = 0;
-                }
-
             }
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Attack)
@@ -74,36 +68,39 @@ namespace MinecraftAnimals.Animals
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
                 float stopToAttack = player.Distance(npc.Center) < 22f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 775f)
+                if ( player.Distance(npc.Center) > 775f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 30f)
-                {
-                    npc.velocity.X = 0 * npc.direction;
-                }
             }
             if (Phase == (int)AIStates.Death)
             {
-                npc.damage = 0;
-                npc.ai[2] += 1f; // increase our death timer.
-                npc.netUpdate = true;
-                npc.velocity.X = 0;
-                npc.velocity.Y += 1.5f;
-                npc.dontTakeDamage = true;
-                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
-                if (npc.ai[2] >= 110f)
+                if (npc.ai[3] != -10)
                 {
-                    for (int i = 0; i < 20; i++)
+                    npc.damage = 0;
+                    npc.ai[2] += 1f; // increase our death timer.
+                    npc.netUpdate = true;
+                    npc.velocity.X = 0;
+                    npc.velocity.Y += 1.5f;
+                    npc.dontTakeDamage = true;
+                    npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                    if (npc.ai[2] >= 110f)
                     {
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
-                        Main.dust[dustIndex].noGravity = true;
+                        for (int i = 0; i < 20; i++)
+                        {
+                            int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                            Main.dust[dustIndex].noGravity = true;
+                        }
+                        npc.life = 0;
                     }
-                    npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)
+            {
+                Phase = (int)AIStates.Attack;
+            }
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16; //autojump for tiles in front
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
@@ -120,10 +117,26 @@ namespace MinecraftAnimals.Animals
         {
             if (npc.life <= 0)
             {
+                npc.ai[3] = 10;
+                npc.netUpdate = true;
+                GlobalTimer = 0;
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
             }
-            base.HitEffect(hitDirection, damage);
+            if (Phase != (int)AIStates.Death && npc.life > npc.life * 0.1)
+            {
+                for (int n = 0; n < 150; n++)
+                {
+                    NPC N = Main.npc[n];
+                    if (N.active && N.Distance(npc.Center) < 325f && (N.type == NPCType<Pigman>()))
+                    {
+                        N.netUpdate = true;
+                        N.target = npc.target;
+                        N.ai[3] = -10;
+                    }
+                }
+            }
+            // Thanks Joost
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
@@ -137,7 +150,7 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 35 : 35);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)

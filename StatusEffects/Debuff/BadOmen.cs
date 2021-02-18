@@ -20,18 +20,18 @@ namespace MinecraftAnimals.StatusEffects.Debuff
             DisplayName.SetDefault("BadOmen");
             Description.SetDefault("You have a bad feeling about going back to spawn");
             Main.buffNoTimeDisplay[Type] = false;
+            Main.debuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.buffTime[buffIndex] = 500;
-            float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(Main.spawnTileX, Main.spawnTileY));
-            if (distanceToSpawn <= 350f)//&& RaidWorld.townNpcCount > 1
+            //float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(player.SpawnX, player.SpawnY));
+            if (player.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)) <= 350f && RaidWorld.RaidWaves == 0)//&& RaidWorld.townNpcCount > 1
             {
                 string key = "The Illagers are coming!";
                 Color messageColor = Color.Orange;
                 RaidWorld.RaidKillCount = 0;
-                RaidWorld.RaidWaves = 0;
+                RaidWorld.RaidWaves += 1;
                 if (Main.netMode == NetmodeID.Server) // Server
                 {
                     NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
@@ -40,7 +40,6 @@ namespace MinecraftAnimals.StatusEffects.Debuff
                 {
                     Main.NewText(Language.GetTextValue(key), messageColor);
                 }
-
                 if (Main.netMode == NetmodeID.SinglePlayer)
                 {
                     Main.PlaySound(SoundID.Roar, player.position, 0);
@@ -51,8 +50,8 @@ namespace MinecraftAnimals.StatusEffects.Debuff
                     ModPacket packet = mod.GetPacket();
                     packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
                     packet.Send();
-                    player.buffTime[buffIndex] = 0;
                 }
+                player.buffTime[buffIndex] = 0;
             }
         }
     }

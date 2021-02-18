@@ -20,13 +20,13 @@ namespace MinecraftAnimals.Items.Weapons
         public override void SetDefaults()
         {
             // Alter any of these values as you see fit, but you should probably keep useStyle on 1, as well as the noUseGraphic and noMelee bools
-            item.shootSpeed = 10f;
-            item.damage = 25;
+            item.shootSpeed = 12f;
+            item.damage = 35;
             item.knockBack = 5f;
             //Channel so that you can held the weapon [Important]  item.channel = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.useAnimation = 70;
-            item.useTime = 25;
+            item.useAnimation = 45;
+            item.useTime = 95;
             item.width = 40;
             item.height = 20;
             item.maxStack = 1;

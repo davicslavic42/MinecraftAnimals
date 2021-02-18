@@ -106,7 +106,7 @@ namespace MinecraftAnimals.Animals
                     npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
                     ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    if (Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type])//Main.tile[a, b].active() && 
+                    if (Main.tile[a, b].active() || Main.tile[a, b].nactive())//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
                     {
                         Phase = (int)AIStates.TPFail;
                         AttackTimer = 0;
@@ -129,7 +129,7 @@ namespace MinecraftAnimals.Animals
                 npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
                 npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                 npc.netUpdate = true;
-                if (!(Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type]))//Main.tile[a, b].active() && 
+                if (!(Main.tile[a, b].active() || Main.tile[a, b].nactive()))//Main.tile[a, b].active() && Main.tileSolid[Main.tile[a, b].type]
                 {
                     Phase = (int)AIStates.Attack;
                     AttackTimer = 0;

@@ -50,9 +50,9 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
-            npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
+                npc.TargetClosest(false);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800)
                 {
@@ -76,8 +76,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
                 if (AttackTimer >= 200 && player.Distance(npc.Center) < 250f)
                 {
-                    npc.velocity.X = 0 * npc.direction;
-                    npc.velocity = new Vector2(npc.direction * 12f, -4f);
+                    npc.velocity.X = AttackTimer * 0.25f / 5f * npc.direction;
                 }
                 else
                 {
@@ -139,13 +138,12 @@ namespace MinecraftAnimals.Raid.Illagers
         public override void NPCLoot()
         {
         }
-
         public override void HitEffect(int hitDirection, double damage)
         {
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                NetMessage.SendData(MessageID.WorldData);
+                //NetMessage.SendData(MessageID.WorldData);
                 RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
             }
@@ -178,7 +176,7 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 20),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

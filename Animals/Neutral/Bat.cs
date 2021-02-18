@@ -56,7 +56,7 @@ namespace MinecraftAnimals.Animals.Neutral
                 }
                 if (GlobalTimer % 30 == 0 && GlobalTimer > 160)
                 {
-                    npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer / 100 * 1.25f : npc.velocity.Y = GlobalTimer / 100 * 1.25f * -1f;
+                    npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer * 0.12f / 10f : npc.velocity.Y = GlobalTimer * 0.12f / 10f * -1f;
                 }
                 if (GlobalTimer > 300) GlobalTimer = 50;
                 if (flyCount == 5)
