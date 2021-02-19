@@ -20,13 +20,13 @@ namespace MinecraftAnimals.StatusEffects.Debuff
             DisplayName.SetDefault("BadOmen");
             Description.SetDefault("You have a bad feeling about going back to spawn");
             Main.buffNoTimeDisplay[Type] = false;
-            Main.debuff[Type] = true;
+            Main.debuff[Type] = false;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
             //float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(player.SpawnX, player.SpawnY));
-            if (player.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)) <= 350f && RaidWorld.RaidWaves == 0)//&& RaidWorld.townNpcCount > 1
+            if (player.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)) <= 50f && RaidWorld.RaidWaves == 0)//&& RaidWorld.townNpcCount > 1
             {
                 string key = "The Illagers are coming!";
                 Color messageColor = Color.Orange;

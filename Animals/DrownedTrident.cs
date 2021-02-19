@@ -183,7 +183,7 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             base.NPCLoot();
-            if (Main.rand.NextBool(50))
+            if (Main.rand.NextBool(25))
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("Trident"));
             }

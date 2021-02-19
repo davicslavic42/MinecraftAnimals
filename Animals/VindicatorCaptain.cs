@@ -31,7 +31,7 @@ namespace MinecraftAnimals.Animals
         {
             if (NPC.downedBoss2)
             {
-                return SpawnCondition.Overworld.Chance * 0.03f;
+                return SpawnCondition.Overworld.Chance * 0.01f;
             }
             return SpawnCondition.Overworld.Chance * 0f;
         }
@@ -124,7 +124,7 @@ namespace MinecraftAnimals.Animals
         public override void NPCLoot()
         {
             Player player = Main.player[npc.target];
-            player.AddBuff(BuffType<BadOmen>(), 7500);
+            player.AddBuff(BuffType<BadOmen>(), 4000);
         }
         public override void HitEffect(int hitDirection, double damage)
         {

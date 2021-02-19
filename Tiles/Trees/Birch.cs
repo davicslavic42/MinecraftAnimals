@@ -10,7 +10,7 @@ namespace MinecraftAnimals.Tiles.Trees
 
         public override int DropWood()
         {
-            ItemType<Items.Blocks.Birch>();
+            //ItemType<Items.Blocks.Birch>();
             return ItemType<Items.Herbs.BirchSapling>();
         }
         public override int GrowthFXGore()

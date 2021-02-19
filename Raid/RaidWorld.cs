@@ -31,7 +31,7 @@ namespace MinecraftAnimals.Raid
         });
 		internal ref int progressCurrentWave => ref RaidWaves;
 
-		public static int progressPerWave = 30;
+		public static int progressPerWave = 25;
 
 
 
@@ -102,7 +102,9 @@ namespace MinecraftAnimals.Raid
 				for (int i = 0; i <= Main.maxNPCs; i++)//I.active
 				{
 					NPC I = Main.npc[i];
-					if (I.active && I.townNPC && I.friendly) townNpcCount++;
+                    float TownNPCDistancetospawn = I.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16));
+
+                    if (I.active && I.townNPC && I.friendly && I.chaseable && TownNPCDistancetospawn < 1000f) townNpcCount++;
 					//if (I.active && !I.friendly && (I.type == NPCType<Pillager>())) RaiderCounter += 1;//|| I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())
 				}
 				RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());

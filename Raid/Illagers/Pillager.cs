@@ -42,7 +42,8 @@ namespace MinecraftAnimals.Raid.Illagers
             Normal = 0,
             Attack = 1,
             Shoot = 2,
-            Death = 3
+            Mounted = 3,
+            Death = 4
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
@@ -54,6 +55,7 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
+            Vector2 newTarget = new Vector2(0, 0);
             if (Phase == (int)AIStates.Normal)
             {
                 npc.TargetClosest(false);
@@ -76,6 +78,8 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Phase == (int)AIStates.Attack)
             {
                 npc.TargetClosest(true);
+                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+
                 npc.velocity.X = 1.4f * npc.direction;
                 if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
                 {
@@ -92,6 +96,8 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Phase == (int)AIStates.Shoot)
             {
                 npc.TargetClosest(true);
+                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+
                 npc.velocity.X = 0f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 144)
@@ -114,6 +120,34 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
                 // If the targeted player is in attack range (250).
             }
+            if (Phase == (int)AIStates.Mounted)
+            {
+                npc.TargetClosest(true);
+                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+
+                npc.velocity.X = 0f * npc.direction;
+                npc.velocity.Y += 0.5f;
+                if (npc.frameCounter == 144)
+                {
+                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
+                    _ = npc.Distance(npc.position) - 25;
+                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
+                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -50f);
+
+                    npc.velocity.X += DirToRing.X;
+                    npc.velocity.Y += DirToRing.Y;
+
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
+                }
+                if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                {
+                    // Out targeted player seems to have left our range, so we'll go back to sleep.
+                    Phase = (int)AIStates.Attack;
+                    GlobalTimer = 0;
+                }
+                // If the targeted player is in attack range (250).
+            }
+            if (npc.ai[2] == -10) Phase = (int)AIStates.Mounted;//not yet done
             // In this state, we are in the Shoot. 
             if (Phase == (int)AIStates.Death)
             {
@@ -149,6 +183,11 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override void NPCLoot()
         {
+            base.NPCLoot();
+            if (Main.rand.NextBool(25))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Weapons.Crossbow>());
+            }
         }
         public override void HitEffect(int hitDirection, double damage)
         {

@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 
 
@@ -29,21 +30,9 @@ namespace MinecraftAnimals.Miscellaneous
 
             item.UseSound = SoundID.Item1;
             item.value = Item.sellPrice(silver: 5);
+            item.createTile = TileType<Tiles.GrassTiles.GrassTile>();
         }
         //thanks gabe
-        private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
-        {
-            if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface); //Set default
-            while (true)
-            {
-                if (y >= maxDepth)
-                    break;
-                if (Main.tile[x, y].active() && types.Any(i => i == Main.tile[x, y].type))
-                    return y; //Returns first valid tile under intitial Y pos, -1 if max depth is reached
-                y++;
-            }
-            return 1; //fallout case
-        }
         public override bool CanUseItem(Player player)
         {
             return true;
@@ -51,7 +40,11 @@ namespace MinecraftAnimals.Miscellaneous
 
         public override bool UseItem(Player player)
         {
-            if (RaidWorld.RaidWaves == 0)
+
+            return true;
+        }
+        /*
+         *             if (RaidWorld.RaidWaves == 0)
             {
                 string key = "The Illagers are coming!";
                 Color messageColor = Color.Orange;
@@ -78,7 +71,7 @@ namespace MinecraftAnimals.Miscellaneous
                 }
             }
             else RaidWorld.IncreaseRaidWave();
-            return true;
-        }
+
+         */
     }
 }

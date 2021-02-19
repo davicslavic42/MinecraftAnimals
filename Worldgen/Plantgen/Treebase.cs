@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.World.Generation;
 using static Terraria.ModLoader.ModContent;
 
+
 namespace MinecraftAnimals.Worldgen.Plantgen
 {
     public class Treebase : ModWorld
@@ -26,19 +27,6 @@ namespace MinecraftAnimals.Worldgen.Plantgen
                 tasks.Insert(ShiniesIndex + 1, new PassLegacy("Tree bases", Treebases));
             }
         }
-        private static int FindType(int x, int y, int maxDepth = -1, params int[] types)
-        {
-            if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface); //Set default
-            while (true)
-            {
-                if (y >= maxDepth)
-                    break;
-                if (Main.tile[x, y].active() && types.Any(i => i == Main.tile[x, y].type))
-                    return y; //Returns first valid tile under intitial Y pos, -1 if max depth is reached
-                y++;
-            }
-            return -1; //fallout case
-        }
         private void Treebases(GenerationProgress progress)
         {
             progress.Message = "Tree bases";
@@ -46,18 +34,17 @@ namespace MinecraftAnimals.Worldgen.Plantgen
             {
                 // The inside of this for loop corresponds to one single splotch of our Ore.
                 // First, we randomly choose any coordinate in the world by choosing a random x and y value.
-                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
+                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 5 * 4, Main.maxTilesX - 60);
                 int y = (int)(WorldGen.worldSurface * 0.35);
-                y = FindType(x, y, -1, TileID.Grass);
+                y = GeneralMethods.FindType(x, y, -1, TileID.Grass);
                 if (y > 1)
                 {
                     Tile tile = Framing.GetTileSafely(x, y);
                     WorldGen.SquareTileFrame(x, y);
                     if (tile.active() && tile.type == TileID.Grass)
                     {
-                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Dirttile>(), false, 0, 0, false, true);
+                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(1, 2), TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);
                     }
-                    Main.NewText(k);
                 }
             }
         }

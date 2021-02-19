@@ -25,8 +25,8 @@ namespace MinecraftAnimals.Items.Weapons
             item.knockBack = 5f;
             //Channel so that you can held the weapon [Important]  item.channel = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.useAnimation = 45;
-            item.useTime = 95;
+            item.useAnimation = 65;
+            item.useTime = 65;
             item.width = 40;
             item.height = 20;
             item.maxStack = 1;

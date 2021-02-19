@@ -25,6 +25,8 @@ namespace MinecraftAnimals.Raid
                     activePlayers++;
             }
             spawnRate = (int)1.5;
+            if (RaidWorld.RaidKillCount + RaidWorld.RaiderCounter >= RaidWorld.progressPerWave) maxSpawns = 0;
+
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>
         { //Spawn info for the Raid npcs and spawn info

@@ -15,18 +15,11 @@ namespace MinecraftAnimals.Tiles
             Main.tileLighted[Type] = true;
             drop = ItemType<Items.Blocks.Dirt>();
             AddMapEntry(new Color(80, 220, 25));
-            SetModTree(new Trees.Birch());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override int SaplingGrowthType(ref int style)
-        {
-            style = 0;
-            return TileType<Trees.BirchSaplingtile>();
         }
     }
 }

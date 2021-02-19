@@ -27,7 +27,7 @@ namespace MinecraftAnimals.Tiles.Trees
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.AnchorValidTiles = new[] { TileType<Dirttile>() };
+            TileObjectData.newTile.AnchorValidTiles = new[] { TileType<Tiles.GrassTiles.GrassTile>() };
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.DrawFlipHorizontal = true;
             TileObjectData.newTile.WaterPlacement = LiquidPlacement.NotAllowed;
@@ -35,7 +35,7 @@ namespace MinecraftAnimals.Tiles.Trees
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.newTile.StyleMultiplier = 3;
             TileObjectData.newSubTile.CopyFrom(TileObjectData.newTile);
-            TileObjectData.newSubTile.AnchorValidTiles = new int[] { TileType<Dirttile>() };
+            TileObjectData.newSubTile.AnchorValidTiles = new int[] { TileType<Tiles.GrassTiles.GrassTile>() };
             TileObjectData.addSubTile(1);
             TileObjectData.addTile(Type);
 
