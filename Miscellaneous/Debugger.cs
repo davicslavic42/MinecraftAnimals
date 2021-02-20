@@ -40,6 +40,11 @@ namespace MinecraftAnimals.Miscellaneous
 
         public override bool UseItem(Player player)
         {
+            Main.NewText(RaidWorld.RaiderCounter + " enemy counter");
+            Main.NewText(RaidWorld.RaidKillCount + " kills");
+            Main.NewText(RaidWorld.progressPerWave + " progress per wave");
+            Main.NewText(RaidWorld.RaidWaves + " current wave");
+            Main.NewText(RaidWorld.townNpcCount + " Town memebers");
 
             return true;
         }

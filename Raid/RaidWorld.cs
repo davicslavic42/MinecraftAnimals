@@ -17,7 +17,6 @@ namespace MinecraftAnimals.Raid
         public static bool RaidEvent = false;
         public static int RaidWaves = 0;
         public static float RaidKillCount = 0f;
-		public static int testRaidKillCount = 0;//(int)NPC.waveKills
 		public static bool downedRaid = false;
         public static int RaiderCounter = 0;// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
 		public static int townNpcCount = 0;
@@ -79,7 +78,6 @@ namespace MinecraftAnimals.Raid
             writer.Write(RaidKillCount);
 			writer.Write(RaidWaves);
 			writer.Write(progressPerWave);
-			writer.Write(testRaidKillCount);
 		}
 
 		public override void NetReceive(BinaryReader reader)
@@ -104,10 +102,9 @@ namespace MinecraftAnimals.Raid
 					NPC I = Main.npc[i];
                     float TownNPCDistancetospawn = I.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16));
 
-                    if (I.active && I.townNPC && I.friendly && I.chaseable && TownNPCDistancetospawn < 1000f) townNpcCount++;
-					//if (I.active && !I.friendly && (I.type == NPCType<Pillager>())) RaiderCounter += 1;//|| I.type == NPCType<Evoker>() || I.type == NPCType<Ravager>() || I.type == NPCType<Witch>() || I.type == NPCType<Vindicator>())
-				}
-				RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
+                    if (I.active && I.townNPC && I.aiStyle == 7) townNpcCount++;//&& TownNPCDistancetospawn < 1000f) && I.CanTalk && I.HasGivenName && I.chaseable && I.friendly
+                }
+                RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
 			}
 		}
 
@@ -171,13 +168,13 @@ namespace MinecraftAnimals.Raid
                     RaidWaves = 0;
                     RaidKillCount = 0f;
                     // Immediately inform clients of new world state.
-					if(townNpcCount > 0) NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
-					else NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);
+					 NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);//if(RaidWaves >= 7)
+					//else NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);
 				}
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
-					if (townNpcCount > 0) Main.NewText((key), messageColor);
-					else Main.NewText((loseKey), messageColor);
+					 Main.NewText((key), messageColor);//if(RaidWaves >= 7)
+					//else Main.NewText((loseKey), messageColor);
 				}
 			}
         }

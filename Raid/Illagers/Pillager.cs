@@ -55,7 +55,12 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
-            Vector2 newTarget = new Vector2(0, 0);
+
+            Vector2 newTargetCenter = new Vector2(0, 0);
+            Vector2 otherTargets = GeneralMethods.GetTargetEntity(npc.Center, 675f, NPCID.Guide);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetEntity(npc.Center, 675f, -1);//gets player center
+            newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(otherTargets) ? newTargetCenter = otherTargets : newTargetCenter = PlayerTarget;
+            //above is testing of new targeting system, 
             if (Phase == (int)AIStates.Normal)
             {
                 npc.TargetClosest(false);
@@ -69,7 +74,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 725f)
+                if (npc.Distance(newTargetCenter) < 675f)//npc.HasValidTarget && player.Distance(npc.Center) < 725f
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -77,16 +82,15 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (Phase == (int)AIStates.Attack)
             {
-                npc.TargetClosest(true);
-                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
 
                 npc.velocity.X = 1.4f * npc.direction;
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
+                if (npc.Distance(newTargetCenter) > 675f )//npc.HasValidTarget &&
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 350f)
+                if (npc.Distance(newTargetCenter) < 350f)
                 {
                     Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;
@@ -95,60 +99,45 @@ namespace MinecraftAnimals.Raid.Illagers
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Shoot)
             {
-                npc.TargetClosest(true);
-                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
 
                 npc.velocity.X = 0f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 144)
                 {
-                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
                     _ = npc.Distance(npc.position) - 25;
-                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -50f);
+                    Vector2 TargetDir = Vector2.Normalize(newTargetCenter - npc.Center);
 
-                    npc.velocity.X += DirToRing.X;
-                    npc.velocity.Y += DirToRing.Y;
-
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
                 }
-                if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                if (npc.Distance(newTargetCenter) > 350f)
                 {
-                    // Out targeted player seems to have left our range, so we'll go back to sleep.
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
-                // If the targeted player is in attack range (250).
             }
+            /*
             if (Phase == (int)AIStates.Mounted)
             {
-                npc.TargetClosest(true);
-                npc.direction = npc.position.X > newTarget.X ? npc.direction = -1 : npc.direction = 1;
+                npc.direction = npc.position.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
 
                 npc.velocity.X = 0f * npc.direction;
                 npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 144)
                 {
-                    Player TargetPlayer = Main.player[(int)Player.FindClosest(npc.position, npc.width, npc.height)];
                     _ = npc.Distance(npc.position) - 25;
-                    Vector2 PlayerDir = npc.DirectionTo(TargetPlayer.position);
-                    Vector2 DirToRing = npc.DirectionTo(TargetPlayer.position + PlayerDir.RotatedBy(0.001f) * -50f);
+                    Vector2 TargetDir = Vector2.Normalize(npc.Center - newTargetCenter);
 
-                    npc.velocity.X += DirToRing.X;
-                    npc.velocity.Y += DirToRing.Y;
-
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
                 }
-                if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
+                if (npc.Distance(newTargetCenter) > 350f)
                 {
-                    // Out targeted player seems to have left our range, so we'll go back to sleep.
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
-                // If the targeted player is in attack range (250).
             }
-            if (npc.ai[2] == -10) Phase = (int)AIStates.Mounted;//not yet done
-            // In this state, we are in the Shoot. 
+            */
+            //if (npc.ai[2] == -10) Phase = (int)AIStates.Mounted;not yet done
             if (Phase == (int)AIStates.Death)
             {
                 npc.damage = 0;
@@ -194,9 +183,12 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                NetMessage.SendData(MessageID.WorldData);
-                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
+                if (RaidWorld.RaidEvent)
+                {
+                    NetMessage.SendData(MessageID.WorldData);
+                    RaidWorld.RaidKillCount += 1f;
+                }
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

@@ -17,10 +17,15 @@ namespace MinecraftAnimals.Tiles.GrassTiles
         {
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
+			Main.tileMerge[Type][TileType<GrassTile>()] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
-            drop = ItemType<Items.Blocks.Dirt>();
-            AddMapEntry(new Color(40, 220, 25));
+			Main.tileBlendAll[Type] = true;
+			TileID.Sets.Grass[Type] = true;
+			TileID.Sets.NeedsGrassFraming[Type] = true;
+			TileID.Sets.NeedsGrassFramingDirt[Type] = TileID.Dirt;
+			drop = ItemType<Items.Blocks.Dirt>();
+            AddMapEntry(new Color(100, 220, 25));
 			SetModTree(new Trees.Birch());
 		}
 
@@ -28,31 +33,33 @@ namespace MinecraftAnimals.Tiles.GrassTiles
         {
             num = fail ? 1 : 3;
         }
-        public override void RandomUpdate(int i, int j)
+		public override int SaplingGrowthType(ref int style)
+		{
+			style = 0;
+			return TileType<Trees.BirchSaplingtile>();
+		}
+		public override void RandomUpdate(int i, int j)
         {
 			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.75); k++)
             {
 				i = WorldGen.genRand.Next(60, Main.maxTilesX - 60);
 				j = (int)(WorldGen.worldSurface * 0.35);
 				j = GeneralMethods.FindType(i, j, -1, TileType<Dirttile>());
-				int tileChooseDir = Main.rand.NextBool() ? 1 : -1;
+				int tileChooseDir = Main.rand.NextBool() ?  1 : -1;
 				if (j > 1)
 				{
-					Tile tile = Framing.GetTileSafely(i + tileChooseDir, j + tileChooseDir);
-					WorldGen.SquareTileFrame(i + tileChooseDir, j + tileChooseDir);
+					Tile tile = Framing.GetTileSafely(i , j );
+					WorldGen.SquareTileFrame(i , j );//+ tileChooseDir
 					if (tile.active() && tile.type == TileType<Dirttile>())
 					{
 						WorldGen.TileRunner(i, j, WorldGen.genRand.Next(1, 2), WorldGen.genRand.Next(1, 2), TileType<GrassTile>(), false, 0, 0, false, true);
 					}
+					//Main.NewText(tile);
 				}
 			}
         }
-		public override int SaplingGrowthType(ref int style)
-		{
-			style = 0;
-			return TileType<Trees.BirchSaplingtile>();
-		}
 		/*
+
         		public static void SpreadGrass(int i, int j, int dirt = 0, int grass = 2, bool repeat = true, byte color = 0)
 		{
 			try

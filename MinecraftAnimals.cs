@@ -144,16 +144,17 @@ namespace MinecraftAnimals
                     //draw wave text
 
                     string waveText = Language.GetTextValue("Raid enemies left ") + (RaidWorld.progressPerWave - (int)RaidWorld.RaidKillCount);// / 100f) * 100
-                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 300, raidBarPosition.Y - 30), Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 300, raidBarPosition.Y - 20), Color.White, scaleMultiplier, 0.5f, -0.1f);
                     //draw the progress bar
 
                     Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(raidBarPosition.X, raidBarPosition.Y), new Vector2(progressColor.Width , progressColor.Height));
 
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)((waveProgressBar.Width * 2.2f) * MathHelper.Clamp((float)(((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) * 3.1f) / 100f), 0f, 1f)), progressColor.Height / 2);//CHECK TO SEE IF RAIDER KILL COUNT OR RAIDERCOUNTER SHOULD BE USED FOR TH UI
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)((waveProgressBar.Width * 2.22f) * MathHelper.Clamp((float)(((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) * 3.1f) / 100f), 0f, 1f)), progressColor.Height / 2);
+                    //Rectangle EmptyRaidbar = new Rectangle(0, 0, (int)(waveProgressBar.Width * 2.2f), progressColor.Height / 2);
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
 
                     spriteBatch.Draw(RaidBarAmount, raidBarPosition + offset, waveProgressAmount, waveColor , 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
-                    //spriteBatch.Draw(RaidBar, raidBarPosition + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
+                    //spriteBatch.Draw(RaidBar, raidBarPosition + offset, EmptyRaidbar, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
                     //spriteBatch.Draw(RaidBar, raidBarPosition + offset, null, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
                 }
                 catch (Exception e)
