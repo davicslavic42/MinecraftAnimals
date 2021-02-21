@@ -29,6 +29,7 @@ namespace MinecraftAnimals.Items
         }
         public override bool UseItem(Player player)
         {
+            //Main.NewText(RaidWorld.townNpcCount + " Town memebers");
             return true;
 
         }

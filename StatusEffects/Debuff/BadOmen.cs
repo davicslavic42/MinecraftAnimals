@@ -26,32 +26,45 @@ namespace MinecraftAnimals.StatusEffects.Debuff
         public override void Update(Player player, ref int buffIndex)
         {
             //float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(player.SpawnX, player.SpawnY));
-            if (player.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)) <= 50f && RaidWorld.RaidWaves == 0)//&& RaidWorld.townNpcCount > 1
+            Vector2 OriginalSpawn = new Vector2(player.SpawnX, player.SpawnY));
+            Vector2 BedSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)
+
+            if (!RaidWorld.RaidEvent && RaidWorld.RaidWaves == 0 && (player.Distance(BedSpawn) <= 50f || player.Distance(OriginalSpawn) <= 50f))//&& 
             {
-                string key = "The Illagers are coming!";
-                Color messageColor = Color.Orange;
-                RaidWorld.RaidKillCount = 0;
-                RaidWorld.RaidWaves += 1;
-                if (Main.netMode == NetmodeID.Server) // Server
+                if(RaidWorld.townNpcCount => 5)
                 {
-                    NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
+                    string key = "The Illagers are coming!";
+                    Color messageColor = Color.Orange;
+                    RaidWorld.RaidKillCount = 0;
+                    RaidWorld.RaidWaves += 1;
+                    if (Main.netMode == NetmodeID.Server) // Server
+                    {
+                        NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
+                    }
+                    else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
+                    {
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        Main.PlaySound(SoundID.Roar, player.position, 0);
+                        RaidWorld.RaidEvent = true;
+                    }
+                    if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
+                    {
+                        ModPacket packet = mod.GetPacket();
+                        packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
+                        packet.Send();
+                    }
+                    player.buffTime[buffIndex] = 0;
                 }
-                else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
+                else
                 {
-                    Main.NewText(Language.GetTextValue(key), messageColor);
+                    string warn = "3 town npcs are needed to start the Raid";
+
+                    Main.NewText(Language.GetTextValue(warn), messageColor);
+                    player.buffTime[buffIndex] = 0;
                 }
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    Main.PlaySound(SoundID.Roar, player.position, 0);
-                    RaidWorld.RaidEvent = true;
-                }
-                if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
-                {
-                    ModPacket packet = mod.GetPacket();
-                    packet.Write((byte)MinecraftAnimals.ModMessageType.StartRaidEvent);
-                    packet.Send();
-                }
-                player.buffTime[buffIndex] = 0;
             }
         }
     }

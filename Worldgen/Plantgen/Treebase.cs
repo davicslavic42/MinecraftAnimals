@@ -34,7 +34,7 @@ namespace MinecraftAnimals.Worldgen.Plantgen
             {
                 // The inside of this for loop corresponds to one single splotch of our Ore.
                 // First, we randomly choose any coordinate in the world by choosing a random x and y value.
-                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 4) : WorldGen.genRand.Next(Main.maxTilesX / 4 * 3, Main.maxTilesX - 60);
+                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 5 * 4, Main.maxTilesX - 60);
                 int y = (int)(WorldGen.worldSurface * 0.35);
                 y = GeneralMethods.FindType(x, y, -1, TileID.Grass);
                 if (y > 1)
@@ -43,32 +43,34 @@ namespace MinecraftAnimals.Worldgen.Plantgen
                     WorldGen.SquareTileFrame(x, y);
                     if (tile.active() && tile.type == TileID.Grass)//|| tile.type == TileID.FleshGrass || tile.type == TileID.CorruptGrass
                     {
-                        WorldGen.TileRunner(x, y, 1,1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
-                    }
-                }
-                y = (int)(WorldGen.worldSurface * 0.35);
-                y = GeneralMethods.FindType(x, y, -1, TileID.FleshGrass);
-                if (y > 1)
-                {
-                    Tile tile = Framing.GetTileSafely(x, y);
-                    WorldGen.SquareTileFrame(x, y);
-                    if (tile.active() && tile.type == TileID.FleshGrass)//||  || tile.type == TileID.CorruptGrass
-                    {
-                        WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
-                    }
-                }
-                y = (int)(WorldGen.worldSurface * 0.35);
-                y = GeneralMethods.FindType(x, y, -1, TileID.CorruptGrass);
-                if (y > 1)
-                {
-                    Tile tile = Framing.GetTileSafely(x, y);
-                    WorldGen.SquareTileFrame(x, y);
-                    if (tile.active() && tile.type == TileID.CorruptGrass)//||  || tile.type == TileID.CorruptGrass
-                    {
-                        WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(2, 3), TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
                     }
                 }
             }
+            /* future test for different grass types
+             *                 y = (int)(WorldGen.worldSurface * 0.35);
+            y = GeneralMethods.FindType(x, y, -1, TileID.FleshGrass);
+            if (y > 1)
+            {
+                Tile tile = Framing.GetTileSafely(x, y);
+                WorldGen.SquareTileFrame(x, y);
+                if (tile.active() && tile.type == TileID.FleshGrass)
+                {
+                    WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                }
+            }
+            y = (int)(WorldGen.worldSurface * 0.35);
+            y = GeneralMethods.FindType(x, y, -1, TileID.CorruptGrass);
+            if (y > 1)
+            {
+                Tile tile = Framing.GetTileSafely(x, y);
+                WorldGen.SquareTileFrame(x, y);
+                if (tile.active() && tile.type == TileID.CorruptGrass)//||  || tile.type == TileID.CorruptGrass
+                {
+                    WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                }
+            }
+            */
         }
     }
 }

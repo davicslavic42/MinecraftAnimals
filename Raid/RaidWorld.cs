@@ -97,18 +97,17 @@ namespace MinecraftAnimals.Raid
 		{
 			if (RaidEvent)
 			{
-				for (int i = 0; i <= Main.maxNPCs; i++)//I.active
+				for (int i = 0; i < Main.maxNPCs; i++)//I.active
 				{
 					NPC I = Main.npc[i];
                     float TownNPCDistancetospawn = I.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16));
-
-                    if (I.active && I.townNPC && I.aiStyle == 7) townNpcCount++;//&& TownNPCDistancetospawn < 1000f) && I.CanTalk && I.HasGivenName && I.chaseable && I.friendly
                 }
+                townNpcCount = GeneralMethods.CountTownNPCRaid();
                 RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
 			}
 		}
 
-		public override void PostUpdate()
+        public override void PostUpdate()
         {
 			if (RaidEvent)
             {
@@ -117,10 +116,8 @@ namespace MinecraftAnimals.Raid
 					RaidKillCount = 0f;
 					IncreaseRaidWave();
 				}
-				if (RaidWaves >= 7)//|| townNpcCount <= 0)
-				{
-					EndRaidEvent();
-				}
+				if (RaidWaves >= 7) EndRaidEvent();
+                if (townNpcCount <= 0) LostRaidEvent();
 			}
 			base.PostUpdate();
         }
@@ -148,15 +145,13 @@ namespace MinecraftAnimals.Raid
             }
         }
 
-        public static void EndRaidEvent()
+        public static void LostRaidEvent()
         {
             if (RaidEvent)
             {
                 Color messageColor = Color.Orange;
                 RaidEvent = false;
-                downedRaid = true;
-                string key = "The Raid has been defeated!";
-				string loseKey = "Your town members were slaughtered!";
+                string loseKey = "Your town members were slaughtered!";
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     RaidKillCount = 0f;
@@ -168,15 +163,39 @@ namespace MinecraftAnimals.Raid
                     RaidWaves = 0;
                     RaidKillCount = 0f;
                     // Immediately inform clients of new world state.
-					 NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);//if(RaidWaves >= 7)
-					//else NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);
-				}
+                    NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);//if(RaidWaves >= 7)
+                }
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
-					 Main.NewText((key), messageColor);//if(RaidWaves >= 7)
-					//else Main.NewText((loseKey), messageColor);
-				}
-			}
+                    Main.NewText((loseKey), messageColor);//if(RaidWaves >= 7)
+                                                          //else Main.NewText((loseKey), messageColor);
+                }
+            }
         }
-	}
+        public static void EndRaidEvent()
+        {
+            RaidEvent = false;
+            downedRaid = true;
+            Color messageColor = Color.Orange;
+            string key = "The Raid has been defeated!";
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                RaidKillCount = 0f;
+                RaidWaves = 0;
+            }
+            if (Main.netMode == NetmodeID.Server)
+            {
+                NetMessage.SendData(MessageID.WorldData);
+                RaidWaves = 0;
+                RaidKillCount = 0f;
+                // Immediately inform clients of new world state.
+                NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);//if(RaidWaves >= 7)
+            }
+            else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
+            {
+                Main.NewText((key), messageColor);//if(RaidWaves >= 7)
+            }
+        }
+
+    }
 }

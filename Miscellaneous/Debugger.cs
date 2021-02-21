@@ -18,7 +18,7 @@ namespace MinecraftAnimals.Miscellaneous
             // Alter any of these values as you see fit, but you should probably keep useStyle on 1, as well as the noUseGraphic and noMelee bools
             item.knockBack = 5f;
             item.useStyle = ItemUseStyleID.SwingThrow;
-            item.useAnimation = 1;
+            item.useAnimation = 2;
             item.useTime = 2;
             item.width = 30;
             item.height = 30;
@@ -40,12 +40,45 @@ namespace MinecraftAnimals.Miscellaneous
 
         public override bool UseItem(Player player)
         {
-            Main.NewText(RaidWorld.RaiderCounter + " enemy counter");
-            Main.NewText(RaidWorld.RaidKillCount + " kills");
-            Main.NewText(RaidWorld.progressPerWave + " progress per wave");
-            Main.NewText(RaidWorld.RaidWaves + " current wave");
-            Main.NewText(RaidWorld.townNpcCount + " Town memebers");
-
+            for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.75); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 5) : WorldGen.genRand.Next(Main.maxTilesX / 5 * 4, Main.maxTilesX - 60);
+                int y = (int)(WorldGen.worldSurface * 0.35);
+                y = GeneralMethods.FindType(x, y, -1, TileID.Grass);
+                if (y > 1)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    WorldGen.SquareTileFrame(x, y);
+                    if (tile.active() && tile.type == TileID.Grass)//|| tile.type == TileID.FleshGrass || tile.type == TileID.CorruptGrass
+                    {
+                        WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(2, 3), TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                    }
+                }
+                y = (int)(WorldGen.worldSurface * 0.35);
+                y = GeneralMethods.FindType(x, y, -1, TileID.FleshGrass);
+                if (y > 1)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    WorldGen.SquareTileFrame(x, y);
+                    if (tile.active() && tile.type == TileID.FleshGrass)
+                    {
+                        WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                    }
+                }
+                y = (int)(WorldGen.worldSurface * 0.35);
+                y = GeneralMethods.FindType(x, y, -1, TileID.CorruptGrass);
+                if (y > 1)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y);
+                    WorldGen.SquareTileFrame(x, y);
+                    if (tile.active() && tile.type == TileID.CorruptGrass)//||  || tile.type == TileID.CorruptGrass
+                    {
+                        WorldGen.TileRunner(x, y, 1, 1, TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                    }
+                }
+            }
             return true;
         }
         /*

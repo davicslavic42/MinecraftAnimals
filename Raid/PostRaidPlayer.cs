@@ -23,6 +23,7 @@ namespace MinecraftAnimals.Raid
                     RaidWorld.RaidWaves += 1;
                 }
             }
+            if (RaidWorld.townNpcCount <= 0) RaidWorld.LostRaidEvent();
         }
     }
 }

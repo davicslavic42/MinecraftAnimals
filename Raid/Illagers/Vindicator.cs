@@ -46,21 +46,26 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Player player = Main.player[npc.target];
-            npc.TargetClosest(true);
+
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 635f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 635f);//gets player center
+            Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
+
             if (Phase == (int)AIStates.Normal)
             {
-                float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
+                npc.TargetClosest(false);
+                npc.velocity.X = 1 * npc.direction;
+                if (GlobalTimer == 5)
+                {
+                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+                }
+                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
                 if (GlobalTimer >= 800)
                 {
                     GlobalTimer = 0;
                 }
-
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
-                {
-                    npc.velocity.X = 1.25f * npc.direction;
-                }
-                if (player.Distance(npc.Center) < 325f)
+                if (npc.Distance(newTargetCenter) < 625f)//npc.HasValidTarget && player.Distance(npc.Center) < 725f
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -68,15 +73,14 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (Phase == (int)AIStates.Attack)
             {
-                npc.TargetClosest(true);
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.damage = 30;
                 npc.velocity.X = 1.75f * npc.direction;
-                AttackTimer++;
-                if (player.Distance(npc.Center) > 325f)
+                if (npc.Distance(newTargetCenter) > 625f)
                 {
                     Phase = (int)AIStates.Normal;
                 }
-                float stopToAttack = player.Distance(npc.Center) < 24f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                float stopToAttack = npc.Distance(newTargetCenter) < 20f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1.85f * npc.direction;
             }
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Death)
@@ -99,9 +103,9 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
             }
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 3) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0 && GlobalTimer % 50 == 0)
@@ -119,9 +123,12 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                NetMessage.SendData(MessageID.WorldData);
-                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
+                if (RaidWorld.RaidEvent)
+                {
+                    NetMessage.SendData(MessageID.WorldData);
+                    RaidWorld.RaidKillCount += 1f;
+                }
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

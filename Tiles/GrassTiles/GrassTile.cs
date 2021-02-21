@@ -23,6 +23,7 @@ namespace MinecraftAnimals.Tiles.GrassTiles
 			Main.tileBlendAll[Type] = true;
 			TileID.Sets.Grass[Type] = true;
 			TileID.Sets.NeedsGrassFraming[Type] = true;
+			TileID.Sets.Conversion.Grass[Type] = true;
 			TileID.Sets.NeedsGrassFramingDirt[Type] = TileID.Dirt;
 			drop = ItemType<Items.Blocks.Dirt>();
             AddMapEntry(new Color(100, 220, 25));
@@ -38,7 +39,13 @@ namespace MinecraftAnimals.Tiles.GrassTiles
 			style = 0;
 			return TileType<Trees.BirchSaplingtile>();
 		}
-		public override void RandomUpdate(int i, int j)
+        public override void RandomUpdate(int i, int j)
+        {
+			WorldGen.SpreadGrass(i, j, TileType<Dirttile>(), TileType<GrassTile>());
+            base.RandomUpdate(i, j);
+        }
+        /*
+		 * 		public override void RandomUpdate(int i, int j)
         {
 			for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.75); k++)
             {
@@ -58,7 +65,6 @@ namespace MinecraftAnimals.Tiles.GrassTiles
 				}
 			}
         }
-		/*
 
         		public static void SpreadGrass(int i, int j, int dirt = 0, int grass = 2, bool repeat = true, byte color = 0)
 		{
@@ -136,5 +142,5 @@ namespace MinecraftAnimals.Tiles.GrassTiles
 		}
 
         */
-	}
+    }
 }

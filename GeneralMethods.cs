@@ -38,30 +38,17 @@ namespace MinecraftAnimals
             return initialAngle;
         }
         //thanks dan for the idea
-        public static Vector2 GetTargetEntity(Vector2 currentCenter, float searchRange = 500f, int TargetType = 0, bool TargetClosest = true) //(float, float) target type -1 is player, target type zero is just for a set of conidiotns like town npcs, or use the ID of the npc you put in
+        public static Vector2 GetTargetPlayerEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true) 
         {
             Vector2 newTargetCenter = new Vector2(0, 0);
             float DistanceToTargetPos = 0f;
             float DistanceToNewTargetPos = 0f;
             bool CloserTargets = DistanceToTargetPos > DistanceToNewTargetPos;//if any of the other valid Centers ends up closer to the main Center the target will be changed
 
-            for (int i = 0; i < Main.maxNPCs; i++)//range of targets
-            {
-                NPC I = Main.npc[i];
-                if (I.active && I.chaseable && Vector2.Distance(currentCenter, I.Center) < searchRange && TargetType == -2)
-                {
-                    newTargetCenter = I.Center;
-                    DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);
-                    DistanceToNewTargetPos = Vector2.Distance(currentCenter, I.Center);
-                    if (TargetClosest){// if I want to target the closest target then the 
-                        if (CloserTargets) newTargetCenter = I.Center;
-                    }
-                }
-            }
-            for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players
+            for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
             {
                 Player player = Main.player[y];
-                if (!player.dead && !player.ghost && player.active && Vector2.Distance(currentCenter, player.Center) < searchRange && TargetType == -1 ) //player.Distance(currentCenter)
+                if (!player.dead && !player.ghost && player.active && Vector2.Distance(currentCenter, player.Center) < searchRange ) 
                 {
                     newTargetCenter = player.Center;
                     DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);
@@ -72,6 +59,61 @@ namespace MinecraftAnimals
                     }
                 }
             }
+            return newTargetCenter;
+        }
+        public static Vector2 GetAnyTargetEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true)
+        {
+            Vector2 newTargetCenter = new Vector2(0, 0);
+            float DistanceToTargetPos = 0f;
+            float DistanceToNewTargetPos = 0f;
+            bool CloserTargets = DistanceToTargetPos > DistanceToNewTargetPos;//if any of the other valid Centers ends up closer to the main Center the target will be changed
+
+            for (int i = 0; i < Main.maxNPCs; i++)//range of targets
+            {
+                NPC I = Main.npc[i];
+                if (I.active && I.chaseable && Vector2.Distance(currentCenter, I.Center) < searchRange)
+                {
+                    newTargetCenter = I.Center;
+                    DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);
+                    DistanceToNewTargetPos = Vector2.Distance(currentCenter, I.Center);
+                    if (TargetClosest)
+                    {// if I want to target the closest target then the 
+                        if (CloserTargets) newTargetCenter = I.Center;
+                    }
+                }
+            }
+            return newTargetCenter;
+        }
+        public static Vector2 GetAnyTownNpcTargetEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true)
+        {
+            Vector2 newTargetCenter = new Vector2(0, 0);
+            float DistanceToTargetPos = 0f;
+            float DistanceToNewTargetPos = 0f;
+            bool CloserTargets = DistanceToTargetPos > DistanceToNewTargetPos;//if any of the other valid Centers ends up closer to the main Center the target will be changed
+
+            for (int i = 0; i < Main.maxNPCs; i++)//targets town npcs
+            {
+                NPC I = Main.npc[i];
+                if (I.active && I.chaseable && I.townNPC && I.friendly && I.aiStyle == 7 && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (!I.homeless || I.homeless) && Vector2.Distance(currentCenter, I.Center) < searchRange )
+                {
+                    newTargetCenter = I.Center;
+                    DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);//distance to current target
+                    DistanceToNewTargetPos = Vector2.Distance(currentCenter, I.Center);//this takes the distance to the different valid Centers of the npcs aka potential new targets
+                    if (TargetClosest)
+                    {// if I want to target the closest target this is set to true
+                        if (CloserTargets) newTargetCenter = I.Center;
+                    }
+                }
+            }
+            return newTargetCenter;
+        }
+        public static Vector2 GetSpecificTargetEntity(Vector2 currentCenter, int TargetType, float searchRange = 500f, bool TargetClosest = true, int TargetType )
+        {
+            Vector2 newTargetCenter = new Vector2(0, 0);
+            float DistanceToTargetPos = 0f;
+            float DistanceToNewTargetPos = 0f;
+            bool CloserTargets = DistanceToTargetPos > DistanceToNewTargetPos;//if any of the other valid Centers ends up closer to the main Center the target will be changed
+
             for (int i = 0; i < Main.maxNPCs; i++)//targets a specific npc by ID
             {
                 NPC I = Main.npc[i];
@@ -88,9 +130,10 @@ namespace MinecraftAnimals
             }
             return newTargetCenter;
         }
+
         public static int FindType(int x, int y, int maxDepth = -1, params int[] types)//thanks gabe
         {
-            if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface); //Set default
+            if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface * 2); //Set default
             while (true)
             {
                 if (y >= maxDepth)
@@ -101,6 +144,27 @@ namespace MinecraftAnimals
             }
             return -1; //fallout case
         }
-
+        public static int CountTownNpcs()
+        {
+            int TownMembers = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)//I.active
+            {
+                NPC I = Main.npc[i];
+                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (!I.homeless || I.homeless)) TownMembers++;
+            }
+            return TownMembers;
+        }
+        public static int CountTownNPCRaid()
+        {
+            Vector2 OriginalSpawn = new Vector2(player.SpawnX, player.SpawnY));
+            Vector2 BedSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)
+            int TownMembersleft = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)//I.active
+            {
+                NPC I = Main.npc[i];
+                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (!I.homeless || I.homeless) && (I.Distance(OriginalSpawn) <= 1250f || I.Distance(OriginalSpawn) <= 1250f)) TownMembers++;
+            }
+            return TownMembersleft;
+        }
     }
 }

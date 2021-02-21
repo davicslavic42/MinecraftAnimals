@@ -30,13 +30,6 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             return SpawnCondition.Overworld.Chance * 0.03f;
         }
-        /*
-         *             if (RaidWorld.RaidEvent && spawnInfo.player.ZoneOverworldHeight)
-            {
-                return 3.5f;
-            }
-
-         */
         internal enum AIStates
         {
             Normal = 0,
@@ -54,12 +47,10 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Player player = Main.player[npc.target];
 
-            Vector2 newTargetCenter = new Vector2(0, 0);
-            Vector2 otherTargets = GeneralMethods.GetTargetEntity(npc.Center, 675f, NPCID.Guide);//gets target center
-            Vector2 PlayerTarget = GeneralMethods.GetTargetEntity(npc.Center, 675f, -1);//gets player center
-            newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(otherTargets) ? newTargetCenter = otherTargets : newTargetCenter = PlayerTarget;
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 675f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 675f);//gets player center
+            Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             //above is testing of new targeting system, 
             if (Phase == (int)AIStates.Normal)
             {
@@ -74,7 +65,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 675f)//npc.HasValidTarget && player.Distance(npc.Center) < 725f
+                if (npc.Distance(newTargetCenter) < 675f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -90,7 +81,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 350f)
+                if (npc.Distance(newTargetCenter) < 350f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))
                 {
                     Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;
@@ -105,7 +96,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.velocity.Y += 0.5f;
                 if (npc.frameCounter == 144)
                 {
-                    _ = npc.Distance(npc.position) - 25;
+                    //_ = npc.Distance(npc.position) - 25;
                     Vector2 TargetDir = Vector2.Normalize(newTargetCenter - npc.Center);
 
                     Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
@@ -160,7 +151,7 @@ namespace MinecraftAnimals.Raid.Illagers
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
@@ -173,7 +164,7 @@ namespace MinecraftAnimals.Raid.Illagers
         public override void NPCLoot()
         {
             base.NPCLoot();
-            if (Main.rand.NextBool(25))
+            if (Main.rand.NextBool(20))
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Weapons.Crossbow>());
             }
