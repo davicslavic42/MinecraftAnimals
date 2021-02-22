@@ -47,9 +47,10 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int patrol = 0;
+
         public override void AI()
         {
+            int patrol = 0;
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];

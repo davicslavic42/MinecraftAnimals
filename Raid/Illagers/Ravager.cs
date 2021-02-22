@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             npc.width = 80;
             npc.height = 60;
-            npc.lifeMax = 195;
+            npc.lifeMax = 155;
             npc.damage = 38;
             npc.knockBackResist = 0f;
             npc.HitSound = SoundID.NPCHit1;
@@ -49,7 +49,10 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Player player = Main.player[npc.target];
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 705f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 705f);//gets player center
+            Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
+
             if (Phase == (int)AIStates.Normal)
             {
                 npc.TargetClosest(false);
@@ -59,7 +62,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     GlobalTimer = 0;
                 }
 
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
+                if (npc.Distance(newTargetCenter) < 700f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -67,28 +70,23 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (Phase == (int)AIStates.Attack)
             {
-                npc.TargetClosest(true);
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (player.Distance(npc.Center) > 730f)
+                if (npc.Distance(newTargetCenter) > 700f)
                 {
                     Phase = (int)AIStates.Normal;
                 }
-                if (AttackTimer >= 200 && player.Distance(npc.Center) < 250f)
+                if (AttackTimer >= 200 && npc.Distance(newTargetCenter) < 250f)
                 {
-                    npc.velocity.X = AttackTimer * 0.25f / 5f * npc.direction;
+                    npc.velocity.X = AttackTimer * 0.25f / 7.5f * npc.direction;//charges at the target
                 }
-                else
-                {
-                    float stopToAttack = player.Distance(npc.Center) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
-                }
-                if (AttackTimer >= 220)
-                {
-                    AttackTimer = 0;
-                }
+                else npc.velocity.X = npc.Distance(newTargetCenter) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
+                if (AttackTimer >= 230) AttackTimer = 0;
             }
             if (Phase == (int)AIStates.Roar)
             {
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;//ensures npc is facing target
                 npc.velocity.X = 0f * npc.direction;
                 if (GlobalTimer >= 55)
                 {
@@ -125,7 +123,7 @@ namespace MinecraftAnimals.Raid.Illagers
             int x = (int)(npc.Center.X + (((npc.width / 2) + 25) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + npc.height / 2 - 2) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
@@ -143,9 +141,12 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                //NetMessage.SendData(MessageID.WorldData);
-                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
+                if (RaidWorld.RaidEvent)
+                {
+                    NetMessage.SendData(MessageID.WorldData);
+                    RaidWorld.RaidKillCount += 1f;
+                }
             }
             if (Main.rand.Next(0, 5) == 1 && GlobalTimer > 150)
             {
@@ -166,7 +167,7 @@ namespace MinecraftAnimals.Raid.Illagers
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 85 : 85);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 90 : 90);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
@@ -194,7 +195,6 @@ namespace MinecraftAnimals.Raid.Illagers
         private const int Frame_Attack_5 = 10;
         public override void FindFrame(int frameHeight)
         {
-            int i = 1;
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Normal)

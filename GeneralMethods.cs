@@ -15,6 +15,7 @@ namespace MinecraftAnimals
 {
     public class GeneralMethods
     {
+
         public static float ManualMobRotation(float currentAngle, float nextAngle, float speed)
         {
 
@@ -107,7 +108,7 @@ namespace MinecraftAnimals
             }
             return newTargetCenter;
         }
-        public static Vector2 GetSpecificTargetEntity(Vector2 currentCenter, int TargetType, float searchRange = 500f, bool TargetClosest = true, int TargetType )
+        public static Vector2 GetSpecificTargetEntity(Vector2 currentCenter, int TargetType, float searchRange = 500f, bool TargetClosest = true)
         {
             Vector2 newTargetCenter = new Vector2(0, 0);
             float DistanceToTargetPos = 0f;
@@ -144,7 +145,7 @@ namespace MinecraftAnimals
             }
             return -1; //fallout case
         }
-        public static int CountTownNpcs()
+        public static int CountTownNpcs()//will most likely be used for allowing of iron golems to spawn
         {
             int TownMembers = 0;
             for (int i = 0; i < Main.maxNPCs; i++)//I.active
@@ -154,15 +155,15 @@ namespace MinecraftAnimals
             }
             return TownMembers;
         }
+
         public static int CountTownNPCRaid()
         {
-            Vector2 OriginalSpawn = new Vector2(player.SpawnX, player.SpawnY));
-            Vector2 BedSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)
             int TownMembersleft = 0;
             for (int i = 0; i < Main.maxNPCs; i++)//I.active
             {
+                Vector2 OriginalSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
                 NPC I = Main.npc[i];
-                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (!I.homeless || I.homeless) && (I.Distance(OriginalSpawn) <= 1250f || I.Distance(OriginalSpawn) <= 1250f)) TownMembers++;
+                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && I.Distance(OriginalSpawn) <= 3750f && (!I.homeless || I.homeless) ) TownMembersleft++;//needed parameters to check for all town npcs cuz vanilla is pain
             }
             return TownMembersleft;
         }

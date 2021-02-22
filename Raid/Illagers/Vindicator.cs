@@ -53,7 +53,6 @@ namespace MinecraftAnimals.Raid.Illagers
 
             if (Phase == (int)AIStates.Normal)
             {
-                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5)
@@ -176,7 +175,6 @@ namespace MinecraftAnimals.Raid.Illagers
 
         public override void FindFrame(int frameHeight)
         {
-            int i = 1;
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Normal)

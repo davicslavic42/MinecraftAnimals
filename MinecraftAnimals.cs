@@ -148,12 +148,13 @@ namespace MinecraftAnimals
                     //draw the progress bar
 
                     Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(raidBarPosition.X, raidBarPosition.Y), new Vector2(progressColor.Width , progressColor.Height));
-                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)((waveProgressBar.Width * 2.35f) * MathHelper.Clamp((float)(((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) * 3.1f) / 100f), 0f, 1f)), progressColor.Height / 2);
-                    //Rectangle EmptyRaidbar = new Rectangle(0, 0, (int)(waveProgressBar.Width * 2.2f), progressColor.Height / 2);
+
+                    Rectangle waveProgressAmount = new Rectangle(0, 0, (int)((waveProgressBar.Width * 2.64f) * MathHelper.Clamp((float)(((RaidWorld.progressPerWave - RaidWorld.RaidKillCount) * 3.1f) / 100f), 0f, 1f)), (int)(progressColor.Height * 0.625));
+                    Rectangle EmptyRaidbar = new Rectangle(0, 0, (int)(waveProgressBar.Width * 2.045f), (int)(progressColor.Height * 0.625));
                     Vector2 offset = new Vector2((waveProgressBar.Width - (int)(waveProgressBar.Width * scaleMultiplier)) * 0.5f, (waveProgressBar.Height - (int)(waveProgressBar.Height * scaleMultiplier)) * 0.5f);
 
-                    spriteBatch.Draw(RaidBarAmount, raidBarPosition + offset, waveProgressAmount, waveColor , 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
-                    //spriteBatch.Draw(RaidBar, raidBarPosition + offset, EmptyRaidbar, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RaidBar, raidBarPosition + offset, EmptyRaidbar, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RaidBarAmount, raidBarPosition + offset, waveProgressAmount, waveColor, 0f, new Vector2(0f), scaleMultiplier * 1.5f, SpriteEffects.None, 0f);
                 }
                 catch (Exception e)
                 {

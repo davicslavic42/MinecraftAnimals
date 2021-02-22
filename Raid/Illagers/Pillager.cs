@@ -48,7 +48,7 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
 
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 675f);//gets target center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 675f);//gets target center, this case town npcs
             Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 675f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             //above is testing of new targeting system, 
@@ -81,7 +81,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 350f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))
+                if (npc.Distance(newTargetCenter) < 350f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))//
                 {
                     Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;

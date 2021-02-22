@@ -25,6 +25,7 @@ namespace MinecraftAnimals.Animals.Neutral
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.scale = 0.70f;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -56,7 +57,7 @@ namespace MinecraftAnimals.Animals.Neutral
                 }
                 if (GlobalTimer % 30 == 0 && GlobalTimer > 160)
                 {
-                    npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer * 0.12f / 10f : npc.velocity.Y = GlobalTimer * 0.12f / 10f * -1f;
+                    npc.velocity.Y = Main.rand.Next(2) == 1 ? npc.velocity.Y = GlobalTimer * 0.05f / 20f : npc.velocity.Y = GlobalTimer * 0.05f / 20f * -1f;
                 }
                 if (GlobalTimer > 300) GlobalTimer = 50;
                 if (flyCount == 5)
@@ -66,7 +67,7 @@ namespace MinecraftAnimals.Animals.Neutral
                 }
             }
 
-            if (Phase == (int)AIStates.Fly)
+            if (Phase == (int)AIStates.Fly)// bat flies upward until it finds a celing block to rest on
             {
                 int x = (int)(npc.Center.X) / 16;
                 int y = (int)(npc.Center.Y - ((npc.height / 2) + 1)) / 16;

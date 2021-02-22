@@ -24,53 +24,53 @@ namespace MinecraftAnimals.Raid
                 if (Main.player[i].active)
                     activePlayers++;
             }
-            spawnRate = (int)1.5;
-            if (RaidWorld.RaidKillCount + RaidWorld.RaiderCounter >= RaidWorld.progressPerWave) maxSpawns = 0;
+            spawnRate = (int)2.3;
+            if ((int)RaidWorld.RaidKillCount + RaidWorld.RaiderCounter >= RaidWorld.progressPerWave) maxSpawns = 0;
 
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>
         { //Spawn info for the Raid npcs and spawn info
 			new Dictionary<int, float> { //wave 1
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 5.35f},
+                {NPCType<Pillager>(), 8.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 4.73f},
+                {NPCType<Vindicator>(), 7.83f},
                 {NPCType<Witch>(), 0f},
             },
             new Dictionary<int, float> { //wave 2
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 4.35f},
+                {NPCType<Pillager>(), 7.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 4.73f},
-                {NPCType<Witch>(), 4.0f},
+                {NPCType<Vindicator>(), 7.73f},
+                {NPCType<Witch>(), 6.8f},
             },
             new Dictionary<int, float> { //wave 3
 				{NPCType<Evoker>(), 0f},
-                {NPCType<Pillager>(), 4.35f},
+                {NPCType<Pillager>(), 7.35f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 4.73f},
-                {NPCType<Witch>(), 4.135f},
+                {NPCType<Vindicator>(), 7.73f},
+                {NPCType<Witch>(), 7.135f},
             },
             new Dictionary<int, float> { //wave 4
-				{NPCType<Evoker>(), 3.65f},
-                {NPCType<Pillager>(), 4.25f},
+				{NPCType<Evoker>(), 6.85f},
+                {NPCType<Pillager>(), 6.95f},
                 {NPCType<Ravager>(), 0f},
-                {NPCType<Vindicator>(), 4.43f},
-                {NPCType<Witch>(), 4.235f},
+                {NPCType<Vindicator>(), 6.953f},
+                {NPCType<Witch>(), 6.5f},
             },
             new Dictionary<int, float> { //wave 5
-				{NPCType<Evoker>(), 3.85f},
-                {NPCType<Pillager>(), 5.35f},
-                {NPCType<Ravager>(), 2.15f},
-                {NPCType<Vindicator>(), 4.73f},
-                {NPCType<Witch>(), 4.135f},
+				{NPCType<Evoker>(), 6.85f},
+                {NPCType<Pillager>(), 7.35f},
+                {NPCType<Ravager>(), 3.15f},
+                {NPCType<Vindicator>(), 6.73f},
+                {NPCType<Witch>(), 6.135f},
             },
             new Dictionary<int, float> { //wave 6
 				{NPCType<Evoker>(), 7.35f},
-                {NPCType<Pillager>(), 5.35f},
-                {NPCType<Ravager>(), 1.95f},
-                {NPCType<Vindicator>(), 1.73f},
-                {NPCType<Witch>(), 4.135f},
+                {NPCType<Pillager>(), 8.35f},
+                {NPCType<Ravager>(), 3.05f},
+                {NPCType<Vindicator>(), 8.73f},
+                {NPCType<Witch>(), 6.135f},
             }
         };
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)

@@ -26,17 +26,16 @@ namespace MinecraftAnimals.StatusEffects.Debuff
         public override void Update(Player player, ref int buffIndex)
         {
             //float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(player.SpawnX, player.SpawnY));
-            Vector2 OriginalSpawn = new Vector2(player.SpawnX, player.SpawnY));
-            Vector2 BedSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16)
-
-            if (!RaidWorld.RaidEvent && RaidWorld.RaidWaves == 0 && (player.Distance(BedSpawn) <= 50f || player.Distance(OriginalSpawn) <= 50f))//&& 
+            Vector2 OriginalSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
+            if (!RaidWorld.RaidEvent && RaidWorld.RaidWaves == 0 && player.Distance(OriginalSpawn) <= 50f)//&& 
             {
-                if(RaidWorld.townNpcCount => 5)
+                Color messageColor = Color.Orange;
+                if (RaidWorld.townNpcCount >= 5)
                 {
-                    string key = "The Illagers are coming!";
-                    Color messageColor = Color.Orange;
+                    string key = "An Illager Raid is beginning, protect your towns people!";
                     RaidWorld.RaidKillCount = 0;
                     RaidWorld.RaidWaves += 1;
+                    RaidWorld.RaidEvent = true;
                     if (Main.netMode == NetmodeID.Server) // Server
                     {
                         NetMessage.BroadcastChatMessage(NetworkText.FromKey(key), messageColor);
@@ -49,6 +48,8 @@ namespace MinecraftAnimals.StatusEffects.Debuff
                     {
                         Main.PlaySound(SoundID.Roar, player.position, 0);
                         RaidWorld.RaidEvent = true;
+                        RaidWorld.RaidKillCount = 0;
+                        RaidWorld.RaidWaves += 1;
                     }
                     if (Main.netMode == NetmodeID.Server && player.whoAmI == Main.myPlayer)
                     {
@@ -60,7 +61,7 @@ namespace MinecraftAnimals.StatusEffects.Debuff
                 }
                 else
                 {
-                    string warn = "3 town npcs are needed to start the Raid";
+                    string warn = "5 town npcs near your original spawnpoint are needed to start the Raid, current active town members: " + RaidWorld.townNpcCount;
 
                     Main.NewText(Language.GetTextValue(warn), messageColor);
                     player.buffTime[buffIndex] = 0;

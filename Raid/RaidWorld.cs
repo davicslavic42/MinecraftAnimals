@@ -77,10 +77,11 @@ namespace MinecraftAnimals.Raid
             writer.Write(flags);
             writer.Write(RaidKillCount);
 			writer.Write(RaidWaves);
-			writer.Write(progressPerWave);
-		}
+            writer.Write(progressPerWave);
+            writer.Write(townNpcCount);
+        }
 
-		public override void NetReceive(BinaryReader reader)
+        public override void NetReceive(BinaryReader reader)
         {
             BitsByte flags = reader.ReadByte();
             downedRaid = flags[0];
@@ -89,20 +90,15 @@ namespace MinecraftAnimals.Raid
             RaidEvent = flags[1];
             RaidKillCount = reader.ReadInt32();
 			RaidWaves = reader.ReadInt32();
-			progressPerWave = reader.ReadInt32();
+            progressPerWave = reader.ReadInt32();
+            townNpcCount = reader.ReadInt32();
 
-		}
-		//progressPerWave = (int)(10 + (progressCurrentWave * 15));
-		public override void PreUpdate()
+        }
+        public override void PreUpdate()
 		{
-			if (RaidEvent)
+            townNpcCount = GeneralMethods.CountTownNPCRaid(); // counts npcs in range of player's spawn point or bed to ensure they meet
+            if (RaidEvent)
 			{
-				for (int i = 0; i < Main.maxNPCs; i++)//I.active
-				{
-					NPC I = Main.npc[i];
-                    float TownNPCDistancetospawn = I.Distance(new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16));
-                }
-                townNpcCount = GeneralMethods.CountTownNPCRaid();
                 RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
 			}
 		}
@@ -117,7 +113,7 @@ namespace MinecraftAnimals.Raid
 					IncreaseRaidWave();
 				}
 				if (RaidWaves >= 7) EndRaidEvent();
-                if (townNpcCount <= 0) LostRaidEvent();
+                if (townNpcCount <= 0) LostRaidEvent();// if town npcs die the player loses
 			}
 			base.PostUpdate();
         }
@@ -126,7 +122,7 @@ namespace MinecraftAnimals.Raid
             if (RaidWaves != 0)
             {
                 string wavekey = ("Wave " + RaidWaves + " has been defeated!");
-                Color messageColor1 = Color.Red;
+                Color messageColor1 = Color.GreenYellow;
 				RaidWaves += 1;
 				RaidKillCount = 0f;
                 if (Main.netMode == NetmodeID.Server) // Server
@@ -145,11 +141,11 @@ namespace MinecraftAnimals.Raid
             }
         }
 
-        public static void LostRaidEvent()
+        public static void LostRaidEvent()// in the event that all town memebers are killed the player loses the raid
         {
             if (RaidEvent)
             {
-                Color messageColor = Color.Orange;
+                Color messageColor = Color.Red;
                 RaidEvent = false;
                 string loseKey = "Your town members were slaughtered!";
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -168,7 +164,6 @@ namespace MinecraftAnimals.Raid
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
                     Main.NewText((loseKey), messageColor);//if(RaidWaves >= 7)
-                                                          //else Main.NewText((loseKey), messageColor);
                 }
             }
         }
@@ -176,7 +171,7 @@ namespace MinecraftAnimals.Raid
         {
             RaidEvent = false;
             downedRaid = true;
-            Color messageColor = Color.Orange;
+            Color messageColor = Color.Green;
             string key = "The Raid has been defeated!";
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -196,6 +191,5 @@ namespace MinecraftAnimals.Raid
                 Main.NewText((key), messageColor);//if(RaidWaves >= 7)
             }
         }
-
     }
 }

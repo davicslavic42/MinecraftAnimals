@@ -34,8 +34,9 @@ namespace MinecraftAnimals.Raid.Illagers
         internal enum AIStates
         {
             Normal = 0,
-            Attack = 1,
-            Death = 2
+            Approach = 1,
+            Attack = 2,
+            Death = 3
         }
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
@@ -45,9 +46,10 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Player player = Main.player[npc.target];
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 635f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 635f);//gets player center
+            Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             int attackType = 1;
-            npc.TargetClosest(true);
             if (Phase == (int)AIStates.Normal)
             {
                 npc.velocity.Y = 2;
@@ -57,11 +59,23 @@ namespace MinecraftAnimals.Raid.Illagers
                     GlobalTimer = 0;
                 }
 
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 730f) // passive player is within a certain range
+                if (npc.Distance(newTargetCenter) < 630f) // passive player is within a certain range
                 {
-                    npc.velocity.X = 1.25f * npc.direction;
+                    Phase = (int)AIStates.Approach;
+                    GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 325f)
+            }
+            if (Phase == (int)AIStates.Approach)
+            {
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
+                npc.velocity.Y = 1.5f;
+                npc.velocity.X = 1.25f * npc.direction;
+                if (npc.Distance(newTargetCenter) > 630f) // passive player is within a certain range
+                {
+                    Phase = (int)AIStates.Normal;
+                    GlobalTimer = 0;
+                }
+                if (npc.Distance(newTargetCenter) < 325f) 
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -70,6 +84,7 @@ namespace MinecraftAnimals.Raid.Illagers
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Attack)
             {
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y - 2), npc.width, (npc.height / 2 - 1), DustType<Dusts.Poteffect>(), 0f, 0f, 100, default(Color), 1f);// causes little potion effects to flaot around
                 Main.dust[dustIndex].scale = 0.2f + (float)Main.rand.Next(5) * 0.1f;
                 npc.ai[3]++;
@@ -82,13 +97,13 @@ namespace MinecraftAnimals.Raid.Illagers
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 150, (int)npc.position.Y - 50), NPCType<Illagers.Vex>(), 0);
+                            NPC.NewNPC(Main.rand.Next((int)npc.position.X - 50, (int)npc.position.X + 50), Main.rand.Next((int)npc.position.Y - 150, (int)npc.position.Y - 50), NPCType<Vex>(), 0);
                         }
                         npc.ai[3] = -200;
                     }
                     if (attackType == 1)
                     {
-                        if (player.Distance(npc.Center) < 125f)
+                        if (npc.Distance(newTargetCenter) < 125f)
                         {
                             for (int i = 0; i < 2; i++)
                             {
@@ -105,14 +120,11 @@ namespace MinecraftAnimals.Raid.Illagers
                         npc.ai[3] = 25;
                     }
                 }
-                else
+                if (npc.Distance(newTargetCenter) > 325f)
                 {
-                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 325f)
-                    {
-                        // Out targeted player seems to have left our range, so we'll go back to sleep.
-                        Phase = (int)AIStates.Normal;
-                        GlobalTimer = 0;
-                    }
+                    // Out targeted player seems to have left our range, so we'll go back to sleep.
+                    Phase = (int)AIStates.Approach;
+                    GlobalTimer = 0;
                 }
             }
             if (Phase == (int)AIStates.Death)
@@ -140,7 +152,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 25 == 0)
             {
                 int i = 1;
-                if (i == 1 && npc.velocity.X != 0 && GlobalTimer % 25 == 0)
+                if (i == 1 && npc.velocity.X != 0 && GlobalTimer % 50 == 0)
                 {
                     npc.velocity = new Vector2(npc.direction * 1, -7f);
                     i = 0;
@@ -153,9 +165,12 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                //NetMessage.SendData(MessageID.WorldData);
-                RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
+                if (RaidWorld.RaidEvent)
+                {
+                    NetMessage.SendData(MessageID.WorldData);
+                    RaidWorld.RaidKillCount += 1f;
+                }
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
@@ -215,6 +230,12 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     npc.frame.Y = Frame_Walk * frameHeight;
                 }
+            }
+            if (Phase == (int)AIStates.Approach)
+            {
+                npc.frameCounter++;
+                if (++npc.frameCounter % 7 == 0)
+                    npc.frame.Y = (npc.frame.Y / frameHeight + 1) % ((Main.npcFrameCount[npc.type] / 2) + 1) * frameHeight;
             }
             if (Phase == (int)AIStates.Attack)
             {

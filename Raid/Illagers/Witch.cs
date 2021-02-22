@@ -71,7 +71,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 270f)
+                if (npc.Distance(newTargetCenter) < 270f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))
                 {
                     Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;
@@ -88,7 +88,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     Vector2 TargetDir = Vector2.Normalize(newTargetCenter - npc.Center);
 
-                    Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Harmpot>(), 18, 3, Main.LocalPlayer.whoAmI);
                 }
                 if (npc.Distance(newTargetCenter) > 270f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))
                 {

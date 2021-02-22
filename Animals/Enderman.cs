@@ -51,7 +51,7 @@ namespace MinecraftAnimals.Animals
         public override void AI()
         {
             bool tpCheck = false;
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 16) * npc.direction)) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 10) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;//autojump check
             int a = (int)(npc.position.X / 16);//teleport check params
             int b = (int)(npc.position.Y / 16);

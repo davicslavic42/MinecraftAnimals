@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace MinecraftAnimals.projectiles
 {
@@ -13,7 +14,7 @@ namespace MinecraftAnimals.projectiles
         public override void SetDefaults()
         {
             projectile.width = 8;
-            projectile.height = 28;
+            projectile.height = 8;
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.penetrate = 3;
@@ -52,6 +53,10 @@ namespace MinecraftAnimals.projectiles
             projectile.rotation =
                 projectile.velocity.ToRotation() +
                 MathHelper.ToRadians(90f);
+        }
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            if (target.active && target.townNPC && target.friendly && target.aiStyle == 7 && target.chaseable && target.HasGivenName && !NPCID.Sets.TownCritter[target.type] && (!target.homeless || target.homeless)) damage *= 2;
         }
     }
 }

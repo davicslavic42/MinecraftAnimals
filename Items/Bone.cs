@@ -14,7 +14,7 @@ namespace MinecraftAnimals.Items
 
         public override void SetDefaults()
         {
-            item.maxStack = 99;
+            item.maxStack = 64;
             item.width = 20;
             item.height = 30;
             item.useTime = 20;
@@ -25,13 +25,11 @@ namespace MinecraftAnimals.Items
         }
         public override bool CanUseItem(Player player)
         {
-            return true;
+            return false;
         }
         public override bool UseItem(Player player)
         {
-            //Main.NewText(RaidWorld.townNpcCount + " Town memebers");
-            return true;
-
+            return false;
         }
     }
 }
