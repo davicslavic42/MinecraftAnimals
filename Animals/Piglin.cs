@@ -1,7 +1,9 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals
 {
@@ -14,7 +16,7 @@ namespace MinecraftAnimals.Animals
         }
         public override void SetDefaults()
         {
-            npc.width = 28;
+            npc.width = 25;
             npc.height = 50;
             npc.lifeMax = 125;
             npc.damage = 28;
@@ -28,90 +30,125 @@ namespace MinecraftAnimals.Animals
         {
             return SpawnCondition.Underworld.Chance * 0.08f;
         }
-        // These const ints are for the benefit of the programmer. Organization is key to making an AI that behaves properly without driving you crazy.
-        // Here I lay out what I will use each of the 4 npc.ai slots for.
-        private const int AI_State_Slot = 0;
-        private const int AI_Timer_Slot = 1;
-        // Here I define some values I will use with the State slot. Using an ai slot as a means to store "state" can simplify things greatly. Think flowchart.
-        private const int State_Find = 0;
-        private const int State_Attack = 1;
-        private const int State_Jump = 2;
-
-        // This is a property (https://msdn.microsoft.com/en-us/library/x9fsa0sw.aspx), it is very useful and helps keep out AI code clear of clutter.
-        // Without it, every instance of "AI_State" in the AI code below would be "npc.ai[AI_State_Slot]". 
-        // Also note that without the "AI_State_Slot" defined above, this would be "npc.ai[0]".
-        // This is all to just make beautiful, manageable, and clean code.
-        public float AI_State
+        internal enum AIStates
         {
-            get => npc.ai[AI_State_Slot];
-            set => npc.ai[AI_State_Slot] = value;
+            Normal = 0,
+            Attack = 1,
+            Death = 2
         }
+        internal ref float GlobalTimer => ref npc.ai[0];
+        internal ref float Phase => ref npc.ai[1];
+        internal ref float ActionPhase => ref npc.ai[2];
+        internal ref float AttackTimer => ref npc.ai[3];
 
-        public float AI_Timer
-        {
-            get => npc.ai[AI_Timer_Slot];
-            set => npc.ai[AI_Timer_Slot] = value;
-        }
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
-            if (AI_State == State_Find)
+            GlobalTimer++;
+            Player player = Main.player[npc.target];
+            if (Phase == (int)AIStates.Normal)
             {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 0;
-                npc.velocity.Y += 0.5f;
+                npc.TargetClosest(false);
+                npc.velocity.X = 1 * npc.direction;
+                if (GlobalTimer == 5)
+                {
+                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
+                }
+                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction;
+                if (GlobalTimer >= 800)
+                {
+                    GlobalTimer = 0;
+                }
+                if (npc.HasValidTarget && player.Distance(npc.Center) < 675f)
+                {
+                    Phase = (int)AIStates.Attack;
+                    GlobalTimer = 0;
+                }
 
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 550f)
-                {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
-                }
-                if (AI_Timer == 750)
-                {
-                    npc.spriteDirection = -1;
-                    AI_Timer = 0;
-                }
             }
             // thanks oli for the tile checks
-            else if (AI_State == State_Attack)
+            if (Phase == (int)AIStates.Attack)
             {
-                Player player = Main.player[npc.target];
                 npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
-                npc.velocity.Y += 0.5f;
-
-                if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) > 550f)
+                npc.velocity.X = 1.4f * npc.direction;
+                float stopToAttack = player.Distance(npc.Center) < 18f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;
+                if (npc.HasValidTarget && player.Distance(npc.Center) > 675f)
                 {
-                    AI_State = State_Find;
-                    AI_Timer = 0;
+                    Phase = (int)AIStates.Normal;
+                    GlobalTimer = 0;
                 }
-                if (Collision.SolidCollision(npc.position, (npc.width + 2), npc.height))
+                if (player.Distance(npc.Center) < 28f)
                 {
-                    AI_State = State_Jump;
-                    AI_Timer = 0;
+                    npc.velocity.X = 0 * npc.direction;
                 }
             }
-            else if (AI_State == State_Jump)
+            if (Phase == (int)AIStates.Death)
             {
-                AI_Timer++;
-                Player player = Main.player[npc.target];
-                npc.TargetClosest(true);
-                npc.velocity.X = 1.5f * npc.direction;
-                npc.velocity.Y += 0.5f;
-                if (AI_Timer == 1)
+                npc.damage = 0;
+                npc.ai[2] += 1f; // increase our death timer.
+                npc.netUpdate = true;
+                npc.velocity.X = 0;
+                npc.velocity.Y += 1.5f;
+                npc.dontTakeDamage = true;
+                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
+                if (npc.ai[2] >= 110f)
                 {
-                    // We apply an initial velocity the first tick we are in the Jump frame. Remember that -Y is up. 
-                    npc.velocity = new Vector2(npc.direction * 1, -10f);
-                }
-                else if (AI_Timer > 15)
-                {
-                    AI_State = State_Attack;
-                    AI_Timer = 0;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        Main.dust[dustIndex].noGravity = true;
+                    }
+                    npc.life = 0;
                 }
             }
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            {
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
+                {
+                    npc.velocity = new Vector2(npc.direction * 1, -7f);
+                    i = 0;
+                }
+            }
+        }
+        public override void HitEffect(int hitDirection, double damage)
+        {
+            if (npc.life <= 0)
+            {
+                npc.life = 1;
+                Phase = (int)AIStates.Death;
+            }
+            base.HitEffect(hitDirection, damage);
+        }
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (npc.spriteDirection == 1)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            Texture2D texture = Main.npcTexture[npc.type];
+            int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+            int startY = npc.frame.Y;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 40 : 40);
+
+            Color drawColor = npc.GetAlpha(lightColor);
+            if (Phase == (int)AIStates.Death)
+            {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, (npc.gfxOffY + 20)),
+                sourceRectangle, Color.Red * 0.8f, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            }
+            else
+            {
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 10),
+                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            }
+            return false;
         }
         private const int Frame_Walk = 0;
         private const int Frame_Walk_2 = 1;
@@ -124,95 +161,54 @@ namespace MinecraftAnimals.Animals
         private const int Frame_Attack_3 = 8;
         public override void FindFrame(int frameHeight)
         {
+            Player player = Main.player[npc.target];
             // This makes the sprite flip horizontally in conjunction with the npc.direction.
             npc.spriteDirection = npc.direction;
-            if (AI_State == State_Find)
+            if (Phase == (int)AIStates.Normal)
             {
                 npc.frameCounter++;
+                if (GlobalTimer <= 500)
+                {
+                    if (++npc.frameCounter % 7 == 0)
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 3) * frameHeight;
+                }
+                else
                 {
                     npc.frame.Y = Frame_Walk * frameHeight;
                 }
             }
-            if (AI_State == State_Attack)
+            if (Phase == (int)AIStates.Attack)
             {
                 npc.frameCounter++;
-                if (npc.frameCounter < 10)
+                if (player.Distance(npc.Center) < 30f)
                 {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else if (npc.frameCounter < 20)
-                {
-                    npc.frame.Y = Frame_Walk_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 30)
-                {
-                    npc.frame.Y = Frame_Walk_3 * frameHeight;
-                }
-                else if (npc.frameCounter < 40)
-                {
-                    npc.frame.Y = Frame_Walk_4 * frameHeight;
-                }
-                else if (npc.frameCounter < 50)
-                {
-                    npc.frame.Y = Frame_Walk_5 * frameHeight;
-                }
-                else if (npc.frameCounter < 60)
-                {
-                    npc.frame.Y = Frame_Walk_6 * frameHeight;
+                    npc.frameCounter++;
+                    if (npc.frameCounter < 7)
+                    {
+                        npc.frame.Y = Frame_Attack * frameHeight;
+                    }
+                    else if (npc.frameCounter < 14)
+                    {
+                        npc.frame.Y = Frame_Attack_2 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 28)
+                    {
+                        npc.frame.Y = Frame_Attack_3 * frameHeight;
+                    }
+                    else
+                    {
+                        npc.frameCounter = 0;
+                    }
                 }
                 else
                 {
-                    npc.frameCounter = 0;
+                    if (++npc.frameCounter % 7 == 0)
+                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 3) * frameHeight;
                 }
             }
-            if (npc.HasValidTarget && Main.player[npc.target].Distance(npc.Center) < 50f)
+            if (Phase == (int)AIStates.Death)
             {
-                npc.frameCounter++;
-                if (npc.frameCounter < 46)
-                {
-                    npc.frame.Y = Frame_Attack * frameHeight;
-                }
-                else if (npc.frameCounter < 78)
-                {
-                    npc.frame.Y = Frame_Attack_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 96)
-                {
-                    npc.frame.Y = Frame_Attack_3 * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
-                }
-            }
-            if (AI_State == State_Jump)
-            {
-                npc.frameCounter++;
-
-                if (npc.frameCounter < 10)
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
-                else if (npc.frameCounter < 20)
-                {
-                    npc.frame.Y = Frame_Walk_2 * frameHeight;
-                }
-                else if (npc.frameCounter < 30)
-                {
-                    npc.frame.Y = Frame_Walk_3 * frameHeight;
-                }
-                else if (npc.frameCounter < 40)
-                {
-                    npc.frame.Y = Frame_Walk_4 * frameHeight;
-                }
-                else if (npc.frameCounter < 50)
-                {
-                    npc.frame.Y = Frame_Walk_5 * frameHeight;
-                }
-                else
-                {
-                    npc.frameCounter = 0;
-                }
+                npc.frame.Y = Frame_Walk * frameHeight;
             }
         }
     }

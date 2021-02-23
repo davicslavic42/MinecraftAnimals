@@ -1,9 +1,8 @@
 displayName = Minecraft Animals
-author = Davslav
-version = 0.1.0
-includeSource = false
-includePDB = true
+author = Davslav, Pootistweet
+version = 0.1.1.1
 includeSource = true
-hideCode = false
-homepage = https://forums.terraria.org/index.php?threads/minecraft-animals.96770/
+includePDB = true
 buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+homepage = https://discord.gg/4S8qRrn
+hideCode = true
