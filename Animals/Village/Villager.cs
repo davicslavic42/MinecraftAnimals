@@ -2,6 +2,9 @@
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using static Terraria.ModLoader.ModContent;
 
 namespace MinecraftAnimals.Animals.Village
 {
@@ -59,7 +62,7 @@ namespace MinecraftAnimals.Animals.Village
 
                 foreach (Item item in player.inventory)
                 {
-                    if (item.type == ItemID.Emerald || item.type == ItemID.Emerald)
+                    if (item.type == ItemType<Miscellaneous.Debugger>())// ItemID.Emerald
                     {
                         return true;
                     }
@@ -79,7 +82,7 @@ namespace MinecraftAnimals.Animals.Village
                 case 2:
                     return "Villager";
                 default:
-                    return "Villager";
+                    return "Money Stealer";
             }
         }
 
@@ -98,17 +101,17 @@ namespace MinecraftAnimals.Animals.Village
 
         public override string GetChat()
         {
-            int partyGirl = NPC.FindFirstNPC(NPCID.PartyGirl);
-            if (partyGirl >= 0 && Main.rand.NextBool(4))
+            int Merchant = NPC.FindFirstNPC(NPCID.Merchant);
+            if (Merchant >= 0 && Main.rand.NextBool(4))
             {
-                return "Can you please tell " + Main.npc[partyGirl].GivenName + " to stop decorating my house with colors?";
+                return "I'm sure that " + Main.npc[Merchant].GivenName + " would agree that 7 emeralds for leather boots is a perfectly good trade";
             }
             switch (Main.rand.Next(5))
             {
                 case 0:
                     return "What's wrong with trading emeralds for some iron leggings?";
                 case 1:
-                    return "I've heard rumors of Illagers coming to these areas too, watch out for the raid captains";
+                    return "I've heard rumors of Illagers coming to these areas just like I have, so watch out for them raid captains";
                 case 2:
                     {
                         // Main.npcChatCornerItem shows a single item in the corner, like the Angler Quest chat.
@@ -143,6 +146,25 @@ namespace MinecraftAnimals.Animals.Village
 			return chat; // chat is implicitly cast to a string. You can also do "return chat.Get();" if that makes you feel better
 		}
 		*/
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (npc.spriteDirection == 1)
+            {
+                spriteEffects = SpriteEffects.FlipHorizontally;
+            }
+            Texture2D texture = Main.npcTexture[npc.type];
+            int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
+            int startY = npc.frame.Y;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 15 : 15);
+
+            Color drawColor = npc.GetAlpha(lightColor);
+            Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+            sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
+            return false;
+        }
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
@@ -170,6 +192,8 @@ namespace MinecraftAnimals.Animals.Village
             shop.item[nextSlot].SetDefaults(ItemID.RegenerationPotion);
             nextSlot++;
             shop.item[nextSlot].SetDefaults(ItemID.ArcheryPotion);
+            nextSlot++;
+            shop.item[nextSlot].SetDefaults(ItemType<Items.Usables.OminousBanner>());
             nextSlot++;
         }
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)

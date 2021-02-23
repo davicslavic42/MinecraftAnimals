@@ -90,25 +90,15 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Jump)
             {
-                if (GlobalTimer >= 5 && GlobalTimer <= 20)
-                {
-                    npc.velocity = new Vector2(npc.direction * 2, -5f);
-                }
-                if (GlobalTimer >= 5 && GlobalTimer <= 20 && player.Distance(npc.Center) < 220f)
-                {
-                    npc.velocity = new Vector2(npc.direction * 4, -3f);
-                }
+                if (GlobalTimer >= 5 && GlobalTimer <= 20) npc.velocity = new Vector2(npc.direction * 2, -5f);
+                if (GlobalTimer >= 5 && GlobalTimer <= 20 && player.Distance(npc.Center) < 220f) npc.velocity = new Vector2(npc.direction * 4, -3f);
 
                 if (GlobalTimer >= 50 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
                     Phase = (int)AIStates.Crouch;
                     GlobalTimer = 0;
                 }
-                if (GlobalTimer > 15 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
-                {
-                    npc.velocity.X = npc.direction * 0;
-
-                }
+                if (GlobalTimer > 15 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1)) npc.velocity.X = GlobalTimer * 0.01f;
             }
             if (Phase == (int)AIStates.Death)
             {

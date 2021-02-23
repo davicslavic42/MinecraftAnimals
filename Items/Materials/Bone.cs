@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace MinecraftAnimals.Items
+namespace MinecraftAnimals.Items.Materials
 {
     public class Bone : ModItem
     {

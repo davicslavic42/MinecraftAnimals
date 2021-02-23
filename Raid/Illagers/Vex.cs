@@ -42,29 +42,26 @@ namespace MinecraftAnimals.Raid.Illagers
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int SpeedLim = 1;
 
         public override void AI()
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Player player = Main.player[npc.target];
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 605f);//gets target center, town npcs in this case
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 605f);//gets player center
+            Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
+            int SpeedLim = 1;
+
             if (Phase == (int)AIStates.Normal)
             {
                 SpeedLim = 1;
-                npc.velocity.Y = 0.25f;
+                npc.velocity.Y = -0.15f;
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
-                if (GlobalTimer == 5)
-                {
-                    npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
-                }
+                if (GlobalTimer == 5) npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;// random direction for passive movement
                 float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 0.75f * npc.direction : npc.velocity.X = 0 * npc.direction;
-                if (GlobalTimer >= 800)
-                {
-                    GlobalTimer = 0;
-                }
-                if (npc.HasValidTarget && player.Distance(npc.Center) < 725f)
+                if (GlobalTimer >= 800) GlobalTimer = 0;
+                if (npc.Distance(newTargetCenter) < 605f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -72,14 +69,15 @@ namespace MinecraftAnimals.Raid.Illagers
             }
             if (Phase == (int)AIStates.Attack)
             {
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
+                npc.velocity.X = 1.5f * npc.direction;
                 SpeedLim = 1;
-                npc.TargetClosest(true);
-                if (npc.HasValidTarget && player.Distance(npc.Center) > 725f)
+                if (npc.Distance(newTargetCenter) > 605f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (player.Distance(npc.Center) < 250f && GlobalTimer > 155)
+                if (npc.Distance(newTargetCenter) < 250f && GlobalTimer > 205)
                 {
                     Phase = (int)AIStates.Charge;
                     GlobalTimer = 0;
@@ -88,6 +86,8 @@ namespace MinecraftAnimals.Raid.Illagers
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Charge)
             {
+                npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
+                npc.velocity.X = 3.25f * npc.direction;
                 SpeedLim = 2;
                 AttackTimer++;
                 npc.TargetClosest(true);
@@ -98,9 +98,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     AttackTimer = 0;
                     GlobalTimer = 0;
                 }
-                // If the targeted player is in attack range (250).
             }
-            // In this state, we are in the Charge. 
             if (Phase == (int)AIStates.Death)
             {
                 SpeedLim = 2;
@@ -123,23 +121,15 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
             }
             //thanks nuova prime//
-            if (player.position.Y < npc.position.Y + 35)
+            if (newTargetCenter.Y < npc.position.Y + 25)
             {
                 npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
             }
-            if (player.position.Y > npc.position.Y + 35)
+            if (newTargetCenter.Y > npc.position.Y + 25)
             {
                 npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .45f;
             }
-            if (player.position.X < npc.position.X)
-            {
-                npc.velocity.X -= npc.velocity.X > 0f ? 0.5f : 0.2f;
-            }
-            if (player.position.X > npc.position.X)
-            {
-                npc.velocity.X += npc.velocity.X < 0f ? 0.5f : 0.25f;
-            }
-            if (SpeedLim == 1)//prevents the eocity from going above inputed number
+            if (SpeedLim == 1)//prevents the velocity from going above inputed number
             {
                 if (npc.velocity.X * npc.direction > 1.9f)
                 {

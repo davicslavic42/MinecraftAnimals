@@ -21,7 +21,7 @@ namespace MinecraftAnimals.Raid.Illagers
             npc.width = 80;
             npc.height = 60;
             npc.lifeMax = 155;
-            npc.damage = 38;
+            npc.damage = 30;
             npc.knockBackResist = 0f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -57,11 +57,7 @@ namespace MinecraftAnimals.Raid.Illagers
             {
                 npc.TargetClosest(false);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
-                if (GlobalTimer >= 800)
-                {
-                    GlobalTimer = 0;
-                }
-
+                if (GlobalTimer >= 800) GlobalTimer = 0;
                 if (npc.Distance(newTargetCenter) < 700f)
                 {
                     Phase = (int)AIStates.Attack;
@@ -73,15 +69,11 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (npc.Distance(newTargetCenter) > 700f)
-                {
-                    Phase = (int)AIStates.Normal;
-                }
-                if (AttackTimer >= 200 && npc.Distance(newTargetCenter) < 250f)
-                {
-                    npc.velocity.X = AttackTimer * 0.25f / 7.5f * npc.direction;//charges at the target
-                }
+                if (npc.Distance(newTargetCenter) > 700f) Phase = (int)AIStates.Normal;
+               
+                if (AttackTimer >= 200 && npc.Distance(newTargetCenter) < 250f) npc.velocity.X = AttackTimer * 0.25f / 7.5f * npc.direction;//charges at the target
                 else npc.velocity.X = npc.Distance(newTargetCenter) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
+                
                 if (AttackTimer >= 230) AttackTimer = 0;
             }
             if (Phase == (int)AIStates.Roar)

@@ -38,17 +38,19 @@ namespace MinecraftAnimals.Items.Herbs
             {
                 WorldGen.TreeGrowFXCheck(Player.tileTargetX, Player.tileTargetY);
             }
+            /*
             else
             {
                 item.stack++;
             }
+            */
             return true;
         }
 
         public override void AddRecipes()
         {
             ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(ItemType<Bone>(), 1);
+            recipe.AddIngredient(ItemType<Materials.Bone>(), 1);
             recipe.AddTile(TileID.WorkBenches);
             recipe.SetResult(this, 3);
             recipe.AddRecipe();
