@@ -13,26 +13,17 @@ namespace MinecraftAnimals.projectiles.Passive
         // Use a different style for constant so it is very clear in code when a constant is used
 
         // The maximum charge value
-        private const float MAX_CHARGE = 50f;
-        private const float MOVE_DISTANCE = 60f;
 
         public int TargetWhoAmI
         {
             get => (int)projectile.ai[1];
             set => projectile.ai[1] = value;
         }
-        private int Shoot = 0;//int used for the final check before shooting
         private const int MAX_TICKS = 25;
-        internal float Charge
-        {
-            get => projectile.localAI[0];
-            set => projectile.localAI[0] = value;
-        }
-        public float Distance
-        {
-            get => projectile.ai[0];
-            set => projectile.ai[0] = value;
-        }
+        internal ref float Charge => ref projectile.ai[0];
+        private const float MAX_CHARGE = 50f;
+        internal ref float GlobalProjectileTimer => ref projectile.ai[1];
+        bool Loaded = false;
 
         // Are we at max charge? With c#6 you can simply use => which indicates this is a get only property
         public bool IsAtMaxCharge => Charge == MAX_CHARGE;
@@ -40,11 +31,11 @@ namespace MinecraftAnimals.projectiles.Passive
         public override void SetDefaults()
         {
             projectile.width = 8;
-            projectile.height = 28;
+            projectile.height = 8;
             projectile.friendly = true;
             projectile.hostile = false;
             projectile.penetrate = 3;
-            projectile.hide = true;
+            projectile.hide = false;
             projectile.damage = 5;
             projectile.tileCollide = true;
             projectile.ranged = true;
@@ -54,11 +45,10 @@ namespace MinecraftAnimals.projectiles.Passive
         private void UpdatePlayer(Player player)
         {
             // Multiplayer support here, only run this code if the client running it is the owner of the projectile
+            Vector2 aim = Vector2.Normalize(Main.MouseWorld - player.Center);
             if (projectile.owner == Main.myPlayer)
             {
-                Vector2 diff = Main.MouseWorld - player.Center;
-                diff.Normalize();
-                projectile.velocity = diff;
+                projectile.velocity = aim;
                 projectile.direction = Main.MouseWorld.X > player.position.X ? 1 : -1;
                 projectile.netUpdate = true;
             }
@@ -67,55 +57,37 @@ namespace MinecraftAnimals.projectiles.Passive
             player.heldProj = projectile.whoAmI; // Update player's held projectile
             player.itemTime = 2; // Set item time to 2 frames while we are used
             player.itemAnimation = 2; // Set item animation time to 2 frames while we are used
-            player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir); // Set the item rotation to where we are shooting
+            player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir); // Set the item rotation to where we are shooting  aim.ToRotation();
+        }
+
+        #endregion ignore
+        /*
+        public void Drawarrow(SpriteBatch spriteBatch, Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, Color color = default(Color))
+        {
+            float r = new Vector2(projectile.velocity).ToRotation();
+            // Draws the laser 'body'
+            spriteBatch.Draw(texture, projectile.position, null, Color.White, r, scale, 0, 0);
+        }
+        */
+        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
+        {
+            return false;
+        }
+        private void Firebolt(Player player)
+        {
+            Vector2 aim = Vector2.Normalize(Main.MouseWorld - player.Center);
+            projectile.velocity = aim.RotatedByRandom(0.1f) * 12f;
         }
 
         private void Chargeshot(Player player)
         {
-            if (!player.channel)
-            {
-                projectile.Kill();
-            }
-            if (!IsAtMaxCharge && player.channel)
-            {
-                Charge++;
-            }
-        }
-
-        #endregion ignore
-        public void Drawarrow2(SpriteBatch spriteBatch, Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, float maxDist = 2000f, Color color = default(Color), int transDist = 50)
-        {
-            float r = unit.ToRotation() + rotation;
-
-            // Draws the laser 'body'
-            for (float i = projectile.timeLeft; i <= 0;)
-            {
-                Color c = Color.White;
-                var origin = start + i * unit;
-                spriteBatch.Draw(texture, origin - Main.screenPosition,
-                    new Rectangle(0, 26, 28, 26), c, r,
-                    new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
-            }
-        }
-
-
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
-        {
-            // We start drawing the laser if we have charged up
-            if (IsAtMaxCharge)
-            {
-                Drawarrow2(spriteBatch, Main.projectileTexture[projectile.type], Main.player[projectile.owner].Center,
-                    projectile.velocity, 10, projectile.damage, -1.57f, 1f, 1000f, Color.White, (int)MOVE_DISTANCE);
-            }
-            return false;
+            if (!player.channel && !Loaded) projectile.Kill();
+            if (!IsAtMaxCharge && player.channel) Charge++;
+            if (IsAtMaxCharge && player.channel) Loaded = true;
+            if (player.channel && Loaded) Firebolt(player);
         }
 
         #region basic ai and mp
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-        {
-            target.immune[projectile.owner] = 5;
-        }
 
         public override void AI()
         {
@@ -130,14 +102,13 @@ namespace MinecraftAnimals.projectiles.Passive
             // Finally we spawn some effects like dusts and light
             UpdatePlayer(player);
             Chargeshot(player);
-
-
             // If laser is not charged yet, stop the AI here.
-            if (Charge < MAX_CHARGE) return;
+            if (!Loaded) return;
+            Firebolt(player);
             projectile.hide = false;
+            projectile.velocity.Y += 0.1f;
 
 
-            NormalAI();
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -150,22 +121,13 @@ namespace MinecraftAnimals.projectiles.Passive
             // Run an AABB versus Line check to look for collisions, look up AABB collision first to see how it works
             // It will look for collisions on the given line using AABB
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center,
-                player.Center + unit * Distance, 22, ref point);
+                projectile.Center, 22, ref point);
         }
 
         private void SetLaserPosition(Player player)
         {
-            for (Distance = MOVE_DISTANCE; Distance <= 2200f; Distance += 5f)
-            {
-                var start = player.Center + projectile.velocity * Distance;
-                if (!Collision.CanHit(player.Center, 1, 1, start, 1, 1))
-                {
-                    Distance -= 5f;
-                    break;
-                }
-            }
         }
-
+        /*
         private void NormalAI()
         {
             TargetWhoAmI++;
@@ -186,6 +148,7 @@ namespace MinecraftAnimals.projectiles.Passive
                 projectile.velocity.ToRotation() +
                 MathHelper.ToRadians(90f);
         }
+        */
         #endregion
     }
 }

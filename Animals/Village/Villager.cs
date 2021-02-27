@@ -12,7 +12,7 @@ namespace MinecraftAnimals.Animals.Village
     [AutoloadHead]
     public class Villager : ModNPC
     {
-
+        public override string Texture => "MinecraftAnimals/Animals/Village/Villager";
         public override bool Autoload(ref string name)
         {
             name = "Villager";
@@ -70,7 +70,6 @@ namespace MinecraftAnimals.Animals.Village
             }
             return false;
         }
-
         public override string TownNPCName()
         {
             switch (WorldGen.genRand.Next(4))
@@ -146,6 +145,8 @@ namespace MinecraftAnimals.Animals.Village
 			return chat; // chat is implicitly cast to a string. You can also do "return chat.Get();" if that makes you feel better
 		}
 		*/
+        //manual drawin bellow
+        /*
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -158,13 +159,14 @@ namespace MinecraftAnimals.Animals.Village
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 15 : 15);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 10 : 10);
 
             Color drawColor = npc.GetAlpha(lightColor);
             Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
             sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             return false;
         }
+        */
 
         public override void SetChatButtons(ref string button, ref string button2)
         {

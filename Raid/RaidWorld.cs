@@ -31,23 +31,6 @@ namespace MinecraftAnimals.Raid
 		internal ref int progressCurrentWave => ref RaidWaves;
 
 		public static int progressPerWave = 25;
-
-
-
-		/*
-        public static int progressPerWave = (new int[8]
-        {
-                0,
-                20,
-                30,
-                40,
-                50,
-                70,
-                90,
-                0
-        })[RaidWaves];
-		 */
-
 		public override void Initialize()
         {
             downedRaid = false;
@@ -100,7 +83,7 @@ namespace MinecraftAnimals.Raid
             if (RaidEvent)
 			{
                 RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
-			}
+            }
 		}
 
         public override void PostUpdate()

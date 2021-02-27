@@ -18,16 +18,17 @@ namespace MinecraftAnimals.StatusEffects.Debuff
         public override void SetDefaults()
         {
             DisplayName.SetDefault("BadOmen");
-            Description.SetDefault("You have a bad feeling about going back to spawn");
+            Description.SetDefault("You feel like there are Illagers watching");
             Main.buffNoTimeDisplay[Type] = false;
-            Main.debuff[Type] = false;
+            Main.debuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
             //float distanceToSpawn = Vector2.Distance(new Vector2(player.position.X, player.position.Y), new Vector2(player.SpawnX, player.SpawnY));
             Vector2 OriginalSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
-            if (!RaidWorld.RaidEvent && RaidWorld.RaidWaves == 0 && player.Distance(OriginalSpawn) <= 50f)//&& 
+            Vector2 BedSpawn = new Vector2(player.SpawnX * 16, player.SpawnY * 16);
+            if (!RaidWorld.RaidEvent && RaidWorld.RaidWaves == 0 && (player.Distance(OriginalSpawn) <= 150f || player.Distance(BedSpawn) <= 150f))//&& 
             {
                 Color messageColor = Color.Orange;
                 if (RaidWorld.townNpcCount >= 5)
@@ -61,7 +62,7 @@ namespace MinecraftAnimals.StatusEffects.Debuff
                 }
                 else
                 {
-                    string warn = "5 town npcs near your original spawnpoint are needed to start the Raid, current active town members: " + RaidWorld.townNpcCount;
+                    string warn = "5 town npc near your bed or original spawnpoint is needed to start the Raid, current active town members: " + RaidWorld.townNpcCount; // or bed spawnpoint
 
                     Main.NewText(Language.GetTextValue(warn), messageColor);
                     player.buffTime[buffIndex] = 0;

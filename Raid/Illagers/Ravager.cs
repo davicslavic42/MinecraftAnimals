@@ -49,8 +49,8 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 705f);//gets target center
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 705f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 805f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 805f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
 
             if (Phase == (int)AIStates.Normal)
@@ -58,7 +58,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.TargetClosest(false);
                 float isMoving = GlobalTimer <= 500 ? npc.velocity.X = 1 * npc.direction : npc.velocity.X = 0 * npc.direction; //basic passive movement for 500 ticks then stationary 300
                 if (GlobalTimer >= 800) GlobalTimer = 0;
-                if (npc.Distance(newTargetCenter) < 700f)
+                if (npc.Distance(newTargetCenter) < 800f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -69,7 +69,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.X = 1.75f * npc.direction;
                 AttackTimer++;
-                if (npc.Distance(newTargetCenter) > 700f) Phase = (int)AIStates.Normal;
+                if (npc.Distance(newTargetCenter) > 800f) Phase = (int)AIStates.Normal;
                
                 if (AttackTimer >= 200 && npc.Distance(newTargetCenter) < 250f) npc.velocity.X = AttackTimer * 0.25f / 7.5f * npc.direction;//charges at the target
                 else npc.velocity.X = npc.Distance(newTargetCenter) < 50f ? npc.velocity.X = 0 * npc.direction : 1.75f * npc.direction; //as the name suggests as the player gets close enough it stops moving to attack
@@ -84,7 +84,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     for (int i = 0; i < 10; i++)
                     {
-                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X + (((npc.width / 2) + 32) * npc.direction), npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
+                        int dustIndex = Dust.NewDust(new Vector2(npc.position.X + (((npc.width / 2) + 42) * npc.direction), npc.position.Y), npc.width, npc.height, DustType<Dusts.Poof>(), 0f, 0f, 100, default(Color), 1f); //spawns ender dust
                         Main.dust[dustIndex].noGravity = true;
                     }
                     Projectile.NewProjectile(npc.Center.X, npc.Center.Y, npc.velocity.X, npc.velocity.Y, ProjectileType<projectiles.RavagerRoar>(), 1, 10f, Main.myPlayer, 600f);
@@ -112,8 +112,8 @@ namespace MinecraftAnimals.Raid.Illagers
                     npc.life = 0;
                 }
             }
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 25) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + npc.height / 2 - 2) / 16;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 24) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + npc.height / 2 - 3) / 16;
 
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {

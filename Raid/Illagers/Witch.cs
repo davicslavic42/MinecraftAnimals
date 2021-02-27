@@ -46,8 +46,8 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
 
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 655f);//gets target center
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 655f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 775f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 725f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             if (Phase == (int)AIStates.Normal)
             {
@@ -56,7 +56,7 @@ namespace MinecraftAnimals.Raid.Illagers
 
                 if (GlobalTimer == 5) npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
                 if (GlobalTimer >= 800) GlobalTimer = 0;
-                if (npc.Distance(newTargetCenter) < 655f)
+                if (npc.Distance(newTargetCenter) < 775f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -66,7 +66,7 @@ namespace MinecraftAnimals.Raid.Illagers
             {
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.X = 1.4f * npc.direction;
-                if (npc.Distance(newTargetCenter) > 655f)
+                if (npc.Distance(newTargetCenter) > 775f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;

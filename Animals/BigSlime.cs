@@ -98,7 +98,7 @@ namespace MinecraftAnimals.Animals
                     Phase = (int)AIStates.Crouch;
                     GlobalTimer = 0;
                 }
-                if (GlobalTimer > 15 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1)) npc.velocity.X = GlobalTimer * 0.01f;
+                if (GlobalTimer > 30 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1)) npc.velocity = new Vector2(npc.direction * 1.75f, -1.5f);
             }
             if (Phase == (int)AIStates.Death)
             {

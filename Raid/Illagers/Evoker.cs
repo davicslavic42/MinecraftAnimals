@@ -46,8 +46,8 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 635f);//gets target center
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 635f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 855f);//gets target center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 855f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             int attackType = 1;
             if (Phase == (int)AIStates.Normal)
@@ -59,7 +59,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     GlobalTimer = 0;
                 }
 
-                if (npc.Distance(newTargetCenter) < 630f) // passive player is within a certain range
+                if (npc.Distance(newTargetCenter) < 830f) // passive player is within a certain range
                 {
                     Phase = (int)AIStates.Approach;
                     GlobalTimer = 0;
@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.Y = 1.5f;
                 npc.velocity.X = 1.25f * npc.direction;
-                if (npc.Distance(newTargetCenter) > 630f) // passive player is within a certain range
+                if (npc.Distance(newTargetCenter) > 830f) // passive player is within a certain range
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;

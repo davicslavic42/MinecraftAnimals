@@ -25,6 +25,7 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -114,9 +115,10 @@ namespace MinecraftAnimals.Animals
                     npc.Transform(NPCType<SpiderWall>());
                 }
             }
-            if (Main.dayTime == false && death == 0) // half brightness
+            if (!Main.dayTime && death == 0) // half brightness
             {
                 Phase = (int)AIStates.Attack;
+                npc.friendly = false;
             }
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;

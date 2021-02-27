@@ -143,8 +143,8 @@ namespace MinecraftAnimals
 
                     string waveText = Language.GetTextValue("Raid enemies left ") + (RaidWorld.progressPerWave - (int)RaidWorld.RaidKillCount);// / 100f) * 100
                     string TownText = Language.GetTextValue("Town members left ") + RaidWorld.townNpcCount;
-                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 150, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
-                    Utils.DrawBorderString(spriteBatch, TownText, new Vector2(raidBarPosition.X + 350, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    Utils.DrawBorderString(spriteBatch, waveText, new Vector2(raidBarPosition.X + 175, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
+                    Utils.DrawBorderString(spriteBatch, TownText, new Vector2(raidBarPosition.X + 375, raidBarPosition.Y - 25), Color.White, scaleMultiplier, 0.5f, -0.1f);
                     //draw the progress bar
 
                     Rectangle waveProgressBar = Utils.CenteredRectangle(new Vector2(raidBarPosition.X, raidBarPosition.Y), new Vector2(progressColor.Width , progressColor.Height));

@@ -114,9 +114,9 @@ namespace MinecraftAnimals.Animals
                     i = 0;
                 }
             }
-            if (Main.tile[(int)(npc.position.X / 16), (int)(npc.position.Y / 16)].liquid > 40f)
+            if (npc.wet && (Phase == (int)AIStates.Attack || Phase == (int)AIStates.Normal))
             {
-                npc.velocity.X = 1.75f;
+                npc.velocity.X = 3.75f * npc.direction;
             }
         }
         public override void HitEffect(int hitDirection, double damage)

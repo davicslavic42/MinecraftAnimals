@@ -23,6 +23,7 @@ namespace MinecraftAnimals.Animals
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -47,6 +48,7 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
+                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -107,8 +109,9 @@ namespace MinecraftAnimals.Animals
             if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)
             {
                 Phase = (int)AIStates.Attack;
+                npc.friendly = false;
             }
-            if (player.HeldItem.type == ItemType<Items.Materials.Bone>() && npc.ai[3] != -10 && Phase != (int)AIStates.Death) Phase = (int)AIStates.Follow; //if player is holding a bone and dog is not dead nor hostile start to follow
+            if (player.HeldItem.type == ItemType<Items.Materials.Bone>() && npc.ai[3] != -10/* ai[3] == -10  goes hostile*/ && Phase != (int)AIStates.Death) Phase = (int)AIStates.Follow; //if player is holding a bone and dog is not dead nor hostile start to follow
 
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
@@ -165,7 +168,7 @@ namespace MinecraftAnimals.Animals
                 for (int n = 0; n < 150; n++)
                 {
                     NPC N = Main.npc[n];
-                    if (N.active && N.Distance(npc.Center) < 325f && (N.type == NPCType<Wolf>()))
+                    if (N.active && N.Distance(npc.Center) < 325f && N.ai[1] != (int)AIStates.Death && (N.type == NPCType<Wolf>()))
                     {
                         N.netUpdate = true;
                         N.target = npc.target;

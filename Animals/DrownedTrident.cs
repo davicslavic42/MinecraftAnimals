@@ -97,7 +97,7 @@ namespace MinecraftAnimals.Animals
                     npc.velocity.X += DirToRing.X;
                     npc.velocity.Y += DirToRing.Y;
 
-                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 9f, ProjectileType<projectiles.DeepTrident>(), 28, 3, Main.LocalPlayer.whoAmI);
+                    Projectile.NewProjectile(npc.Center, PlayerDir.RotatedByRandom(0.1f) * 9f, ProjectileType<projectiles.DeepTrident>(), 25, 3, Main.LocalPlayer.whoAmI);
                 }
                 if (!npc.HasValidTarget || Main.player[npc.target].Distance(npc.Center) > 350f)
                 {
@@ -129,7 +129,6 @@ namespace MinecraftAnimals.Animals
             }
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + (npc.height / 2) - 2) / 16;
-
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
             {
                 int i = 1;
@@ -139,9 +138,9 @@ namespace MinecraftAnimals.Animals
                     i = 0;
                 }
             }
-            if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid > 230)
+            if (npc.wet && (Phase == (int)AIStates.Attack || Phase == (int)AIStates.Normal))
             {
-                npc.velocity.X = 1.5f;
+                npc.velocity.X = 3.75f * npc.direction;
             }
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -150,6 +149,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.life = 1;
                 Phase = (int)AIStates.Death;
+                NPCLoot();
             }
             base.HitEffect(hitDirection, damage);
         }

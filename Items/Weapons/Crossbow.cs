@@ -21,7 +21,7 @@ namespace MinecraftAnimals.Items.Weapons
         {
             // Alter any of these values as you see fit, but you should probably keep useStyle on 1, as well as the noUseGraphic and noMelee bools
             item.shootSpeed = 12f;
-            item.damage = 35;
+            item.damage = 25;
             item.knockBack = 5f;
             //Channel so that you can held the weapon [Important]  item.channel = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
@@ -32,7 +32,9 @@ namespace MinecraftAnimals.Items.Weapons
             item.maxStack = 1;
             item.rare = ItemRarityID.Pink;
             item.ranged = true;
+            item.shoot = ProjectileType<projectiles.Passive.PassiveArrow>();
             item.useAmmo = AmmoID.Arrow;
+            //item.channel = true;
 
             item.noMelee = true;
             item.autoReuse = false;
@@ -40,7 +42,7 @@ namespace MinecraftAnimals.Items.Weapons
             item.value = Item.sellPrice(silver: 75);
             // Look at the javelin projectile for a lot of custom code
             // If you are in an editor like Visual Studio, you can hold CTRL and Click ExampleJavelinProjectile
-            item.shoot = ProjectileType<projectiles.Passive.PassiveArrow>();
+            //item.shoot = ProjectileType<projectiles.Passive.PassiveArrow>();
         }
     }
 }

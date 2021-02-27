@@ -18,8 +18,8 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             npc.width = 30;
             npc.height = 60;
-            npc.lifeMax = 20;
-            npc.damage = 25;
+            npc.lifeMax = 35;
+            npc.damage = 20;
             npc.knockBackResist = 0.5f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
@@ -47,21 +47,21 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 605f);//gets target center, town npcs in this case
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 605f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 750f);//gets target center, town npcs in this case
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 705f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             int SpeedLim = 1;
 
             if (Phase == (int)AIStates.Normal)
             {
                 SpeedLim = 1;
-                npc.velocity.Y = -0.15f;
+                npc.velocity.Y = -0.1f;
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5) npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;// random direction for passive movement
-                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 0.75f * npc.direction : npc.velocity.X = 0 * npc.direction;
+                float walkOrPause = GlobalTimer <= 500 ? npc.velocity.X = 0.75f * npc.direction : npc.velocity.X = 0 * npc.direction;//passive movement back and forth when no target is chosen
                 if (GlobalTimer >= 800) GlobalTimer = 0;
-                if (npc.Distance(newTargetCenter) < 605f)
+                if (npc.Distance(newTargetCenter) < 750f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -72,7 +72,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
                 npc.velocity.X = 1.5f * npc.direction;
                 SpeedLim = 1;
-                if (npc.Distance(newTargetCenter) > 605f)
+                if (npc.Distance(newTargetCenter) > 750f)
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
@@ -90,7 +90,6 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.velocity.X = 3.25f * npc.direction;
                 SpeedLim = 2;
                 AttackTimer++;
-                npc.TargetClosest(true);
                 if (AttackTimer > 175)
                 {
                     // Out targeted player seems to have left our range, so we'll go back to sleep.
@@ -121,11 +120,11 @@ namespace MinecraftAnimals.Raid.Illagers
                 }
             }
             //thanks nuova prime//
-            if (newTargetCenter.Y < npc.position.Y + 25)
+            if (newTargetCenter.Y < npc.position.Y + 10)
             {
                 npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
             }
-            if (newTargetCenter.Y > npc.position.Y + 25)
+            if (newTargetCenter.Y > npc.position.Y + 10)
             {
                 npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .45f;
             }
@@ -154,7 +153,7 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            if (npc.life <= 0)
+            if (npc.life <= 1)
             {
                 npc.life = 1;
                 Phase = (int)AIStates.Death;

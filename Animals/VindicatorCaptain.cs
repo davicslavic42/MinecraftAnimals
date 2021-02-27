@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Animals
                 }
                 if (patrol == 0 && player.Distance(npc.Center) < 825f)
                 {
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Illagers.Pillager>(), 0);
                     }

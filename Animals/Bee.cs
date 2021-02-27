@@ -24,6 +24,7 @@ namespace MinecraftAnimals.Animals
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -47,6 +48,7 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
+                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -62,6 +64,7 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Attack)
             {
+                npc.friendly = false;
                 npc.dontTakeDamage = false;
                 npc.TargetClosest(true);
                 npc.damage = 30;
@@ -99,11 +102,11 @@ namespace MinecraftAnimals.Animals
                 Phase = (int)AIStates.Attack;
             }
             int x = (int)(npc.Center.X) / 16;
-            int y = (int)(npc.Center.Y + ((npc.height / 2) + 4)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) - 6)) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Framing.GetTileSafely(x, y).type])
             {
-                npc.velocity.Y -= 0.05f;
+                npc.velocity.Y -= 0.1f;
             }
 
         }
@@ -149,7 +152,7 @@ namespace MinecraftAnimals.Animals
                 for (int n = 0; n < 150; n++)
                 {
                     NPC N = Main.npc[n];
-                    if (N.active && N.Distance(npc.Center) < 325f && (N.type == NPCType<Bee>()))
+                    if (N.active && N.Distance(npc.Center) < 325f && N.ai[1] != (int)AIStates.Death && (N.type == NPCType<Bee>()))
                     {
                         N.netUpdate = true;
                         N.target = npc.target;

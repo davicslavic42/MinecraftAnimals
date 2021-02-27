@@ -48,8 +48,8 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
 
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 675f);//gets target center, this case town npcs
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 675f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 875f);//gets target center, this case town npcs
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 800f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             //above is testing of new targeting system, 
             if (Phase == (int)AIStates.Normal)
@@ -65,7 +65,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 675f)
+                if (npc.Distance(newTargetCenter) < 875f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -76,12 +76,12 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
 
                 npc.velocity.X = 1.4f * npc.direction;
-                if (npc.Distance(newTargetCenter) > 675f )//npc.HasValidTarget &&
+                if (npc.Distance(newTargetCenter) > 875f )//npc.HasValidTarget &&
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 350f && Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1))//
+                if (npc.Distance(newTargetCenter) < 350f)//&& Collision.CanHitLine(npc.Center, 1, 1, newTargetCenter, 1, 1)
                 {
                     Phase = (int)AIStates.Shoot;
                     GlobalTimer = 0;
@@ -163,10 +163,13 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override void NPCLoot()
         {
-            base.NPCLoot();
-            if (Main.rand.NextBool(20))
+            if (Main.rand.NextBool(30))
             {
                 Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Weapons.Crossbow>());
+            }
+            if (Main.rand.NextBool(35))
+            {
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Usables.OminousBanner>());
             }
         }
         public override void HitEffect(int hitDirection, double damage)
@@ -180,6 +183,7 @@ namespace MinecraftAnimals.Raid.Illagers
                     NetMessage.SendData(MessageID.WorldData);
                     RaidWorld.RaidKillCount += 1f;
                 }
+                NPCLoot();
             }
         }
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)

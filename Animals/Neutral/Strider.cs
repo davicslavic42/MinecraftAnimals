@@ -18,11 +18,12 @@ namespace MinecraftAnimals.Animals.Neutral
         {
             npc.width = 42;
             npc.height = 48;
-            npc.lifeMax = 100;
+            npc.lifeMax = 25;
             npc.lavaImmune = true;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -64,6 +65,7 @@ namespace MinecraftAnimals.Animals.Neutral
                 npc.ai[2] += 1f; // increase our death timer.
                 npc.netUpdate = true;
                 npc.velocity.Y = 0;
+                npc.velocity.X = 0;
                 npc.dontTakeDamage = true;
                 npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 8f);
                 if (npc.ai[2] >= 110f)
@@ -75,11 +77,18 @@ namespace MinecraftAnimals.Animals.Neutral
                     }
                     npc.life = 0;
                 }
+
             }
-            if (Main.tile[(int)(npc.Center.X / 16), (int)(npc.Center.Y / 16) / 16].liquid > 0)
+            int a = (int)(npc.Center.X / 16);
+            int b = (int)(npc.Center.Y / 16);
+            Tile tile = Main.tile[a, b];
+            if (Main.tile[a, b].liquid > 0 && Main.tile[a, b].liquidType() == Tile.Liquid_Water && !Main.tile[a, b].active())
             {
-                npc.velocity = new Vector2(npc.direction * 2, -2f);
+                //npc.velocity = new Vector2(npc.direction * 2, -2f);
+                npc.velocity.Y = 0;
+                npc.noGravity = true;
             }
+            else npc.noGravity = false;
         }
         public override void HitEffect(int hitDirection, double damage)
         {

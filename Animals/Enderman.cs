@@ -27,6 +27,7 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
+            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -60,6 +61,7 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
+                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -75,6 +77,7 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Attack)
             {
+                npc.friendly = false;
                 npc.TargetClosest(true);
                 npc.damage = 30;
                 npc.alpha = 0;
@@ -106,7 +109,7 @@ namespace MinecraftAnimals.Animals
                     npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
                     ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    if (Main.tile[a, b].active() || Main.tile[a, b].nactive())//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
+                    if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Framing.GetTileSafely(a, b).type])//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
                     {
                         Phase = (int)AIStates.TPFail;
                         AttackTimer = 0;
@@ -116,7 +119,6 @@ namespace MinecraftAnimals.Animals
                         AttackTimer = 0;
                         Phase = (int)AIStates.Attack; // if all is good it attacks normally
                     }
-
                 }
             }
             if (Phase == (int)AIStates.TPFail)
@@ -129,12 +131,11 @@ namespace MinecraftAnimals.Animals
                 npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
                 npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                 npc.netUpdate = true;
-                if (!(Main.tile[a, b].active() || Main.tile[a, b].nactive()))//Main.tile[a, b].active() && Main.tileSolid[Main.tile[a, b].type]
+                if (!(Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Framing.GetTileSafely(a, b).type]))//Main.tile[a, b].active() && Main.tileSolid[Main.tile[a, b].type]
                 {
                     Phase = (int)AIStates.Attack;
                     AttackTimer = 0;
                 }
-
             }
             if (Phase == (int)AIStates.Death)
             {

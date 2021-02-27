@@ -62,7 +62,7 @@ namespace MinecraftAnimals
             }
             return newTargetCenter;
         }
-        public static Vector2 GetAnyTargetEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true)
+        public static Vector2 GetAnyHostileTargetEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true)
         {
             Vector2 newTargetCenter = new Vector2(0, 0);
             float DistanceToTargetPos = 0f;
@@ -72,7 +72,7 @@ namespace MinecraftAnimals
             for (int i = 0; i < Main.maxNPCs; i++)//range of targets
             {
                 NPC I = Main.npc[i];
-                if (I.active && I.chaseable && Vector2.Distance(currentCenter, I.Center) < searchRange)
+                if (I.active && I.chaseable && !I.friendly && !I.noGravity && Vector2.Distance(currentCenter, I.Center) < searchRange)
                 {
                     newTargetCenter = I.Center;
                     DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);
@@ -161,9 +161,11 @@ namespace MinecraftAnimals
             int TownMembersleft = 0;
             for (int i = 0; i < Main.maxNPCs; i++)//I.active
             {
+                Player player = Main.player[i];
                 Vector2 OriginalSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
+                Vector2 BedSpawn = new Vector2(player.SpawnX * 16, player.SpawnY * 16);
                 NPC I = Main.npc[i];
-                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && I.Distance(OriginalSpawn) <= 3750f && (!I.homeless || I.homeless) ) TownMembersleft++;//needed parameters to check for all town npcs cuz vanilla is pain
+                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (I.Distance(OriginalSpawn) <= 3850f || I.Distance(BedSpawn) <= 3850f) && (!I.homeless || I.homeless) ) TownMembersleft++;//needed parameters to check for all town npcs cuz vanilla is pain
             }
             return TownMembersleft;
         }

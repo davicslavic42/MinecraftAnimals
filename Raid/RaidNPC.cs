@@ -24,8 +24,9 @@ namespace MinecraftAnimals.Raid
                 if (Main.player[i].active)
                     activePlayers++;
             }
-            spawnRate = (int)2.3;
-            if ((int)RaidWorld.RaidKillCount + RaidWorld.RaiderCounter >= RaidWorld.progressPerWave) maxSpawns = 0;
+            spawnRate = 18;
+            if (RaidWorld.RaiderCounter >= RaidWorld.progressPerWave - RaidWorld.RaidKillCount) maxSpawns = 0;
+            else maxSpawns = 18;
 
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>
@@ -52,7 +53,7 @@ namespace MinecraftAnimals.Raid
                 {NPCType<Witch>(), 7.135f},
             },
             new Dictionary<int, float> { //wave 4
-				{NPCType<Evoker>(), 6.85f},
+				{NPCType<Evoker>(), 4.85f},
                 {NPCType<Pillager>(), 6.95f},
                 {NPCType<Ravager>(), 0f},
                 {NPCType<Vindicator>(), 6.953f},
@@ -61,14 +62,14 @@ namespace MinecraftAnimals.Raid
             new Dictionary<int, float> { //wave 5
 				{NPCType<Evoker>(), 6.85f},
                 {NPCType<Pillager>(), 7.35f},
-                {NPCType<Ravager>(), 3.15f},
+                {NPCType<Ravager>(), 2.85f},
                 {NPCType<Vindicator>(), 6.73f},
                 {NPCType<Witch>(), 6.135f},
             },
             new Dictionary<int, float> { //wave 6
 				{NPCType<Evoker>(), 7.35f},
                 {NPCType<Pillager>(), 8.35f},
-                {NPCType<Ravager>(), 3.05f},
+                {NPCType<Ravager>(), 2.85f},
                 {NPCType<Vindicator>(), 8.73f},
                 {NPCType<Witch>(), 6.135f},
             }
