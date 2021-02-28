@@ -48,7 +48,7 @@ namespace MinecraftAnimals.Raid.Illagers
             GlobalTimer++;
 
             Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 835f);//gets target center
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 800f);//gets player center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 835f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
 
             if (Phase == (int)AIStates.Normal)

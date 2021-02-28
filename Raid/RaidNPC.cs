@@ -18,16 +18,18 @@ namespace MinecraftAnimals.Raid
 
         public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
-            int activePlayers = 0;
-            for (int i = 0; i < 255; i++)
+            if (RaidWorld.RaidEvent)
             {
-                if (Main.player[i].active)
-                    activePlayers++;
+                int activePlayers = 0;
+                for (int i = 0; i < 255; i++)
+                {
+                    if (Main.player[i].active)
+                        activePlayers++;
+                }
+                spawnRate = 15;
+                if (RaidWorld.RaiderCounter >= RaidWorld.progressPerWave - RaidWorld.RaidKillCount) maxSpawns = 0;
+                else maxSpawns = 15;
             }
-            spawnRate = 18;
-            if (RaidWorld.RaiderCounter >= RaidWorld.progressPerWave - RaidWorld.RaidKillCount) maxSpawns = 0;
-            else maxSpawns = 18;
-
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>
         { //Spawn info for the Raid npcs and spawn info

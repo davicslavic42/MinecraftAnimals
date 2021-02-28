@@ -27,7 +27,6 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
-            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -61,7 +60,6 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Passive)
             {
-                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)

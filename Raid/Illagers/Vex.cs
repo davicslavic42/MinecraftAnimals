@@ -47,8 +47,8 @@ namespace MinecraftAnimals.Raid.Illagers
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 750f);//gets target center, town npcs in this case
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 705f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 755f);//gets target center, town npcs in this case
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 755f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             int SpeedLim = 1;
 
@@ -122,17 +122,17 @@ namespace MinecraftAnimals.Raid.Illagers
             //thanks nuova prime//
             if (newTargetCenter.Y < npc.position.Y + 10)
             {
-                npc.velocity.Y -= npc.velocity.Y > 0f ? 0.75f : .4f;
+                npc.velocity.Y -= npc.velocity.Y > 0f ? 0.85f : .5f;
             }
             if (newTargetCenter.Y > npc.position.Y + 10)
             {
-                npc.velocity.Y += npc.velocity.Y < 0f ? 0.75f : .45f;
+                npc.velocity.Y += npc.velocity.Y < 0f ? 0.85f : .55f;
             }
             if (SpeedLim == 1)//prevents the velocity from going above inputed number
             {
-                if (npc.velocity.X * npc.direction > 1.9f)
+                if (npc.velocity.X * npc.direction > 1.5f)
                 {
-                    npc.velocity.X = 1.9f * npc.direction;
+                    npc.velocity.X = 1.5f * npc.direction;
                 }
                 if (npc.velocity.Y > 1.5f)
                 {

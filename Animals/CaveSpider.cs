@@ -26,7 +26,7 @@ namespace MinecraftAnimals.Animals
             npc.aiStyle = -1;
             npc.value = 35f;
             npc.scale = 0.80f;
-            npc.friendly = true;
+            npc.friendly = false;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -51,7 +51,6 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
-                npc.friendly = true;
                 npc.damage = 0;
                 npc.TargetClosest(false);
                 if (GlobalTimer == 5)
@@ -177,7 +176,7 @@ namespace MinecraftAnimals.Animals
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

@@ -18,7 +18,8 @@ namespace MinecraftAnimals.projectiles.Passive
             projectile.hostile = false;
             projectile.penetrate = 3;
             projectile.hide = false;
-            projectile.damage = 5;
+            projectile.damage = 12;
+            projectile.knockBack = 2.5f;
         }
         public int TargetWhoAmI
         {
@@ -41,7 +42,7 @@ namespace MinecraftAnimals.projectiles.Passive
             if (TargetWhoAmI >= MAX_TICKS)
             {
                 const float velXmult = 0.98f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
-                const float velYmult = 0.15f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
+                const float velYmult = 0.1f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
                 TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
                 projectile.velocity.X *= velXmult;
                 projectile.velocity.Y += velYmult;

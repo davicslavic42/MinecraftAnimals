@@ -22,7 +22,6 @@ namespace MinecraftAnimals.Animals.Neutral
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
-            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -61,10 +60,7 @@ namespace MinecraftAnimals.Animals.Neutral
             if (Phase == (int)AIStates.Sleep)
             {
                 npc.velocity.X = 0 * npc.direction;
-                if (Main.dayTime)
-                {
-                    Phase = (int)AIStates.Passive;
-                }
+                if (!Main.dayTime) Phase = (int)AIStates.Passive;
             }
             if (Phase == (int)AIStates.Death)
             {
@@ -87,10 +83,7 @@ namespace MinecraftAnimals.Animals.Neutral
                     npc.life = 0;
                 }
             }
-            if (!Main.dayTime && npc.life <= 0)
-            {
-                Phase = (int)AIStates.Sleep;
-            }
+            if (Main.dayTime && npc.life >= 5) Phase = (int)AIStates.Sleep;
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
@@ -135,7 +128,7 @@ namespace MinecraftAnimals.Animals.Neutral
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY - 6),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

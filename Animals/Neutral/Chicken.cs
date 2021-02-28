@@ -23,7 +23,7 @@ namespace MinecraftAnimals.Animals.Neutral
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
-            npc.friendly = true;
+
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {

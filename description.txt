@@ -11,5 +11,8 @@ v0.1.1.1:
 -Added more Nether mobs such as: the hoglin, piglin, piglin ranger,. Birch trees spawn on the outer sides of the world. fixed spawn rates.
 
 v0.1.2.1:
--AI for all current mobs have been redone to fix up sync, redo behavior and added simple minecraft like death animation. The Raid has been added, this as of now includes the Pillager, Vindicator, Evoker, Witch, Ravager, and Vex which all spawn 
-within the event.
+-AI for all current mobs have been redone to fix up sync, redo behavior and added simple minecraft like death animation.
+`The Raid has been added! 
+this as of now includes the Pillager, Vindicator, Evoker, Witch, Ravager, and Vex which all spawn within the event. Find Roaming patrol captains after smashing a shadow orb and head back to your spawn point or set up bed.
+With an added twist you now must not only fight the illagers but defend your town npcs as well as if all within the area die you will lose the raid
+-On the outer edges of your world small birch tree plains have a chance to spawn

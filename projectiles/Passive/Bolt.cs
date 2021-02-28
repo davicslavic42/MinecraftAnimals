@@ -19,14 +19,23 @@ namespace MinecraftAnimals.projectiles.Passive
             get => (int)projectile.ai[1];
             set => projectile.ai[1] = value;
         }
-        private const int MAX_TICKS = 25;
-        internal ref float Charge => ref projectile.ai[0];
-        private const float MAX_CHARGE = 50f;
-        internal ref float GlobalProjectileTimer => ref projectile.ai[1];
-        bool Loaded = false;
+        internal ref float Charge => ref projectile.localAI[0];
+        internal ref float LoadedCharge => ref projectile.localAI[1];
+        internal ref float ProjectileState => ref projectile.ai[0];
+        private const float MAX_CHARGE = 250f;
+        //private const float PREFIRE = 50f;//this is the time before firing the shot after the crossbow is loaded
+        bool Ready = false;
+        internal enum AIStates
+        {
+            Charge = 0,
+            Loaded = 1,
+            Launch = 2,
+        }
+
 
         // Are we at max charge? With c#6 you can simply use => which indicates this is a get only property
         public bool IsAtMaxCharge => Charge == MAX_CHARGE;
+        ////public bool ReadyToFire => Charge >= PREFIRE;
 
         public override void SetDefaults()
         {
@@ -34,14 +43,16 @@ namespace MinecraftAnimals.projectiles.Passive
             projectile.height = 8;
             projectile.friendly = true;
             projectile.hostile = false;
-            projectile.penetrate = 3;
-            projectile.hide = false;
+            projectile.penetrate = 10;
+            projectile.hide = true;
             projectile.damage = 5;
-            projectile.tileCollide = true;
+            projectile.tileCollide = false;
             projectile.ranged = true;
-            projectile.timeLeft = 2;
+            projectile.timeLeft = 200;
+           
         }
-        #region ignore
+        #region basic charging and mp
+
         private void UpdatePlayer(Player player)
         {
             // Multiplayer support here, only run this code if the client running it is the owner of the projectile
@@ -49,6 +60,7 @@ namespace MinecraftAnimals.projectiles.Passive
             if (projectile.owner == Main.myPlayer)
             {
                 projectile.velocity = aim;
+                projectile.rotation = aim.ToRotation();
                 projectile.direction = Main.MouseWorld.X > player.position.X ? 1 : -1;
                 projectile.netUpdate = true;
             }
@@ -60,55 +72,60 @@ namespace MinecraftAnimals.projectiles.Passive
             player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir); // Set the item rotation to where we are shooting  aim.ToRotation();
         }
 
-        #endregion ignore
-        /*
+        #endregion basic charging and mp
         public void Drawarrow(SpriteBatch spriteBatch, Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, Color color = default(Color))
         {
-            float r = new Vector2(projectile.velocity).ToRotation();
-            // Draws the laser 'body'
-            spriteBatch.Draw(texture, projectile.position, null, Color.White, r, scale, 0, 0);
+            //float r = new Vector2(projectile.velocity).ToRotation();
+            Rectangle boltRec = new Rectangle(0, 0, projectile.width, projectile.height);
+            spriteBatch.Draw(texture, projectile.position, boltRec, default(Color));
         }
-        */
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
+            // We start drawing the laser if we have charged up
+            if (IsAtMaxCharge)
+            {
+                Drawarrow(spriteBatch, Main.projectileTexture[projectile.type], Main.player[projectile.owner].Center - Main.screenPosition,
+                    projectile.velocity, 20, 12, projectile.rotation, 1f, default(Color));
+            }
             return false;
         }
-        private void Firebolt(Player player)
-        {
-            Vector2 aim = Vector2.Normalize(Main.MouseWorld - player.Center);
-            projectile.velocity = aim.RotatedByRandom(0.1f) * 12f;
-        }
 
-        private void Chargeshot(Player player)
-        {
-            if (!player.channel && !Loaded) projectile.Kill();
-            if (!IsAtMaxCharge && player.channel) Charge++;
-            if (IsAtMaxCharge && player.channel) Loaded = true;
-            if (player.channel && Loaded) Firebolt(player);
-        }
 
         #region basic ai and mp
-
         public override void AI()
         {
             Player player = Main.player[projectile.owner];
-            projectile.position = player.Center + projectile.velocity * 1.5f;
-            projectile.timeLeft = 2;
+            Vector2 aim = Vector2.Normalize(Main.MouseWorld - player.Center);
+            projectile.position = aim;
+            projectile.timeLeft = 500;
+            float speed = 10f;
+            projectile.tileCollide = false;
 
-            // By separating large AI into methods it becomes very easy to see the flow of the AI in a broader sense
-            // First we update player variables that are needed to channel the laser
-            // Then we run our charging laser logic
-            // If we are fully charged, we proceed to update the laser's position
-            // Finally we spawn some effects like dusts and light
             UpdatePlayer(player);
-            Chargeshot(player);
-            // If laser is not charged yet, stop the AI here.
-            if (!Loaded) return;
-            Firebolt(player);
-            projectile.hide = false;
-            projectile.velocity.Y += 0.1f;
+            if (ProjectileState == (int)AIStates.Charge)
+            {
+                projectile.damage = 0;
+                if (!player.channel) projectile.Kill();
+                if (!IsAtMaxCharge && player.channel) Charge++;
+                if (IsAtMaxCharge && player.channel)
+                {
+                    projectile.damage = 20;
+                    aim *= speed;//bolt speed
+                    projectile.velocity = aim;// fire the bolt
+                    projectile.velocity.Y += 0.1f;// weighs it down like an arrow
+                    projectile.tileCollide = true;
+                    projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
 
-
+                    //ProjectileState = (int)AIStates.Loaded;
+                    //Ready = true;
+                    //CombatText.NewText(new Rectangle(0, 0, player.width, player.height / 2), Color.LightSteelBlue,"Bolt Loaded!");
+                    //Charge = 0;
+                }
+                //if (ReadyToFire && player.channel)Charge++;
+                //if (player.channel && Ready && ReadyToFire) LoadedCharge++
+                Main.NewText(LoadedCharge);
+                Main.NewText(Charge);
+            }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -123,32 +140,84 @@ namespace MinecraftAnimals.projectiles.Passive
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center,
                 projectile.Center, 22, ref point);
         }
-
-        private void SetLaserPosition(Player player)
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
+            base.OnHitNPC(target, damage, knockback, crit);
         }
+
+        #endregion basic ai and mp
         /*
-        private void NormalAI()
-        {
-            TargetWhoAmI++;
-
-            // For a little while, the javelin will travel with the same speed, but after this, the javelin drops velocity very quickly.
-            if (TargetWhoAmI >= MAX_TICKS)
+            if (ProjectileState == (int)AIStates.Loaded)
             {
-                const float velXmult = 0.98f; // x velocity factor, every AI update the x velocity will be 98% of the original speed
-                const float velYmult = 0.15f; // y velocity factor, every AI update the y velocity will be be 0.35f bigger of the original speed, causing the javelin to drop to the ground
-                TargetWhoAmI = MAX_TICKS; // set ai1 to maxTicks continuously
-                projectile.velocity.X *= velXmult;
-                projectile.velocity.Y += velYmult;
+                if (player.channel) LoadedCharge++;
+                if (ReadyToFire && player.channel)
+                {
+                    ProjectileState = (int)AIStates.Launch;
+                }
             }
-
-            // Make sure to set the rotation accordingly to the velocity, and add some to work around the sprite's rotation
-            // Please notice the MathHelper usage, offset the rotation by 90 degrees (to radians because rotation uses radians) because the sprite's rotation is not aligned!
-            projectile.rotation =
-                projectile.velocity.ToRotation() +
-                MathHelper.ToRadians(90f);
+            if (ProjectileState == (int)AIStates.Launch)
+            {
+                projectile.damage = 20;
+                projectile.velocity = aim.RotatedByRandom(0.1f) * 12f;
+                projectile.velocity.Y += 0.1f;
+                projectile.tileCollide = true;
+                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            }
+            */
+        /*
+         *             if (ProjectileState == (int)AIStates.Loaded)
+        {
+            if (player.channel) LoadedCharge++;
+            if (ReadyToFire && player.channel)
+            {
+                ProjectileState = (int)AIStates.Launch;
+            }
         }
-        */
-        #endregion
+        if (ProjectileState == (int)AIStates.Launch)
+        {
+            projectile.damage = 20;
+            projectile.velocity = aim.RotatedByRandom(0.1f) * 12f;
+            projectile.velocity.Y += 0.1f;
+            projectile.tileCollide = true;
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+        }
+
+
+                public override void AI()
+        {
+            Player player = Main.player[projectile.owner];
+            projectile.position = player.Center + projectile.velocity * 1.5f;
+            projectile.timeLeft = 2;
+            UpdatePlayer(player);
+            Chargeshot(player);
+            // If laser is not charged yet, stop the AI here.
+            if (!IsAtMaxCharge) return;
+
+            Firebolt(player);
+            projectile.tileCollide = true;
+            projectile.velocity.Y += 0.1f;
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            Main.NewText(Charge);
+        }
+
+
+                private void Chargeshot(Player player)
+        {
+            if (!player.channel) projectile.Kill();
+            if (!IsAtMaxCharge && player.channel) Charge++;
+        }
+        private void Firebolt(Player player)
+        {
+            if (IsAtMaxCharge)
+            {
+                Vector2 aim = Vector2.Normalize(Main.MouseWorld - player.Center);
+                projectile.velocity += (aim.RotatedByRandom(0.05f) * 12f) ;
+                projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+            }
+            projectile.timeLeft = 100;
+        }
+
+         */
+
     }
 }

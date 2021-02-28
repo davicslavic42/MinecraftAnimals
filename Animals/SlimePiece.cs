@@ -65,8 +65,10 @@ namespace MinecraftAnimals.Animals
             // In this state, a player has been targeted
             if (Phase == (int)AIStates.Crouch)
             {
-                npc.velocity.X = npc.direction * 0;
-                // If the targeted player is in attack range (250).
+                ActionPhase = 20;
+                ActionPhase--;
+                if (AttackTimer >= 0 && AttackTimer <= 20) npc.velocity.X = ActionPhase / 15f * npc.direction;
+                else npc.velocity.X = 0 * npc.direction;
                 if (player.Distance(npc.Center) < 720f)
                 {
                     AttackTimer++;
@@ -77,36 +79,23 @@ namespace MinecraftAnimals.Animals
                         GlobalTimer = 0;
                     }
                 }
-                else
+                if (!npc.HasValidTarget || player.Distance(npc.Center) > 740f)
                 {
-                    if (!npc.HasValidTarget || player.Distance(npc.Center) > 740f)
-                    {
-                        // Out targeted player seems to have left our range, so we'll go back to sleep.
-                        Phase = (int)AIStates.Passive;
-                        GlobalTimer = 0;
-                    }
+                    // Out targeted player seems to have left our range, so we'll go back to sleep.
+                    Phase = (int)AIStates.Passive;
+                    GlobalTimer = 0;
                 }
             }
             if (Phase == (int)AIStates.Jump)
             {
-                if (GlobalTimer >= 5 && GlobalTimer <= 20)
-                {
-                    npc.velocity = new Vector2(npc.direction * 2, -5f);
-                }
-                if (GlobalTimer >= 5 && GlobalTimer <= 20 && player.Distance(npc.Center) < 220f)
-                {
-                    npc.velocity = new Vector2(npc.direction * 4, -3f);
-                }
+                if (GlobalTimer >= 5 && GlobalTimer <= 20) npc.velocity = new Vector2(npc.direction * 2, -5f);
+                if (GlobalTimer >= 5 && GlobalTimer <= 20 && player.Distance(npc.Center) < 220f) npc.velocity = new Vector2(npc.direction * 4, -3f);
 
                 if (GlobalTimer >= 50 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
                 {
+                    npc.velocity = new Vector2(npc.direction * 3f, -2.5f);
                     Phase = (int)AIStates.Crouch;
                     GlobalTimer = 0;
-                }
-                if (GlobalTimer > 15 && Collision.SolidCollision(npc.position, (npc.width), npc.height + 1))
-                {
-                    npc.velocity.X = npc.direction * 0;
-
                 }
             }
             if (Phase == (int)AIStates.Death)

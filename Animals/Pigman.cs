@@ -50,6 +50,7 @@ namespace MinecraftAnimals.Animals
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {
+                npc.damage = 0;
                 npc.TargetClosest(false);
                 npc.velocity.X = 1 * npc.direction;
                 if (GlobalTimer == 5)
@@ -65,6 +66,7 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Attack)
             {
+                npc.damage = 35;
                 npc.TargetClosest(true);
                 npc.velocity.X = 1.4f * npc.direction;
                 float stopToAttack = player.Distance(npc.Center) < 22f ? npc.velocity.X = 0 * npc.direction : npc.velocity.X = 1 * npc.direction;

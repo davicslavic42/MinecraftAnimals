@@ -25,7 +25,6 @@ namespace MinecraftAnimals.Animals
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
             npc.value = 35f;
-            npc.friendly = true;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -161,7 +160,7 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 24 : 24);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
@@ -171,7 +170,7 @@ namespace MinecraftAnimals.Animals
             }
             else
             {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY + 10),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
             return false;

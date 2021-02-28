@@ -29,7 +29,7 @@ namespace MinecraftAnimals.Animals
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (NPC.downedBoss2)
+            if (WorldGen.shadowOrbSmashed)
             {
                 return SpawnCondition.Overworld.Chance * 0.01f;
             }
@@ -47,10 +47,10 @@ namespace MinecraftAnimals.Animals
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
+        int patrol = 0;
 
         public override void AI()
         {
-            int patrol = 0;
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
@@ -79,6 +79,7 @@ namespace MinecraftAnimals.Animals
             }
             if (Phase == (int)AIStates.Attack)
             {
+                patrol = 1;
                 npc.TargetClosest(true);
                 npc.damage = 30;
                 npc.velocity.X = 1.75f * npc.direction;
@@ -92,6 +93,7 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Death)
             {
+                patrol = 1;
                 npc.damage = 0;
                 npc.ai[2] += 1f; // increase our death timer.
                 npc.netUpdate = true;
