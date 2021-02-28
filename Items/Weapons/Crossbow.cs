@@ -24,7 +24,7 @@ namespace MinecraftAnimals.Items.Weapons
             // Alter any of these values as you see fit, but you should probably keep useStyle on 1, as well as the noUseGraphic and noMelee bools
             item.shootSpeed = 18f;
             item.damage = 38;
-            item.knockBack = 5f;
+            item.knockBack = 6f;
             //Channel so that you can held the weapon [Important]  item.channel = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
             item.useAnimation = 100;
