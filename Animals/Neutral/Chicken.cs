@@ -86,7 +86,7 @@ namespace MinecraftAnimals.Animals.Neutral
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
@@ -95,11 +95,13 @@ namespace MinecraftAnimals.Animals.Neutral
                     i = 0;
                 }
             }
+
             int a = (int)(npc.Center.X / 16);
-            int b = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
+            int b = (int)(npc.Center.Y + (npc.height / 2) - 1) / 16;
             if (!(Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type]))
             {
-                hover = 1;
+                hover = 1;//if no tiles right bellow chicken will decend slower
+                npc.velocity.Y = 0.5f;
             }
             else hover = 0;
         }

@@ -154,7 +154,7 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)//autojump tile detection
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)

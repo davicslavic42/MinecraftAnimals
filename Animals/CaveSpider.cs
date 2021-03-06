@@ -127,7 +127,7 @@ namespace MinecraftAnimals.Animals
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0)
                 {
-                    npc.velocity = new Vector2(npc.direction * 1, -7f);
+                    npc.velocity = new Vector2(npc.direction * 1, -3.5f);
                     i = 0;
                 }
             }

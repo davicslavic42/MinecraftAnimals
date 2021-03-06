@@ -88,6 +88,18 @@ namespace MinecraftAnimals.Animals.Neutral
                 npc.noGravity = true;
             }
             else npc.noGravity = false;
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;
+
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)//autojump tile detection
+            {
+                int i = 1;
+                if (i == 1 && npc.velocity.X != 0)
+                {
+                    npc.velocity = new Vector2(npc.direction * 1, -7f);
+                    i = 0;
+                }
+            }
         }
         public override void HitEffect(int hitDirection, double damage)
         {

@@ -52,8 +52,8 @@ namespace MinecraftAnimals.Raid.Illagers
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
 
-            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 855f);//gets target center, this case town npcs
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 855f);//gets player center
+            Vector2 TownTargets = GeneralMethods.GetAnyTownNpcTargetEntity(npc.Center, 815f);//gets target center, this case town npcs
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 815f);//gets player center
             Vector2 newTargetCenter = npc.Distance(PlayerTarget) > npc.Distance(TownTargets) ? TownTargets : PlayerTarget;
             //above is testing of new targeting system, 
             if (Phase == (int)AIStates.Normal)
@@ -69,7 +69,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 {
                     GlobalTimer = 0;
                 }
-                if (npc.Distance(newTargetCenter) < 850f)
+                if (npc.Distance(newTargetCenter) < 810f)
                 {
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
@@ -80,7 +80,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 npc.direction = npc.Center.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
 
                 npc.velocity.X = 1.4f * npc.direction;
-                if (npc.Distance(newTargetCenter) > 850f)//npc.HasValidTarget &&
+                if (npc.Distance(newTargetCenter) > 810f)//npc.HasValidTarget &&
                 {
                     Phase = (int)AIStates.Normal;
                     GlobalTimer = 0;
@@ -111,27 +111,6 @@ namespace MinecraftAnimals.Raid.Illagers
                     GlobalTimer = 0;
                 }
             }
-            /*
-            if (Phase == (int)AIStates.Mounted)
-            {
-                npc.direction = npc.position.X > newTargetCenter.X ? npc.direction = -1 : npc.direction = 1;
-
-                npc.velocity.X = 0f * npc.direction;
-                npc.velocity.Y += 0.5f;
-                if (npc.frameCounter == 144)
-                {
-                    _ = npc.Distance(npc.position) - 25;
-                    Vector2 TargetDir = Vector2.Normalize(npc.Center - newTargetCenter);
-
-                    Projectile.NewProjectile(npc.Center, TargetDir.RotatedByRandom(0.1f) * 8f, ProjectileType<projectiles.Arrow>(), 18, 3, Main.LocalPlayer.whoAmI);
-                }
-                if (npc.Distance(newTargetCenter) > 350f)
-                {
-                    Phase = (int)AIStates.Attack;
-                    GlobalTimer = 0;
-                }
-            }
-            */
             //if (npc.ai[2] == -10) Phase = (int)AIStates.Mounted;not yet done
             if (Phase == (int)AIStates.Death)
             {
