@@ -97,7 +97,7 @@ namespace MinecraftAnimals.Animals.Neutral
             }
 
             int a = (int)(npc.Center.X / 16);
-            int b = (int)(npc.Center.Y + (npc.height / 2) - 1) / 16;
+            int b = (int)(npc.Center.Y + (npc.height / 2) - 3) / 16;
             if (!(Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type]))
             {
                 hover = 1;//if no tiles right bellow chicken will decend slower
@@ -158,21 +158,44 @@ namespace MinecraftAnimals.Animals.Neutral
             npc.spriteDirection = npc.direction;
             if (Phase == (int)AIStates.Passive)
             {
-                if (GlobalTimer <= 500)
-                {
-                    npc.frameCounter++;
-                    if (++npc.frameCounter % 7 == 0)
-                        npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 3) * frameHeight;
-                }
-                else
-                {
-                    npc.frame.Y = Frame_Walk * frameHeight;
-                }
+                    if (GlobalTimer <= 500)
+                    {
+                        npc.frameCounter++;
+                        if (++npc.frameCounter % 7 == 0)
+                            npc.frame.Y = (npc.frame.Y / frameHeight + 1) % (Main.npcFrameCount[npc.type] - 3) * frameHeight;
+                    }
+                    else
+                    {
+                        npc.frame.Y = Frame_Walk * frameHeight;
+                    }
             }
             if (Phase == (int)AIStates.Death)
             {
                 npc.frame.Y = Frame_Walk * frameHeight;
             }
         }
+        /*
+         *                 if(hover == 1)
+                {
+                    npc.frameCounter++;
+                    if (npc.frameCounter < 7)
+                    {
+                        npc.frame.Y = Frame_Float * frameHeight;
+                    }
+                    else if (npc.frameCounter < 14)
+                    {
+                        npc.frame.Y = Frame_Float_2 * frameHeight;
+                    }
+                    else if (npc.frameCounter < 28)
+                    {
+                        npc.frame.Y = Frame_Float_3 * frameHeight;
+                    }
+                    else
+                    {
+                        npc.frameCounter = 0;
+                    }
+                }
+                else
+         */
     }
 }

@@ -16,7 +16,7 @@ namespace MinecraftAnimals.Items.Weapons
         }
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("A sturdy crossbow favored among the pillagers");//, turns arros into high velocity bolts
+            Tooltip.SetDefault("A sturdy crossbow favored among the pillagers, turns wooden arrows into charged bolts");//, turns arros into high velocity bolts
         }
 
         public override void SetDefaults()
@@ -27,16 +27,16 @@ namespace MinecraftAnimals.Items.Weapons
             item.knockBack = 6f;
             //Channel so that you can held the weapon [Important]  item.channel = true;
             item.useStyle = ItemUseStyleID.HoldingOut;
-            item.useAnimation = 30;
-            item.useTime = 30;
+            item.useAnimation = 70;
+            item.useTime = 70;
             item.width = 40;
             item.height = 20;
             item.maxStack = 1;
             item.rare = ItemRarityID.Green;
             item.ranged = true;
-            //item.useAmmo = AmmoID.Arrow;
             item.channel = true;
             item.shoot = ProjectileType<projectiles.Passive.Bolt>();
+            item.useAmmo =  AmmoID.Arrow;
 
             item.noMelee = true;
             item.UseSound = SoundID.Item1;
@@ -46,7 +46,7 @@ namespace MinecraftAnimals.Items.Weapons
         }
         public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
         {
-            if (type == AmmoID.Arrow) // or ProjectileID.WoodenArrowFriendly
+            if (type == ProjectileID.WoodenArrowFriendly) // or ProjectileID.WoodenArrowFriendly AmmoID.Arrow
             {
                 type = ProjectileType<projectiles.Passive.Bolt>(); // or ProjectileID.FireArrow;
             }

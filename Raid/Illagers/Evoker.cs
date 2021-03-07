@@ -149,7 +149,7 @@ namespace MinecraftAnimals.Raid.Illagers
             int x = (int)(npc.Center.X + (((npc.width / 2) + 10) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 2) / 16;
 
-            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 25 == 0)
+            if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)
             {
                 int i = 1;
                 if (i == 1 && npc.velocity.X != 0 && GlobalTimer % 50 == 0)
@@ -168,7 +168,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 Phase = (int)AIStates.Death;
                 if (RaidWorld.RaidEvent)
                 {
-                    NetMessage.SendData(MessageID.WorldData);
+                    //NetMessage.SendData(MessageID.WorldData);
                     RaidWorld.RaidKillCount += 1f;
                 }
             }

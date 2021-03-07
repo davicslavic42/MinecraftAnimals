@@ -50,9 +50,8 @@ namespace MinecraftAnimals.projectiles.Passive
 
             // Make sure to set the rotation accordingly to the velocity, and add some to work around the sprite's rotation
             // Please notice the MathHelper usage, offset the rotation by 90 degrees (to radians because rotation uses radians) because the sprite's rotation is not aligned!
-            projectile.rotation =
-                projectile.velocity.ToRotation() +
-                MathHelper.ToRadians(90f);
+            projectile.rotation = projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
+
         }
     }
 }

@@ -20,7 +20,7 @@ namespace MinecraftAnimals.Animals
             npc.height = 50;
             npc.lifeMax = 125;
             npc.damage = 28;
-            npc.knockBackResist = 2f;
+            npc.knockBackResist = 1f;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -45,6 +45,7 @@ namespace MinecraftAnimals.Animals
         {
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
+            npc.velocity.Y = 1 * npc.direction;
             Player player = Main.player[npc.target];
             if (Phase == (int)AIStates.Normal)
             {

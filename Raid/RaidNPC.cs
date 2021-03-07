@@ -26,9 +26,9 @@ namespace MinecraftAnimals.Raid
                     if (Main.player[i].active)
                         activePlayers++;
                 }
-                spawnRate = 15;
-                if (RaidWorld.RaiderCounter >= RaidWorld.progressPerWave - RaidWorld.RaidKillCount) maxSpawns = 0;
-                else maxSpawns = 15;
+                spawnRate = 14;
+                if (RaidWorld.RaiderCounter >= RaidWorld.progressPerWave - RaidWorld.RaidKillCount) maxSpawns = 3;
+                else maxSpawns = 12;
             }
         }
         public static List<IDictionary<int, float>> RaidSpawnpool = new List<IDictionary<int, float>>

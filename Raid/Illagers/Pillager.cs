@@ -157,7 +157,7 @@ namespace MinecraftAnimals.Raid.Illagers
                 Phase = (int)AIStates.Death;
                 if (RaidWorld.RaidEvent)
                 {
-                    NetMessage.SendData(MessageID.WorldData);
+                    //NetMessage.SendData(MessageID.WorldData);
                     RaidWorld.RaidKillCount += 1f;
                 }
                 NPCLoot();

@@ -20,16 +20,6 @@ namespace MinecraftAnimals.Raid
 		public static bool downedRaid = false;
         public static int RaiderCounter = 0;// MAKE SURE TO FIGURE OUT WHETHRE TO USE RAIDERS INT OR RAID ENEMY TYPE
 		public static int townNpcCount = 0;
-		public static int[] Raiders = (new int[5]
-        {
-                NPCType<Evoker>(),
-                NPCType<Pillager>(),
-                NPCType<Ravager>(),
-                NPCType<Witch>(),
-                NPCType<Vindicator>()
-        });
-		internal ref int progressCurrentWave => ref RaidWaves;
-
 		public static int progressPerWave = 25;
 		public override void Initialize()
         {
@@ -111,10 +101,20 @@ namespace MinecraftAnimals.Raid
                 if (Main.netMode == NetmodeID.Server) // Server
                 {
                     NetMessage.BroadcastChatMessage(NetworkText.FromKey(wavekey), messageColor1);
+                    for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
+                    {
+                        Player player = Main.player[y];
+                        Main.PlaySound(SoundID.Roar, player.position, 0);
+                    }
                 }
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
                     Main.NewText(wavekey, messageColor1);
+                    for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
+                    {
+                        Player player = Main.player[y];
+                        Main.PlaySound(SoundID.Roar, player.position, 0);
+                    }
                 }
             }
             else
@@ -129,24 +129,35 @@ namespace MinecraftAnimals.Raid
             if (RaidEvent)
             {
                 Color messageColor = Color.Red;
-                RaidEvent = false;
                 string loseKey = "Your town members were slaughtered!";
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     RaidKillCount = 0f;
                     RaidWaves = 0;
+                    RaidEvent = false;
                 }
                 if (Main.netMode == NetmodeID.Server)
                 {
+                    for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
+                    {
+                        Player player = Main.player[y];
+                        Main.PlaySound(SoundID.Roar, player.position, 0);
+                    }
                     NetMessage.SendData(MessageID.WorldData);
                     RaidWaves = 0;
                     RaidKillCount = 0f;
+                    RaidEvent = false;
                     // Immediately inform clients of new world state.
                     NetMessage.BroadcastChatMessage(NetworkText.FromKey(loseKey), messageColor);//if(RaidWaves >= 7)
                 }
                 else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
                 {
                     Main.NewText((loseKey), messageColor);//if(RaidWaves >= 7)
+                    for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
+                    {
+                        Player player = Main.player[y];
+                        Main.PlaySound(SoundID.Roar, player.position, 0);
+                    }
                 }
             }
         }
@@ -172,6 +183,12 @@ namespace MinecraftAnimals.Raid
             else if (Main.netMode == NetmodeID.SinglePlayer) // Single Player
             {
                 Main.NewText((key), messageColor);//if(RaidWaves >= 7)
+                for (int y = 0; y < Main.ActivePlayersCount; y++)//targets based on active players 
+                {
+                    Player player = Main.player[y];
+                    Main.PlaySound(SoundID.MoonLord, player.position, 0);
+                }
+
             }
         }
     }

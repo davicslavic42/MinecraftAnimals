@@ -134,7 +134,7 @@ namespace MinecraftAnimals.Raid.Illagers
             if (npc.life <= 0)
             {
                 npc.life = 1;
-                NetMessage.SendData(MessageID.WorldData);
+                //NetMessage.SendData(MessageID.WorldData);
                 RaidWorld.RaidKillCount += 1f;
                 Phase = (int)AIStates.Death;
             }
