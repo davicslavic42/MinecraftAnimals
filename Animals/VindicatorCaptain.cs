@@ -31,7 +31,7 @@ namespace MinecraftAnimals.Animals
         {
             if (WorldGen.shadowOrbSmashed)
             {
-                return SpawnCondition.Overworld.Chance * 0.01f;
+                return SpawnCondition.Overworld.Chance * 0.03f;
             }
             return SpawnCondition.Overworld.Chance * 0f;
         }

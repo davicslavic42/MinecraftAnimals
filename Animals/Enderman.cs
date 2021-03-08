@@ -26,6 +26,7 @@ namespace MinecraftAnimals.Animals
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
+            npc.friendly = false;
             npc.value = 35f;
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -51,10 +52,11 @@ namespace MinecraftAnimals.Animals
         public override void AI()
         {
             bool tpCheck = false;
-            int x = (int)(npc.Center.X + (((npc.width / 2) + 10) * npc.direction)) / 16;
-            int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;//autojump check
+
             int a = (int)(npc.position.X / 16);//teleport check params
             int b = (int)(npc.position.Y / 16);
+            Tile tilecheck = Main.tile[a, b];// coords of the npc position within the tile array
+
             Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
             GlobalTimer++;
             Player player = Main.player[npc.target];
@@ -62,7 +64,7 @@ namespace MinecraftAnimals.Animals
             {
                 npc.damage = 0;
                 npc.TargetClosest(false);
-                if (GlobalTimer == 5)
+                if (GlobalTimer == 1)
                 {
                     npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
                 }
@@ -85,7 +87,7 @@ namespace MinecraftAnimals.Animals
                 {
                     Phase = (int)AIStates.Passive;
                 }
-                if (AttackTimer >= 400) //switch to tp mode
+                if (AttackTimer >= 500) //switch to tp mode
                 {
                     Phase = (int)AIStates.TP;
                     AttackTimer = 0;
@@ -106,11 +108,11 @@ namespace MinecraftAnimals.Animals
                     npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
                     npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                     npc.netUpdate = true;
-                    ///if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type])
-                    if (Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Framing.GetTileSafely(a, b).type])//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
+                    if (tilecheck.active() && tilecheck.nactive() && (Main.tileSolid[tilecheck.type] || Main.tileSolidTop[tilecheck.type]) && tilecheck.frameY == 0)//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
                     {
-                        Phase = (int)AIStates.TPFail;
-                        AttackTimer = 0;
+                        //Phase = (int)AIStates.TPFail;
+                        //AttackTimer = 0;
+                        npc.alpha = 255;
                     }
                     else
                     {
@@ -119,8 +121,10 @@ namespace MinecraftAnimals.Animals
                     }
                 }
             }
+            /*
             if (Phase == (int)AIStates.TPFail)
             {
+                //this ai state is when the enderman fails to stay out of a solid tile so it will attempt to find an open area in this state.
                 AttackTimer = 0;
                 AttackTimer++;
                 npc.velocity.X = 0;
@@ -129,12 +133,13 @@ namespace MinecraftAnimals.Animals
                 npc.position.X = player.Center.X + (int)(Distance_ * angle.X); //controls the main area of the random teleport
                 npc.position.Y = player.Center.Y + (int)(Distance_ * angle.Y);// this moves the npc to an area around the player
                 npc.netUpdate = true;
-                if (!(Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Framing.GetTileSafely(a, b).type]))//Main.tile[a, b].active() && Main.tileSolid[Main.tile[a, b].type]
+                if (!(tilecheck.nactive() && tilecheck.active() && (Main.tileSolid[tilecheck.type] || Main.tileSolidTop[tilecheck.type]) && tilecheck.frameY == 0))//Main.tile[a, b].active() && Main.tile[a, b].nactive() &&  Main.tileSolid[Main.tile[a, b].type]
                 {
                     Phase = (int)AIStates.Attack;
                     AttackTimer = 0;
                 }
             }
+            */
             if (Phase == (int)AIStates.Death)
             {
                 npc.damage = 0;
@@ -154,6 +159,8 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
+            int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
+            int y = (int)(npc.Center.Y + (npc.height / 2) - 4) / 16;//autojump check
             if (Main.tile[x, y].active() && Main.tile[x, y].nactive() && Main.tileSolid[Main.tile[x, y].type] && GlobalTimer % 50 == 0)//autojump tile detection
             {
                 int i = 1;
@@ -166,7 +173,6 @@ namespace MinecraftAnimals.Animals
         }
         public override void HitEffect(int hitDirection, double damage)
         {
-            npc.friendly = false;
             Phase = (int)AIStates.Attack;
             if (npc.life <= 0)
             {
@@ -187,7 +193,7 @@ namespace MinecraftAnimals.Animals
             int startY = npc.frame.Y;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 20 : 20);
+            origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 28 : 28);
 
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
@@ -202,25 +208,6 @@ namespace MinecraftAnimals.Animals
             }
             return false;
         }
-        //                npc.rotation = GeneralMethods.ManualMobRotation(npc.rotation, MathHelper.ToRadians(90f), 0.5f);
-        /*
-        public override bool CheckDead()
-        {
-            npc.ai[2] = 0f;
-            Phase = (int)AIStates.Death;
-            if (npc.ai[2] == 0f)
-            {
-                npc.ai[2] = 1f;
-                npc.damage = 0;
-                npc.life = npc.lifeMax;
-                npc.dontTakeDamage = true;
-                npc.netUpdate = true;
-                return false;
-            }
-            return false;
-        }
-                */
-
         private bool RectangeIntersectsTiles(Rectangle rectangle)
         {
             bool intersects = false;

@@ -37,12 +37,12 @@ namespace MinecraftAnimals.projectiles.Passive
             projectile.height = 8;
             projectile.friendly = true;
             projectile.hostile = false;
-            projectile.penetrate = 10;
+            projectile.penetrate = 1;
             projectile.hide = true;
             projectile.damage = 5;
             projectile.tileCollide = false;
             projectile.ranged = true;
-            projectile.timeLeft = 200;
+            projectile.timeLeft = 900;
             projectile.localNPCHitCooldown = -1; // 1 hit per npc max
         }
         public override void SetStaticDefaults()
@@ -107,7 +107,7 @@ namespace MinecraftAnimals.projectiles.Passive
                 if (!player.channel) LoadedCharge = 18f;// The purpose of this is that after the player loads the bolt they if they let go it sets the charge right before the prefire number so when they channel again it fires
                 if (ReadyToFire)
                 {
-                    projectile.damage = 40;
+                    projectile.damage = 46;
                     projectile.velocity = aim * 26f;// fires the bolt
                     player.channel = false;
                     ProjectileState = (int)AIStates.Launch;

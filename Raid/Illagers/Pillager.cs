@@ -28,7 +28,7 @@ namespace MinecraftAnimals.Raid.Illagers
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (NPC.downedBoss1)
+            if (WorldGen.shadowOrbSmashed)
             {
                 return SpawnCondition.Overworld.Chance * 0.04f;
             }
@@ -147,7 +147,7 @@ namespace MinecraftAnimals.Raid.Illagers
         public override void NPCLoot()
         {
             if (Main.rand.NextBool(40)) Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Weapons.Crossbow>());
-            if (WorldGen.shadowOrbSmashed) if (Main.rand.NextBool(35)) Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Usables.OminousBanner>());
+            if (RaidWorld.downedRaid) if (Main.rand.NextBool(35)) Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, ItemType<Items.Usables.OminousBanner>());
         }
         public override void HitEffect(int hitDirection, double damage)
         {

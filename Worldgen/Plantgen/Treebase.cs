@@ -25,6 +25,7 @@ namespace MinecraftAnimals.Worldgen.Plantgen
                 // Next, we insert our step directly after the original "Shinies" step. 
                 // ExampleModOres is a method seen below.
                 tasks.Insert(ShiniesIndex + 1, new PassLegacy("Tree bases", Treebases));
+                tasks.Insert(ShiniesIndex + 2, new PassLegacy("Dirt", Dirty));
             }
         }
         private void Treebases(GenerationProgress progress)
@@ -44,6 +45,27 @@ namespace MinecraftAnimals.Worldgen.Plantgen
                     if (tile.active() && tile.type == TileID.Grass)//|| tile.type == TileID.FleshGrass || tile.type == TileID.CorruptGrass
                     {
                         WorldGen.TileRunner(x, y, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(2, 3), TileType<Tiles.GrassTiles.GrassTile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
+                    }
+                }
+            }
+        }
+        private void Dirty(GenerationProgress progress)
+        {
+            progress.Message = "Dirt";
+            for (int k = 0; k < (int)((Main.maxTilesX * (int)WorldGen.worldSurface) * 0.35); k++)
+            {
+                // The inside of this for loop corresponds to one single splotch of our Ore.
+                // First, we randomly choose any coordinate in the world by choosing a random x and y value.
+                int x = WorldGen.genRand.Next(2) == 0 ? WorldGen.genRand.Next(60, Main.maxTilesX / 6) : WorldGen.genRand.Next(Main.maxTilesX / 6 * 5, Main.maxTilesX - 60);
+                int y = (int)(WorldGen.worldSurface * 0.35);
+                y = GeneralMethods.FindType(x, y, -1, TileType<Tiles.GrassTiles.GrassTile>());
+                if (y > 1)
+                {
+                    Tile tile = Framing.GetTileSafely(x, y + 1);
+                    WorldGen.SquareTileFrame(x, y + 1);
+                    if (tile.active() && tile.type == TileID.Dirt)//|| tile.type == TileID.FleshGrass || tile.type == TileID.CorruptGrass
+                    {
+                        WorldGen.TileRunner(x, y + 1, WorldGen.genRand.Next(2, 3), WorldGen.genRand.Next(2, 3), TileType<Tiles.Dirttile>(), false, 0, 0, false, true);//WorldGen.genRand.Next(2, 3)
                     }
                 }
             }

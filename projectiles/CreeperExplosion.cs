@@ -21,8 +21,7 @@ namespace MinecraftAnimals.projectiles
             projectile.friendly = false;
             projectile.hostile = true;
             projectile.hide = true;
-            // 5 second fuse.
-            projectile.timeLeft = 30;
+            projectile.timeLeft = 5;
 
             // These 2 help the projectile hitbox be centered on the projectile sprite.
             drawOffsetX = 5;

@@ -1,8 +1,9 @@
 Minecraft Animals is a mod that adds in different mobs and such from minecraft as you'd expect, and a small amount of other things
 to create a little minecraft ambience in your world. Note, this is still wip and not every single mc thing is going to be put in.
 
-Big thanks to: Gameraiders101 for showing the mod,  rebmiami the previous lead dev and creator, Chem (collaberator), GabeHasWon (massive code help), DanYami(massive code help), Oli(massive code help),
-NuovaPrime(massive code help), Stevie(massive code help), Joost(massive code help).
+Big thanks to: Gameraiders101 for showing the mod and giving the og team the neat little idea to start this project,  rebmiami the previous lead dev and creator, Chem (collaberator),
+GabeHasWon (massive code help), DanYami(massive code help), Oli(massive code help),
+NuovaPrime(massive code help), Stevie(massive code help), Joost(massive code help), MutantWaffles(massive code help), and many more.
 
 The mod forum is currently incomplete but slowly being worked on, We hope you enjoy the mod, and please report any issues you encounter
 
@@ -11,8 +12,9 @@ v0.1.1.1:
 -Added more Nether mobs such as: the hoglin, piglin, piglin ranger,. Birch trees spawn on the outer sides of the world. fixed spawn rates.
 
 v0.1.2.1:
--AI for all current mobs have been redone to fix up sync, redo behavior and added simple minecraft like death animation.
-`The Raid has been added! 
+-AI for all current mobs have been redone to fix up sync issues with ai and added simple minecraft like death animation.
+`The Raid has been completed! 
 this as of now includes the Pillager, Vindicator, Evoker, Witch, Ravager, and Vex which all spawn within the event. Find Roaming patrol captains after smashing a shadow orb and head back to your spawn point or set up bed.
 With an added twist you now must not only fight the illagers but defend your town npcs as well as if all within the area die you will lose the raid
 -On the outer edges of your world small birch tree plains have a chance to spawn
+-Crossbow and Illager banner has been added

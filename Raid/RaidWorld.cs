@@ -8,7 +8,8 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static Terraria.ModLoader.ModContent;
 using MinecraftAnimals.Raid;
-using System.Linq;
+using Terraria.World.Generation;
+using Terraria.ObjectData;
 
 namespace MinecraftAnimals.Raid
 {

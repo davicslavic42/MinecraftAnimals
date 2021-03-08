@@ -95,7 +95,7 @@ namespace MinecraftAnimals.Animals.Neutral
                     i = 0;
                 }
             }
-
+            /*
             int a = (int)(npc.Center.X / 16);
             int b = (int)(npc.Center.Y + (npc.height / 2) - 3) / 16;
             if (!(Main.tile[a, b].active() && Main.tile[a, b].nactive() && Main.tileSolid[Main.tile[a, b].type]))
@@ -104,6 +104,7 @@ namespace MinecraftAnimals.Animals.Neutral
                 npc.velocity.Y = 0.5f;
             }
             else hover = 0;
+            */
         }
         public override void HitEffect(int hitDirection, double damage)
         {

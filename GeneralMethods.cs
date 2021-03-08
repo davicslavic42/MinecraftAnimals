@@ -38,6 +38,7 @@ namespace MinecraftAnimals
             }
             return initialAngle;
         }
+        #region Beta Targeting
         //thanks dan for the idea
         public static Vector2 GetTargetPlayerEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true) 
         {
@@ -131,7 +132,9 @@ namespace MinecraftAnimals
             }
             return newTargetCenter;
         }
+        #endregion Beta Targeting
 
+        #region tiles
         public static int FindType(int x, int y, int maxDepth = -1, params int[] types)//thanks gabe
         {
             if (maxDepth == -1) maxDepth = (int)(WorldGen.worldSurface * 2); //Set default
@@ -145,7 +148,22 @@ namespace MinecraftAnimals
             }
             return -1; //fallout case
         }
-        public static int CountTownNpcs()//will most likely be used for allowing of iron golems to spawn
+        /*
+        bool CheckSolidTile(int x, int y, params int[] types)//thanks gabe
+        {
+            Tile tile = Main.tile[x, y];
+            if (tile.active() && Main.tileSolid[tile.type] ) return true;//Framing.GetTileSafely(x, y) && types.Any(i => i == tile.type)
+            else return false;
+
+        }
+        public static bool TileIsSolidOrPlatform(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            return tile != null && (tile.nactive() && (Main.tileSolid[tile.type] || Main.tileSolidTop[tile.type] && tile.frameY == 0) || tile.liquid > 64);
+        }
+        */
+        #endregion tiles
+        int CountTownNpcs()//will most likely be used for allowing of iron golems to spawn
         {
             int TownMembers = 0;
             for (int i = 0; i < Main.maxNPCs; i++)//I.active
