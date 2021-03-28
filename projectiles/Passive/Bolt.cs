@@ -9,6 +9,7 @@ namespace MinecraftAnimals.projectiles.Passive
 {
     public class Bolt : ModProjectile
     {
+        public override string Texture => "MinecraftAnimals/projectiles/Passive/PassiveArrow";
         public int TargetWhoAmI
         {
             get => (int)projectile.ai[1];

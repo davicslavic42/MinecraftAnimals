@@ -70,7 +70,7 @@ namespace MinecraftAnimals.Raid
         }
         public override void PreUpdate()
 		{
-            townNpcCount = GeneralMethods.CountTownNPCRaid(); // counts npcs in range of player's spawn point or bed to ensure they meet
+            townNpcCount = CountTownNPCRaid(); // counts npcs in range of player's spawn point or bed to ensure they meet
             if (RaidEvent)
 			{
                 RaiderCounter = NPC.CountNPCS(NPCType<Pillager>()) + NPC.CountNPCS(NPCType<Evoker>()) + NPC.CountNPCS(NPCType<Ravager>()) + NPC.CountNPCS(NPCType<Witch>()) + NPC.CountNPCS(NPCType<Vindicator>());
@@ -192,5 +192,19 @@ namespace MinecraftAnimals.Raid
 
             }
         }
+        internal int CountTownNPCRaid()
+        {
+            int TownMembersleft = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)//I.active
+            {
+                Player player = Main.player[i];
+                Vector2 OriginalSpawn = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
+                Vector2 BedSpawn = new Vector2(player.SpawnX * 16, player.SpawnY * 16);
+                NPC I = Main.npc[i];
+                if (I.active && I.townNPC && I.friendly && I.aiStyle == 7 && I.chaseable && I.HasGivenName && !NPCID.Sets.TownCritter[I.type] && (I.Distance(OriginalSpawn) <= 3850f || I.Distance(BedSpawn) <= 3850f) && (!I.homeless || I.homeless)) TownMembersleft++;//needed parameters to check for all town npcs cuz vanilla is pain
+            }
+            return TownMembersleft;
+        }
+
     }
 }
