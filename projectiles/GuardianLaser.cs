@@ -6,6 +6,8 @@ using Terraria.Enums;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 using static Terraria.ModLoader.ModContent;
+using Terraria.ID;
+using MinecraftAnimals.Animals.OceanNpcs;
 
 namespace MinecraftAnimals.projectiles
 {
@@ -32,11 +34,18 @@ namespace MinecraftAnimals.projectiles
 
 		// The actual distance is stored in the ai0 field
 		// By making a property to handle this it makes our life easier, and the accessibility more readable
+		public int ParentIndex
+		{
+			get => (int)projectile.ai[0] - 1;
+			set => projectile.ai[0] = value + 1;
+		}
+		public bool HasParent => ParentIndex > -1;
 		internal float Distance
 		{
-			get => projectile.ai[0];
-			set => projectile.ai[0] = value;
+			get => projectile.ai[1];
+			set => projectile.ai[1] = value;
 		}
+
 		internal int TargetWhoAmI
 		{
 			get => (int)projectile.ai[1];
@@ -45,7 +54,7 @@ namespace MinecraftAnimals.projectiles
 		internal ref float Charge => ref projectile.localAI[0];
 		internal ref float ProjectileState => ref projectile.ai[0];
 
-		internal const float MAX_CHARGE = 150f;
+		internal const float MAX_CHARGE = 250f;
 		internal const float MOVE_DISTANCE = 60f;
 		bool IsAtMaxCharge => Charge == MAX_CHARGE;
 		internal enum AIStates
@@ -63,15 +72,16 @@ namespace MinecraftAnimals.projectiles
 			}
 			return false;
 		}
-		private void UpdatePlayer(Player player)
+		private void UpdateGuardian(NPC npc)
 		{
-			// Multiplayer support here, only run this code if the client running it is the owner of the projectile
-			Vector2 aim = Vector2.Normalize(Main.MouseWorld - projectile.Center);
-			if (projectile.owner == Main.myPlayer)
+			NPC parentNPC = Main.npc[ParentIndex];
+			Player player = Main.player[npc.target];//TODO loop through player array and check the vector position of the target(because i use a different method) and use that vecotr as a ref point for targeting
+			Vector2 aim = Vector2.Normalize(projectile.Center - parentNPC.Center);
+			if (Main.netMode != NetmodeID.MultiplayerClient)
 			{
 				projectile.velocity = aim;
 				projectile.rotation = aim.ToRotation();
-				projectile.direction = Main.MouseWorld.X > player.position.X ? 1 : -1;
+				projectile.direction = parentNPC.position.X > player.position.X ? 1 : -1;
 				projectile.netUpdate = true;
 			}
 			int dir = projectile.direction;
@@ -126,7 +136,7 @@ namespace MinecraftAnimals.projectiles
 		// Set custom immunity time on hitting an NPC
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
 		{
-			target.immune[projectile.owner] = 5;
+			target.immune[projectile.owner] = 55;
 		}
 
 		// The AI of the projectile
@@ -150,43 +160,10 @@ namespace MinecraftAnimals.projectiles
 			SetLaserPosition(player);
 		}
 
-		private void SpawnDusts(Player player)
-		{
-			Vector2 unit = projectile.velocity * -1;
-			Vector2 dustPos = player.Center + projectile.velocity * Distance;
-
-			for (int i = 0; i < 2; ++i)
-			{
-				float num1 = projectile.velocity.ToRotation() + (Main.rand.Next(2) == 1 ? -1.0f : 1.0f) * 1.57f;
-				float num2 = (float)(Main.rand.NextDouble() * 0.8f + 1.0f);
-				Vector2 dustVel = new Vector2((float)Math.Cos(num1) * num2, (float)Math.Sin(num1) * num2);
-				Dust dust = Main.dust[Dust.NewDust(dustPos, 0, 0, 226, dustVel.X, dustVel.Y)];
-				dust.noGravity = true;
-				dust.scale = 1.2f;
-				dust = Dust.NewDustDirect(Main.player[projectile.owner].Center, 0, 0, 31,
-					-unit.X * Distance, -unit.Y * Distance);
-				dust.fadeIn = 0f;
-				dust.noGravity = true;
-				dust.scale = 0.88f;
-				dust.color = Color.Cyan;
-			}
-
-			if (Main.rand.NextBool(5))
-			{
-				Vector2 offset = projectile.velocity.RotatedBy(1.57f) * ((float)Main.rand.NextDouble() - 0.5f) * projectile.width;
-				Dust dust = Main.dust[Dust.NewDust(dustPos + offset - Vector2.One * 4f, 8, 8, 31, 0.0f, 0.0f, 100, new Color(), 1.5f)];
-				dust.velocity *= 0.5f;
-				dust.velocity.Y = -Math.Abs(dust.velocity.Y);
-				unit = dustPos - Main.player[projectile.owner].Center;
-				unit.Normalize();
-				dust = Main.dust[Dust.NewDust(Main.player[projectile.owner].Center + 55 * unit, 8, 8, 31, 0.0f, 0.0f, 100, new Color(), 1.5f)];
-				dust.velocity = dust.velocity * 0.5f;
-				dust.velocity.Y = -Math.Abs(dust.velocity.Y);
-			}
-		}
 
 		/*
 		 * Sets the end of the laser position based on where it collides with something
+		 * float distanceToPlayer = new Vector2(player.center - npc.center)
 		 */
 		private void SetLaserPosition(Player player)
 		{

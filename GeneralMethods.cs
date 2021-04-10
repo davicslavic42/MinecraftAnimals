@@ -52,6 +52,7 @@ namespace MinecraftAnimals
                 Player player = Main.player[y];
                 if (!player.dead && !player.ghost && player.active && Vector2.Distance(currentCenter, player.Center) < searchRange ) 
                 {
+                    
                     newTargetCenter = player.Center;
                     DistanceToTargetPos = Vector2.Distance(currentCenter, newTargetCenter);
                     DistanceToNewTargetPos = Vector2.Distance(currentCenter, player.Center);// checks other player Centers

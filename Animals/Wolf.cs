@@ -106,12 +106,12 @@ namespace MinecraftAnimals.Animals
                     npc.life = 0;
                 }
             }
-            if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)
+            if (npc.ai[3] == -10 && npc.life > npc.life * 0.05)//wolf is now hostile
             {
                 Phase = (int)AIStates.Attack;
                 npc.friendly = false;
             }
-            if (player.HeldItem.type == ItemType<Items.Materials.Bone>() && npc.ai[3] != -10/* ai[3] == -10  goes hostile*/ && Phase != (int)AIStates.Death) Phase = (int)AIStates.Follow; //if player is holding a bone and dog is not dead nor hostile start to follow
+            if (player.HeldItem.type == ItemType<Items.Materials.Bone>() && npc.ai[3] != -10/* if ai[3] == -10 wolf goes hostile*/ && Phase != (int)AIStates.Death) Phase = (int)AIStates.Follow; //if player is holding a bone and dog is not dead nor hostile it will start to follow
 
             int x = (int)(npc.Center.X + (((npc.width / 2) + 8) * npc.direction)) / 16;
             int y = (int)(npc.Center.Y + ((npc.height / 2) * npc.direction) - 1) / 16;

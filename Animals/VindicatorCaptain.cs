@@ -43,11 +43,16 @@ namespace MinecraftAnimals.Animals
             Attack = 1,
             Death = 2
         }
+        //public bool patrol
+        //{
+        //    get => npc.localAI[0] == 1f;
+        //    set => npc.localAI[0] = value ? 1f : 0f;
+        // }
+        bool patrol = false;
         internal ref float GlobalTimer => ref npc.ai[0];
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
-        int patrol = 0;
 
         public override void AI()
         {
@@ -68,18 +73,17 @@ namespace MinecraftAnimals.Animals
                     Phase = (int)AIStates.Attack;
                     GlobalTimer = 0;
                 }
-                if (patrol == 0 && player.Distance(npc.Center) < 825f)
+                if (!patrol && player.Distance(npc.Center) < 825f)
                 {
+                    patrol = true;
                     for (int i = 0; i < 2; i++)
                     {
                         NPC.NewNPC(Main.rand.Next((int)npc.position.X - 120, (int)npc.position.X + 120), (int)npc.position.Y - 30, NPCType<Raid.Illagers.Pillager>(), 0);
                     }
-                    patrol = 1;
                 }
             }
             if (Phase == (int)AIStates.Attack)
             {
-                patrol = 1;
                 npc.TargetClosest(true);
                 npc.damage = 30;
                 npc.velocity.X = 1.75f * npc.direction;
@@ -93,7 +97,6 @@ namespace MinecraftAnimals.Animals
             // thanks oli for the tile checks
             if (Phase == (int)AIStates.Death)
             {
-                patrol = 1;
                 npc.damage = 0;
                 npc.ai[2] += 1f; // increase our death timer.
                 npc.netUpdate = true;

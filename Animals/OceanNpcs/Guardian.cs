@@ -4,12 +4,16 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MinecraftAnimals.Animals.OceanNpcs
 {
     public class Guardian : ModNPC
     {
         public override string Texture => "Assets/NPCTextures/Ocean/Guardian";
+
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Guardian");
@@ -20,7 +24,7 @@ namespace MinecraftAnimals.Animals.OceanNpcs
             npc.noGravity = true;
             npc.width = 48;
             npc.height = 12;
-            npc.lifeMax = 10;
+            npc.lifeMax = 90;
             npc.HitSound = SoundID.NPCHit1;
             npc.DeathSound = SoundID.NPCDeath1;
             npc.aiStyle = -1;
@@ -39,13 +43,18 @@ namespace MinecraftAnimals.Animals.OceanNpcs
         internal ref float Phase => ref npc.ai[1];
         internal ref float ActionPhase => ref npc.ai[2];
         internal ref float AttackTimer => ref npc.ai[3];
+        internal float pupilRadius = 0f;
+        const float PUPIL_MOVEMENT_SPEED = 0.15f;//this controls the speed the guardian's pupil moves around the drawn point
         public override void AI()
         {
-            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 710f);//gets player center
+            Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 660f);//gets player center
+            Vector2 TargetDir = Vector2.Normalize(PlayerTarget - npc.Center);
+            //Main.player[npc.target] = 
             npc.direction = npc.Center.X > PlayerTarget.X ? npc.direction = -1 : npc.direction = 1;
             GlobalTimer++;
             if (Phase == (int)AIStates.Normal)
             {
+                pupilRadius = 0f;
                 npc.velocity.X = 2.25f * npc.direction;
                 if (GlobalTimer % 50 == 0 && GlobalTimer > 250)
                 {
@@ -53,15 +62,21 @@ namespace MinecraftAnimals.Animals.OceanNpcs
                     npc.direction = Main.rand.Next(2) == 1 ? npc.direction = 1 : npc.direction = -1;
                     GlobalTimer = 0;
                 }
-                if(npc.Distance(PlayerTarget) < 700f) Phase = (int)AIStates.Attack;
+                if(npc.Distance(PlayerTarget) < 650f) Phase = (int)AIStates.Attack;
             }
             if (Phase == (int)AIStates.Attack)
             {
+                pupilRadius = 0.5f;
                 int flee = 0;
-                Vector2 TargetDir = Vector2.Normalize(PlayerTarget - npc.Center);
                 npc.velocity.X = 0f * npc.direction;
-                npc.rotation = TargetDir.ToRotation();
-                Projectile.NewProjectile(npc.Center, TargetDir, ProjectileType<projectiles.GuardianLaser>(), 10, 2);
+                npc.rotation = TargetDir.ToRotation();//turns to player
+                Vector2 laserAngle = Vector2.UnitX.RotatedBy(TargetDir.ToRotation());//rotation angle for the laser position so it doesn't disconenect from the eye
+                Vector2 laserPosition = new Vector2(npc.Center.X + ((npc.width / 2) + 3) / 16 * laserAngle.X, npc.Center.Y * 0.5f * laserAngle.Y);// position is moved closer to the eye an
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    int projectileIndex = Projectile.NewProjectile(laserPosition, TargetDir, ProjectileType<projectiles.GuardianLaser>(), 10, 2, npc.whoAmI);//fix later! new Vector2(npc.Center.X + 32f, npc.Center.Y * 0.5f)
+                    Projectile npcprojectile = Main.projectile[projectileIndex];
+                }
             }
             if (Phase == (int)AIStates.Death)
             {
@@ -97,21 +112,26 @@ namespace MinecraftAnimals.Animals.OceanNpcs
         public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if (npc.spriteDirection == 1)
+            if (npc.spriteDirection == 1) spriteEffects = SpriteEffects.FlipHorizontally;
+            /*
+            if (Phase == (int)AIStates.Attack && (npc.rotation < MathHelper.PiOver2 || npc.rotation > MathHelper.ToRadians(180))) 
             {
-                spriteEffects = SpriteEffects.FlipHorizontally;
+                spriteEffects = SpriteEffects.FlipVertically;
             }
+            */
             Texture2D texture = Main.npcTexture[npc.type];
-            Texture2D eyeTexture = ModContent.GetTexture("GuardianEye");
-            Vector2 eyeposition = new Vector2(npc.Center.X + ((npc.width / 2) + 4), npc.Center.Y * 0.5f);
+            Texture2D eyeTexture = ModContent.GetTexture("Assets/NPCTextures/Ocean/GuardianEye");
+
+            Player player = Main.player[npc.target];
+            Vector2 eyePosition = new Vector2(npc.Center.X + (((npc.width / 2) + 2) * npc.direction) / 16, npc.Center.Y * 0.5f);
+            float eyeDirection = Vector2.Normalize(player.Center - npc.Center).ToRotation();
 
             int frameHeight = Main.npcTexture[npc.type].Height / Main.npcFrameCount[npc.type];
             int startY = npc.frame.Y;
-            int startX = texture.Width / 2;
+            int startX = texture.Width;
             Rectangle sourceRectangle = new Rectangle(0, startY, startX, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
             origin.X = (float)(npc.spriteDirection == 1 ? sourceRectangle.Width - 25 : 25);
-
             Color drawColor = npc.GetAlpha(lightColor);
             if (Phase == (int)AIStates.Death)
             {
@@ -123,14 +143,16 @@ namespace MinecraftAnimals.Animals.OceanNpcs
                 Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, spriteEffects, 0f);
             }
-            if (Phase == (int)AIStates.Attack && npc.direction == 1)
-            {
-                Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
-                sourceRectangle, drawColor, npc.rotation, origin, npc.scale, SpriteEffects.FlipVertically, 0f);
-            }
-            Main.spriteBatch.Draw(eyeTexture, eyeposition - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
-            sourceRectangle, drawColor, npc.rotation, origin, npc.scale, SpriteEffects.FlipVertically, 0f);
 
+            Main.spriteBatch.Draw(eyeTexture, eyePosition - Main.screenPosition + new Vector2((float)Math.Cos(eyeDirection) * pupilRadius * PUPIL_MOVEMENT_SPEED, (float)Math.Sin(eyeDirection) * pupilRadius * PUPIL_MOVEMENT_SPEED),
+            eyeTexture.Frame(), drawColor, npc.rotation, eyeTexture.Size() * .5f, npc.scale, SpriteEffects.FlipVertically, 0f);
+
+            /* if (Phase == (int)AIStates.Attack && npc.direction == 1)
+             {
+                 Main.spriteBatch.Draw(texture, npc.Center - Main.screenPosition + new Vector2(0f, npc.gfxOffY),
+                 sourceRectangle, drawColor, npc.rotation, origin, npc.scale, SpriteEffects.FlipVertically, 0f);
+             }
+            */
             return false;
         }
         private const int Frame_Walk = 0;
