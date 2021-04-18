@@ -7,6 +7,7 @@ using static Terraria.ModLoader.ModContent;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using MinecraftAnimals.projectiles;
 
 namespace MinecraftAnimals.Animals.OceanNpcs
 {
@@ -49,9 +50,9 @@ namespace MinecraftAnimals.Animals.OceanNpcs
         {
             Vector2 PlayerTarget = GeneralMethods.GetTargetPlayerEntity(npc.Center, 660f);//gets player center
             Vector2 TargetDir = Vector2.Normalize(PlayerTarget - npc.Center);
-            //Main.player[npc.target] = 
             npc.direction = npc.Center.X > PlayerTarget.X ? npc.direction = -1 : npc.direction = 1;
             GlobalTimer++;
+
             if (Phase == (int)AIStates.Normal)
             {
                 pupilRadius = 0f;
@@ -63,20 +64,30 @@ namespace MinecraftAnimals.Animals.OceanNpcs
                     GlobalTimer = 0;
                 }
                 if(npc.Distance(PlayerTarget) < 650f) Phase = (int)AIStates.Attack;
+                
             }
             if (Phase == (int)AIStates.Attack)
             {
                 pupilRadius = 0.5f;
-                int flee = 0;
+                bool flee = false;
                 npc.velocity.X = 0f * npc.direction;
                 npc.rotation = TargetDir.ToRotation();//turns to player
                 Vector2 laserAngle = Vector2.UnitX.RotatedBy(TargetDir.ToRotation());//rotation angle for the laser position so it doesn't disconenect from the eye
                 Vector2 laserPosition = new Vector2(npc.Center.X + ((npc.width / 2) + 3) / 16 * laserAngle.X, npc.Center.Y * 0.5f * laserAngle.Y);// position is moved closer to the eye an
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                
+                int projectileIndex = Projectile.NewProjectile(laserPosition, TargetDir, ProjectileType<projectiles.GuardianLaser>(), 0, 2, npc.whoAmI);//fix later! new Vector2(npc.Center.X + 32f, npc.Center.Y * 0.5f)
+                Projectile npcprojectile = Main.projectile[projectileIndex];
+                if (npcprojectile.modProjectile is GuardianLaser guardianLaser)
                 {
-                    int projectileIndex = Projectile.NewProjectile(laserPosition, TargetDir, ProjectileType<projectiles.GuardianLaser>(), 10, 2, npc.whoAmI);//fix later! new Vector2(npc.Center.X + 32f, npc.Center.Y * 0.5f)
-                    Projectile npcprojectile = Main.projectile[projectileIndex];
+                    guardianLaser.ParentIndex = npc.whoAmI; //Let the minion know who the "parent" is
+                    //guardianLaser.PositionIndex = i; //Give it the iteration index so each minion has a separate one, used for movement
                 }
+                if (Main.netMode == NetmodeID.Server && projectileIndex < Main.maxProjectiles)
+                {
+                    NetMessage.SendData(MessageID.SyncProjectile, number: projectileIndex);
+                }
+                /*                for (int i = 0; i < 2; i++)
+                */
             }
             if (Phase == (int)AIStates.Death)
             {
@@ -98,7 +109,15 @@ namespace MinecraftAnimals.Animals.OceanNpcs
                     npc.life = 0;
                 }
             }
-            if (!npc.wet) npc.velocity.Y = 1.5f;
+            if (!npc.wet) npc.velocity.Y = 1.5f;// ensures this npc doesn't start flying out of water
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                for (int i = 0; i < Main.maxPlayers; i++)
+                {
+                    Player player = Main.player[i];
+                    if (player.Center == PlayerTarget) npc.target = i;
+                }
+            }//very crude but hopefully this will set the npc target to the current player targeted. The "playertargets" targets the player's center without setting an actual indexed target
         }
         public override void HitEffect(int hitDirection, double damage)
         {

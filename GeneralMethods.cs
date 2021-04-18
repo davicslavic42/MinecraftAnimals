@@ -40,6 +40,29 @@ namespace MinecraftAnimals
         }
         #region Beta Targeting
         //thanks dan for the idea
+        public static void setnpcTarget(int currentNpcType, int targetTypeID, float searchRange = 500f, bool TargetClosest = true)/// extra WIP
+        {
+            Vector2 newTargetCenter = new Vector2(0, 0);
+            float DistanceToTargetPos = 0f;
+            float DistanceToNewTargetPos = 0f;
+            bool CloserTargets = DistanceToTargetPos > DistanceToNewTargetPos;//if any of the other valid Centers ends up closer to the main Center the target will be changed
+
+            for (int i = 0; i < Main.maxNPCs; i++)//targets a specific npc by ID
+            {
+                NPC mainNpc = Main.npc[i];
+                NPC npcTarget = Main.npc[i];
+                if (npcTarget.active && npcTarget.chaseable && Vector2.Distance(mainNpc.Center, npcTarget.Center) < searchRange && npcTarget.type == targetTypeID)
+                {
+                    newTargetCenter = npcTarget.Center;
+                    DistanceToTargetPos = Vector2.Distance(mainNpc.Center, newTargetCenter);//distance to current target
+                    DistanceToNewTargetPos = Vector2.Distance(mainNpc.Center, npcTarget.Center);//this takes the distance to the different valid Centers of the npcs aka potential new targets
+                    mainNpc.target = npcTarget.whoAmI;
+                    if (TargetClosest) if (CloserTargets) newTargetCenter = npcTarget.Center;
+                }
+                if (newTargetCenter == npcTarget.Center) mainNpc.target = npcTarget.whoAmI;
+            }
+        }
+
         public static Vector2 GetTargetPlayerEntity(Vector2 currentCenter, float searchRange = 500f, bool TargetClosest = true) 
         {
             Vector2 newTargetCenter = new Vector2(0, 0);
